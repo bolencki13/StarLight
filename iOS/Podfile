@@ -1,0 +1,6 @@
+target 'StarLight' do
+	pod 'ChameleonFramework'
+	pod 'DZNEmptyDataSet'
+	pod 'BEMCheckBox'
+	pod 'OpenCV'
+end

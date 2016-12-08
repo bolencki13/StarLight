@@ -1,0 +1,478 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0D8A0E5ABAE1C6C01CB5FC6B /* libPods-StarLight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0458FD1BAC91985E35FACFF2 /* libPods-StarLight.a */; };
+		40B070971DF72ED3002D745F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B070961DF72ED3002D745F /* main.m */; };
+		40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B070991DF72ED3002D745F /* STLAppDelegate.m */; };
+		40B0709D1DF72ED3002D745F /* STLRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B0709C1DF72ED3002D745F /* STLRootViewController.m */; };
+		40B070A01DF72ED3002D745F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40B0709E1DF72ED3002D745F /* Main.storyboard */; };
+		40B070A31DF72ED3002D745F /* StarLight.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 40B070A11DF72ED3002D745F /* StarLight.xcdatamodeld */; };
+		40B070A51DF72ED3002D745F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40B070A41DF72ED3002D745F /* Assets.xcassets */; };
+		40B070A81DF72ED3002D745F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40B070A61DF72ED3002D745F /* LaunchScreen.storyboard */; };
+		40CEA47A1DF73C7800925F5C /* STLNewStarLightViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40CEA4791DF73C7800925F5C /* STLNewStarLightViewController.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0458FD1BAC91985E35FACFF2 /* libPods-StarLight.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StarLight.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		10B156D2F02AAD2493310FEA /* Pods-StarLight.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StarLight.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StarLight/Pods-StarLight.debug.xcconfig"; sourceTree = "<group>"; };
+		40B070921DF72ED3002D745F /* StarLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StarLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		40B070961DF72ED3002D745F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		40B070981DF72ED3002D745F /* STLAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STLAppDelegate.h; sourceTree = "<group>"; };
+		40B070991DF72ED3002D745F /* STLAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STLAppDelegate.m; sourceTree = "<group>"; };
+		40B0709B1DF72ED3002D745F /* STLRootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STLRootViewController.h; sourceTree = "<group>"; };
+		40B0709C1DF72ED3002D745F /* STLRootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STLRootViewController.m; sourceTree = "<group>"; };
+		40B0709F1DF72ED3002D745F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		40B070A21DF72ED3002D745F /* StarLight.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = StarLight.xcdatamodel; sourceTree = "<group>"; };
+		40B070A41DF72ED3002D745F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		40B070A71DF72ED3002D745F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		40B070A91DF72ED3002D745F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		40CEA4781DF73C7800925F5C /* STLNewStarLightViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLNewStarLightViewController.h; sourceTree = "<group>"; };
+		40CEA4791DF73C7800925F5C /* STLNewStarLightViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STLNewStarLightViewController.mm; sourceTree = "<group>"; };
+		91728CC973F06EBA7C225DAA /* Pods-StarLight.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StarLight.release.xcconfig"; path = "Pods/Target Support Files/Pods-StarLight/Pods-StarLight.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		40B0708F1DF72ED3002D745F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0D8A0E5ABAE1C6C01CB5FC6B /* libPods-StarLight.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3239FAB6578ABAAFDF5BBC4C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				10B156D2F02AAD2493310FEA /* Pods-StarLight.debug.xcconfig */,
+				91728CC973F06EBA7C225DAA /* Pods-StarLight.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		403B92441DF75DE100B06654 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Objects;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		403B924B1DF762D800B06654 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				40B070A11DF72ED3002D745F /* StarLight.xcdatamodeld */,
+			);
+			name = CoreData;
+			sourceTree = "<group>";
+		};
+		40B070891DF72ED3002D745F = {
+			isa = PBXGroup;
+			children = (
+				40B070941DF72ED3002D745F /* StarLight */,
+				40B070931DF72ED3002D745F /* Products */,
+				3239FAB6578ABAAFDF5BBC4C /* Pods */,
+				502FEC676900EBE63B325637 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		40B070931DF72ED3002D745F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				40B070921DF72ED3002D745F /* StarLight.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		40B070941DF72ED3002D745F /* StarLight */ = {
+			isa = PBXGroup;
+			children = (
+				40F7A6101DF72FF1000BCFF3 /* Application */,
+				40F7A6111DF72FF7000BCFF3 /* UI */,
+				403B92441DF75DE100B06654 /* Objects */,
+				403B924B1DF762D800B06654 /* CoreData */,
+				40B070951DF72ED3002D745F /* Supporting Files */,
+			);
+			path = StarLight;
+			sourceTree = "<group>";
+		};
+		40B070951DF72ED3002D745F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				40B0709E1DF72ED3002D745F /* Main.storyboard */,
+				40B070A41DF72ED3002D745F /* Assets.xcassets */,
+				40B070A61DF72ED3002D745F /* LaunchScreen.storyboard */,
+				40B070A91DF72ED3002D745F /* Info.plist */,
+				40B070961DF72ED3002D745F /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		40B437FC1DF9A777000E94C6 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				40B0709B1DF72ED3002D745F /* STLRootViewController.h */,
+				40B0709C1DF72ED3002D745F /* STLRootViewController.m */,
+			);
+			name = Home;
+			sourceTree = "<group>";
+		};
+		40B437FD1DF9A77C000E94C6 /* NewConnection */ = {
+			isa = PBXGroup;
+			children = (
+				40CEA4781DF73C7800925F5C /* STLNewStarLightViewController.h */,
+				40CEA4791DF73C7800925F5C /* STLNewStarLightViewController.mm */,
+			);
+			name = NewConnection;
+			sourceTree = "<group>";
+		};
+		40F7A6101DF72FF1000BCFF3 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				40B070981DF72ED3002D745F /* STLAppDelegate.h */,
+				40B070991DF72ED3002D745F /* STLAppDelegate.m */,
+			);
+			name = Application;
+			sourceTree = "<group>";
+		};
+		40F7A6111DF72FF7000BCFF3 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				40F7A6121DF72FFC000BCFF3 /* ViewControllers */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
+		40F7A6121DF72FFC000BCFF3 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				40B437FC1DF9A777000E94C6 /* Home */,
+				40B437FD1DF9A77C000E94C6 /* NewConnection */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		502FEC676900EBE63B325637 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0458FD1BAC91985E35FACFF2 /* libPods-StarLight.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		40B070911DF72ED3002D745F /* StarLight */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40B070AC1DF72ED3002D745F /* Build configuration list for PBXNativeTarget "StarLight" */;
+			buildPhases = (
+				442828D534039653E692545E /* [CP] Check Pods Manifest.lock */,
+				40B0708E1DF72ED3002D745F /* Sources */,
+				40B0708F1DF72ED3002D745F /* Frameworks */,
+				40B070901DF72ED3002D745F /* Resources */,
+				BBE8DA0D129CE47E3F81E052 /* [CP] Embed Pods Frameworks */,
+				2A4F2287A0CB0B6390BB7378 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StarLight;
+			productName = StarLight;
+			productReference = 40B070921DF72ED3002D745F /* StarLight.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		40B0708A1DF72ED3002D745F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = STL;
+				LastUpgradeCheck = 0810;
+				ORGANIZATIONNAME = "Brian Olencki";
+				TargetAttributes = {
+					40B070911DF72ED3002D745F = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 9UKYMVL752;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 40B0708D1DF72ED3002D745F /* Build configuration list for PBXProject "StarLight" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 40B070891DF72ED3002D745F;
+			productRefGroup = 40B070931DF72ED3002D745F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				40B070911DF72ED3002D745F /* StarLight */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		40B070901DF72ED3002D745F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40B070A81DF72ED3002D745F /* LaunchScreen.storyboard in Resources */,
+				40B070A51DF72ED3002D745F /* Assets.xcassets in Resources */,
+				40B070A01DF72ED3002D745F /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2A4F2287A0CB0B6390BB7378 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StarLight/Pods-StarLight-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		442828D534039653E692545E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		BBE8DA0D129CE47E3F81E052 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StarLight/Pods-StarLight-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		40B0708E1DF72ED3002D745F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40B070A31DF72ED3002D745F /* StarLight.xcdatamodeld in Sources */,
+				40CEA47A1DF73C7800925F5C /* STLNewStarLightViewController.mm in Sources */,
+				40B0709D1DF72ED3002D745F /* STLRootViewController.m in Sources */,
+				40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */,
+				40B070971DF72ED3002D745F /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		40B0709E1DF72ED3002D745F /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				40B0709F1DF72ED3002D745F /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		40B070A61DF72ED3002D745F /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				40B070A71DF72ED3002D745F /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		40B070AA1DF72ED3002D745F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		40B070AB1DF72ED3002D745F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		40B070AD1DF72ED3002D745F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 10B156D2F02AAD2493310FEA /* Pods-StarLight.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 9UKYMVL752;
+				INFOPLIST_FILE = StarLight/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bolencki13.StarLight;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		40B070AE1DF72ED3002D745F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 91728CC973F06EBA7C225DAA /* Pods-StarLight.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 9UKYMVL752;
+				INFOPLIST_FILE = StarLight/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bolencki13.StarLight;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		40B0708D1DF72ED3002D745F /* Build configuration list for PBXProject "StarLight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40B070AA1DF72ED3002D745F /* Debug */,
+				40B070AB1DF72ED3002D745F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		40B070AC1DF72ED3002D745F /* Build configuration list for PBXNativeTarget "StarLight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40B070AD1DF72ED3002D745F /* Debug */,
+				40B070AE1DF72ED3002D745F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		40B070A11DF72ED3002D745F /* StarLight.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				40B070A21DF72ED3002D745F /* StarLight.xcdatamodel */,
+			);
+			currentVersion = 40B070A21DF72ED3002D745F /* StarLight.xcdatamodel */;
+			path = StarLight.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 40B0708A1DF72ED3002D745F /* Project object */;
+}
