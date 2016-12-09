@@ -7,6 +7,7 @@
 //
 
 #import "STLRootViewController.h"
+#import "STLRootTableViewCell.h"
 
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
@@ -53,7 +54,7 @@
 
 #pragma mark - Actions
 - (void)addLights {
-    [self.navigationController pushViewController:[NSClassFromString(@"STLNewStarLightViewController") new] animated:YES];
+    [self.navigationController pushViewController:[NSClassFromString(@"STLCalibrationViewController") new] animated:YES];
 }
 
 #pragma mark - UITableViewDataSource
@@ -65,10 +66,12 @@
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *identifier = @"com.bolencki13.starlight.root-cell";
-    UITableViewCell *cell = [tableView  dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
+    STLRootTableViewCell *cell = [tableView  dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
+        cell = [[STLRootTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
     }
+    
+    
     
     return cell;
 }

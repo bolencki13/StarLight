@@ -1,23 +1,20 @@
 PODS:
-  - BEMCheckBox (1.2.1)
   - ChameleonFramework (2.1.0):
     - ChameleonFramework/Default (= 2.1.0)
   - ChameleonFramework/Default (2.1.0)
   - DZNEmptyDataSet (1.8.1)
-  - OpenCV (3.1.0.1)
+  - GPUImage (0.1.7)
 
 DEPENDENCIES:
-  - BEMCheckBox
   - ChameleonFramework
   - DZNEmptyDataSet
-  - OpenCV
+  - GPUImage
 
 SPEC CHECKSUMS:
-  BEMCheckBox: 264b8b72aa92adbfefa265cc58a0cdb86b207b9f
   ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
   DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
-  OpenCV: 41c4250e2b06a394d6fbb634b5fa622cdd846018
+  GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
 
-PODFILE CHECKSUM: 3a8a67c8b9474a35c7b8b7c049db3254608998ec
+PODFILE CHECKSUM: 98df94988639d23833b7ee20e5547acc1fc43b18
 
 COCOAPODS: 1.1.1

@@ -8,17 +8,32 @@
 
 #import "STLNewStarLightViewController.h"
 
-#import "BEMCheckBox.h"
 #import <opencv2/opencv.hpp>
 #import <opencv2/videoio/cap_ios.h>
 #import <opencv2/imgcodecs/ios.h>
 
-@interface STLNewStarLightViewController () <CvVideoCameraDelegate, BEMCheckBoxDelegate> {
+#define _DEBUG (1)
+
+#define FPS (10)
+#define MIN_AREA (10)
+#define MAX_AREA (100)
+
+CGRect CGRectFromCVRect(cv::Rect frame) {
+    return CGRectMake(frame.x, frame.y, frame.width, frame.height);
+}
+
+cv::Scalar CVScalarFromUIColor(UIColor *color) {
+    CGFloat red,green,blue,alpha;
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
+    return cv::Scalar(blue*255, green*255, red*255, alpha*255);
+}
+
+@interface STLNewStarLightViewController () <CvVideoCameraDelegate> {
     CvVideoCamera *camera;
-    
-    NSMutableArray <BEMCheckBox*> *aryLights;
-    
+        
     UIView *contentView;
+    
+    cv::Mat initalFrame;
 }
 @end
 
@@ -30,7 +45,7 @@
     camera = [[CvVideoCamera alloc] initWithParentView:self.view];
     camera.defaultAVCaptureDevicePosition = AVCaptureDevicePositionBack;
     camera.defaultAVCaptureSessionPreset = AVCaptureSessionPresetMedium;
-    camera.defaultFPS = 60;
+    camera.defaultFPS = FPS;
     camera.delegate = self;
     [camera start];
 
@@ -47,59 +62,42 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Lights
-- (BEMCheckBox*)addLightToPoint:(CGPoint)point {
-    BEMCheckBox *checkBox = [[BEMCheckBox alloc] initWithFrame:CGRectMake(0,0,30,30)];
-    checkBox.delegate = self;
-    checkBox.lineWidth = 3.5;
-    [checkBox setOn:YES animated:NO];
-    checkBox.center = point;
-    [contentView addSubview:checkBox];
+#pragma mark - Image Handling 
+- (void)imageStabalization:(cv::Mat &)image outputImage:(cv::Mat &)outImage {
     
-    if (!aryLights) {
-        aryLights = [NSMutableArray new];
-    }
-    [aryLights addObject:checkBox];
+}
+- (BOOL)imageMotionTracking:(cv::Mat &)image outputImage:(cv::Mat &)outImage frame:(cv::Rect &)frame {
+    cv::Mat frameDelta;
+    cv::absdiff(initalFrame, image, frameDelta);
     
-    return checkBox;
-}
-- (void)removeAllLights {
-    for (BEMCheckBox *checkBox in aryLights) {
-        [checkBox removeFromSuperview];
-    }
-    [aryLights removeAllObjects];
-}
-- (void)removeLightClosestToPoint:(CGPoint)point withMarginOfError:(CGFloat)margin {
-    BEMCheckBox *checkBox = [self lightClosestToPoint:point withMarginOrError:margin];
-    if (checkBox) {
-        [checkBox removeFromSuperview];
-        [aryLights removeObject:checkBox];
-    }
-}
-- (void)updateLightClosestToPoint:(CGPoint)point withMarginOfError:(CGFloat)margin maxLights:(NSInteger)max createIfNecessary:(BOOL)create {
-    BEMCheckBox *checkBox = [self lightClosestToPoint:point withMarginOrError:margin];
-    if (!checkBox && create) {
-        if ([aryLights count] < max) checkBox = [self addLightToPoint:point];
+    cv::Mat threshold;
+    cv::threshold(frameDelta, threshold, 25, 255, cv::THRESH_BINARY);
+    cv::dilate(threshold, threshold, NULL, cv::Point(-1,-1),10);
+    
+    std::vector< std::vector<cv::Point> > contours;
+    cv::findContours(threshold, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    
+    BOOL hasValidLight = NO;
+    for (size_t i=0; i < contours.size(); i++) {
+        if (cv::contourArea(contours[i]) < MIN_AREA || cv::contourArea(contours[i]) > MAX_AREA) continue;
+        cv::Rect _frame = cv::boundingRect(contours[i]);
+        cv::rectangle(outImage, _frame, CVScalarFromUIColor([UIColor blueColor]), 10, CV_AA);
+        frame = _frame;
+        hasValidLight = YES;
     }
     
-    if (checkBox) checkBox.center = point;
+    return hasValidLight;
 }
-- (BEMCheckBox*)lightClosestToPoint:(CGPoint)point withMarginOrError:(CGFloat)margin {
-    BEMCheckBox *checkBox = nil;
-    for (BEMCheckBox *_checkBox in aryLights) {
-        if (!checkBox) checkBox = _checkBox;
-        else {
-            if ([self distanceBetweenRect:_checkBox.frame andPoint:point] < [self distanceBetweenRect:checkBox.frame andPoint:point]) {
-                checkBox = _checkBox;
-            }
-        }
-    }
+- (void)alertWithImage:(UIImage*)image withTitle:(NSString*)title {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:@"\n\n\n\n\n\n\n\n" preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
     
-    if (margin == 0 || [self distanceBetweenRect:checkBox.frame andPoint:point] < margin) {
-        return checkBox;
-    } else {
-        return nil;
-    }
+    UIImageView *imgViewAlert = [[UIImageView alloc] initWithImage:image];
+    [imgViewAlert setFrame:CGRectMake(20, 50, 230, 125)];
+    [imgViewAlert setContentMode:UIViewContentModeScaleAspectFit];
+    [alert.view addSubview:imgViewAlert];
+    
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark - Other
@@ -123,47 +121,21 @@
 
 #pragma mark - CvVideoCameraDelegate
 - (void)processImage:(cv::Mat &)image {
-    cv::Mat bgr_image = image.clone();    
-    cv::medianBlur(bgr_image, bgr_image, 3);
-
-    cv::Mat hsv_image;
-    cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
-
-    cv::Mat lower_red_hue_range;
-    cv::Mat upper_red_hue_range;
-    cv::inRange(hsv_image, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), lower_red_hue_range);
-    cv::inRange(hsv_image, cv::Scalar(160, 100, 100), cv::Scalar(179, 255, 255), upper_red_hue_range);
-
-    cv::Mat red_hue_image;
-    cv::addWeighted(lower_red_hue_range, 1.0, upper_red_hue_range, 1.0, 0.0, red_hue_image);
-    cv::GaussianBlur(red_hue_image, red_hue_image, cv::Size(9, 9), 2, 2);
-
-    std::vector<cv::Vec3f> circles;
-    cv::HoughCircles(red_hue_image, circles, CV_HOUGH_GRADIENT, 1, red_hue_image.rows/8, 100, 20, 0, 15);
-
-    if (circles.size() == 0) {
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            /* No valid lights found remove all check boxes */
-            [self removeAllLights]; /* DEFINITLY is not the best way to do this */
-        });
-        return;
+    cv::Mat gray_image;
+    cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
+    cv::GaussianBlur(gray_image, gray_image, cv::Size(21, 21), 0);
+    
+    if (initalFrame.empty()) {
+        initalFrame = gray_image;
     }
     
-    for(size_t current_circle = 0; current_circle < circles.size(); ++current_circle) {
-        __block int y = std::round(circles[current_circle][0]);
-        __block int x = std::round(circles[current_circle][1]);
-        cv::Point center(y, x);
-        __block int radius = std::round(circles[current_circle][2]);
-
-#if DEBUG
-        cv::circle(image, center, radius, cv::Scalar(0, 255, 0), 5);
-#endif
-        
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            CGPoint center = CGPointMake(x*(CGRectGetWidth(contentView.bounds)/image.rows), fabs(CGRectGetHeight(contentView.frame)-(y*(CGRectGetHeight(contentView.bounds)/image.cols))));
-            [self updateLightClosestToPoint:center withMarginOfError:0 maxLights:circles.size() createIfNecessary:YES];
-//        XXX: Broken need to figure out how to keep track of state and refresh BEMCheckBox's
-        });
+    [self imageStabalization:gray_image outputImage:image];
+    cv::Rect frame;
+    if ([self imageMotionTracking:gray_image outputImage:image frame:frame]) {
+//        frame = cv::Rect(frame.x-20,frame.y-20,frame.width+20,frame.height+20);
+//        cv::rectangle(image, frame, CVScalarFromUIColor([UIColor yellowColor]));
     }
+    
+    initalFrame = gray_image;    
 }
 @end

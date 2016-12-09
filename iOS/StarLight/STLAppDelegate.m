@@ -9,6 +9,7 @@
 #import "STLAppDelegate.h"
 
 #import <ChameleonFramework/Chameleon.h>
+#import <FLEX/FLEXManager.h>
 
 @interface STLAppDelegate ()
 
@@ -19,7 +20,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    
+        
     [Chameleon setGlobalThemeUsingPrimaryColor:[UIColor colorWithHexString:@"#26A65B"] withContentStyle:UIContentStyleContrast];
 
     self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[NSClassFromString(@"STLRootViewController") new]];
