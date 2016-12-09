@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0D8A0E5ABAE1C6C01CB5FC6B /* libPods-StarLight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0458FD1BAC91985E35FACFF2 /* libPods-StarLight.a */; };
-		402A5C0D1DFAD5A80006DFCF /* STLRootTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 402A5C0C1DFAD5A80006DFCF /* STLRootTableViewCell.m */; };
+		40172B001DFAE10500DE7445 /* STLRootCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 40172AFF1DFAE10400DE7445 /* STLRootCollectionViewCell.m */; };
 		40904AFB1DFA351700E92846 /* RedColor.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 40904AFA1DFA351700E92846 /* RedColor.fsh */; };
 		40B070971DF72ED3002D745F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B070961DF72ED3002D745F /* main.m */; };
 		40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B070991DF72ED3002D745F /* STLAppDelegate.m */; };
@@ -24,8 +24,8 @@
 /* Begin PBXFileReference section */
 		0458FD1BAC91985E35FACFF2 /* libPods-StarLight.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StarLight.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10B156D2F02AAD2493310FEA /* Pods-StarLight.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StarLight.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StarLight/Pods-StarLight.debug.xcconfig"; sourceTree = "<group>"; };
-		402A5C0B1DFAD5A80006DFCF /* STLRootTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLRootTableViewCell.h; sourceTree = "<group>"; };
-		402A5C0C1DFAD5A80006DFCF /* STLRootTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLRootTableViewCell.m; sourceTree = "<group>"; };
+		40172AFE1DFAE10400DE7445 /* STLRootCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLRootCollectionViewCell.h; sourceTree = "<group>"; };
+		40172AFF1DFAE10400DE7445 /* STLRootCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLRootCollectionViewCell.m; sourceTree = "<group>"; };
 		40904AFA1DFA351700E92846 /* RedColor.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = RedColor.fsh; sourceTree = "<group>"; };
 		40B070921DF72ED3002D745F /* StarLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StarLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40B070961DF72ED3002D745F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -68,8 +68,8 @@
 		402A5C0A1DFAD58F0006DFCF /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				402A5C0B1DFAD5A80006DFCF /* STLRootTableViewCell.h */,
-				402A5C0C1DFAD5A80006DFCF /* STLRootTableViewCell.m */,
+				40172AFE1DFAE10400DE7445 /* STLRootCollectionViewCell.h */,
+				40172AFF1DFAE10400DE7445 /* STLRootCollectionViewCell.m */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -321,12 +321,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40172B001DFAE10500DE7445 /* STLRootCollectionViewCell.m in Sources */,
 				40B070A31DF72ED3002D745F /* StarLight.xcdatamodeld in Sources */,
 				40E26D271DFA05760023F041 /* STLCalibrationViewController.m in Sources */,
 				40B0709D1DF72ED3002D745F /* STLRootViewController.m in Sources */,
 				40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */,
 				40B070971DF72ED3002D745F /* main.m in Sources */,
-				402A5C0D1DFAD5A80006DFCF /* STLRootTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

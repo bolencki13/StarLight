@@ -9,6 +9,7 @@
 #import "STLCalibrationViewController.h"
 
 #import <GPUImage/GPUImage.h>
+#import <ChameleonFramework/Chameleon.h>
 
 GPUVector3 GPUVector3FromUIColor(UIColor *color) {
     GPUVector3 vector;
@@ -39,8 +40,13 @@ GPUVector3 GPUVector3FromUIColor(UIColor *color) {
 @implementation STLCalibrationViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = self.navigationController.navigationBar.tintColor;
+    self.view.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
+    self.navigationController.hidesNavigationBarHairline = YES;
     
+    UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame))];
+    viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
+    [self.view addSubview:viewExtendNavBar];
+
     if ([GPUImageVideoCamera isBackFacingCameraPresent]) {
         _backgroundImageView = [[GPUImageView alloc] initWithFrame:self.view.bounds];
         [self.view addSubview:_backgroundImageView];
@@ -64,7 +70,7 @@ GPUVector3 GPUVector3FromUIColor(UIColor *color) {
         NSMutableAttributedString *astrText = [[NSMutableAttributedString alloc] initWithString:text];
         [astrText addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:[UIFont systemFontSize]+26] range:[text rangeOfString:@"Whoops!"]];
         [astrText addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:[UIFont systemFontSize]+8] range:[text rangeOfString:@"No rear camera could be found"]];
-        [astrText addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1.0] range:[text rangeOfString:text]];
+        [astrText addAttribute:NSForegroundColorAttributeName value:self.navigationController.navigationBar.barTintColor range:[text rangeOfString:text]];
         
         UILabel *lblInfo = [[UILabel alloc] initWithFrame:CGRectMake(20, CGRectGetHeight(self.view.frame)/2-50, CGRectGetWidth(self.view.frame)-40, 100)];
         lblInfo.attributedText = astrText;

@@ -7,9 +7,10 @@
 //
 
 #import "STLRootViewController.h"
-#import "STLRootTableViewCell.h"
+#import "STLRootCollectionViewCell.h"
 
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
+#import <ChameleonFramework/Chameleon.h>
 
 @interface STLRootViewController () <DZNEmptyDataSetSource, DZNEmptyDataSetDelegate> {
     NSArray *aryLightPods;
@@ -17,8 +18,15 @@
 @end
 
 @implementation STLRootViewController
+static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (instancetype)init {
-    self = [super initWithStyle:UITableViewStyleGrouped];
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [flowLayout setSectionInset:UIEdgeInsetsMake(15,15,15,15)];
+    [flowLayout setItemSize:CGSizeMake(CGRectGetWidth([UIScreen mainScreen].bounds)-30, 100)];
+    [flowLayout setMinimumInteritemSpacing:15];
+    [flowLayout setMinimumLineSpacing:15];
+    
+    self = [super initWithCollectionViewLayout:flowLayout];
     if (self) {
 
     }
@@ -26,13 +34,23 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = self.navigationController.navigationBar.tintColor;
     
+    /* BLUE: #EEF9FF GREEN: #EEFFF9 */
+    self.view.backgroundColor = [UIColor colorWithHexString:@"#EEFFF9"];
+    
+    self.navigationController.hidesNavigationBarHairline = YES;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLights)];
     
-    self.tableView.emptyDataSetSource = self;
-    self.tableView.emptyDataSetDelegate = self;
-    self.tableView.tableFooterView = [UIView new];
+    UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
+    viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
+    [self.view insertSubview:viewExtendNavBar belowSubview:self.collectionView];
+    
+    self.collectionView.alwaysBounceVertical = YES;
+    self.collectionView.bounces = YES;
+    self.collectionView.backgroundColor = [UIColor clearColor];
+    [self.collectionView registerClass:[STLRootCollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
+    self.collectionView.emptyDataSetSource = self;
+    self.collectionView.emptyDataSetDelegate = self;
     
     aryLightPods = @[
                      ];
@@ -57,30 +75,23 @@
     [self.navigationController pushViewController:[NSClassFromString(@"STLCalibrationViewController") new] animated:YES];
 }
 
-#pragma mark - UITableViewDataSource
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+#pragma mark - UICollectionViewDataSource
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
 }
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [aryLightPods count];
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return 2;//[aryLightPods count];
 }
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *identifier = @"com.bolencki13.starlight.root-cell";
-    STLRootTableViewCell *cell = [tableView  dequeueReusableCellWithIdentifier:identifier];
-    if (!cell) {
-        cell = [[STLRootTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
-    }
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    STLRootCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
-    
+    cell.titleLabel.text = [NSString stringWithFormat:@"StarLight Hub %ld",indexPath.row+1];
+    cell.locationLabel.text = (indexPath.row == 0 ? @"Backyard" : @"Tree by Gallows");
     
     return cell;
 }
 
-#pragma mark - UITableViewDelegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-}
+#pragma mark - UICollectionViewDelegate
 
 #pragma mark - DZNEmptyDataSetSource
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView {
@@ -90,6 +101,7 @@
 
     [astrText addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:[UIFont systemFontSize]+26] range:[text rangeOfString:@"Whoops!"]];
     [astrText addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:[UIFont systemFontSize]+8] range:[text rangeOfString:@"No StarLights where found"]];
+    [astrText addAttribute:NSForegroundColorAttributeName value:self.navigationController.navigationBar.barTintColor range:[text rangeOfString:text]];
     
     return astrText;
 }
