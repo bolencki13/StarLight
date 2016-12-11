@@ -12,13 +12,15 @@
 
 @implementation STLRootCollectionViewCell
 - (instancetype)initWithFrame:(CGRect)frame {
-    if (self == [super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+    if (self) {
         [self sharedInit];
     }
     return self;
 }
 - (instancetype)init {
-    if (self == [super init]) {
+    self = [super init];
+    if (self) {
         [self sharedInit];
     }
     return self;
@@ -35,7 +37,7 @@
     
     _designView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 15, CGRectGetHeight(self.frame)-30, CGRectGetHeight(self.frame)-30)];
     _designView.layer.cornerRadius = self.layer.cornerRadius;
-    _designView.backgroundColor = [UIColor colorWithHexString:@"EEFFF9"];
+    _designView.backgroundColor = [UIColor colorWithHexString:@"EEF9FF"];
     _designView.layer.borderColor = [UINavigationBar appearance].barTintColor.CGColor;
     _designView.layer.borderWidth = 1.0;
     [self.contentView addSubview:_designView];

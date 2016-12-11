@@ -10,6 +10,12 @@
 		0D8A0E5ABAE1C6C01CB5FC6B /* libPods-StarLight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0458FD1BAC91985E35FACFF2 /* libPods-StarLight.a */; };
 		40172B001DFAE10500DE7445 /* STLRootCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 40172AFF1DFAE10400DE7445 /* STLRootCollectionViewCell.m */; };
 		40904AFB1DFA351700E92846 /* RedColor.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 40904AFA1DFA351700E92846 /* RedColor.fsh */; };
+		40A42DFD1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42DFC1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m */; };
+		40A42E011DFB159400F2F996 /* STLConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42E001DFB159400F2F996 /* STLConfigurationViewController.m */; };
+		40A42E051DFB1AC200F2F996 /* STLDesignView.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42E041DFB1AC200F2F996 /* STLDesignView.m */; };
+		40A42E081DFB4A4700F2F996 /* STLDownloadCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42E071DFB4A4700F2F996 /* STLDownloadCollectionViewCell.m */; };
+		40A42E0B1DFB5C5600F2F996 /* STLAdvancedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42E0A1DFB5C5600F2F996 /* STLAdvancedViewController.m */; };
+		40A42E0E1DFB678000F2F996 /* NS2DArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42E0D1DFB678000F2F996 /* NS2DArray.m */; };
 		40B070971DF72ED3002D745F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B070961DF72ED3002D745F /* main.m */; };
 		40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B070991DF72ED3002D745F /* STLAppDelegate.m */; };
 		40B0709D1DF72ED3002D745F /* STLRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B0709C1DF72ED3002D745F /* STLRootViewController.m */; };
@@ -17,8 +23,9 @@
 		40B070A31DF72ED3002D745F /* StarLight.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 40B070A11DF72ED3002D745F /* StarLight.xcdatamodeld */; };
 		40B070A51DF72ED3002D745F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40B070A41DF72ED3002D745F /* Assets.xcassets */; };
 		40B070A81DF72ED3002D745F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40B070A61DF72ED3002D745F /* LaunchScreen.storyboard */; };
+		40DF44871DFCD59D00E392CB /* STLMultiDirectionLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 40DF44861DFCD59D00E392CB /* STLMultiDirectionLayout.m */; };
+		40DF448C1DFD058200E392CB /* TransparentToWhiteColor.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 40DF448B1DFD058200E392CB /* TransparentToWhiteColor.fsh */; };
 		40E26D271DFA05760023F041 /* STLCalibrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40E26D261DFA05760023F041 /* STLCalibrationViewController.m */; };
-		40E4C5F91DFA24E500AD608B /* test.JPG in Resources */ = {isa = PBXBuildFile; fileRef = 40E4C5F81DFA24E500AD608B /* test.JPG */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +34,18 @@
 		40172AFE1DFAE10400DE7445 /* STLRootCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLRootCollectionViewCell.h; sourceTree = "<group>"; };
 		40172AFF1DFAE10400DE7445 /* STLRootCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLRootCollectionViewCell.m; sourceTree = "<group>"; };
 		40904AFA1DFA351700E92846 /* RedColor.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = RedColor.fsh; sourceTree = "<group>"; };
+		40A42DFB1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLCalibrationCollectionViewCell.h; sourceTree = "<group>"; };
+		40A42DFC1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLCalibrationCollectionViewCell.m; sourceTree = "<group>"; };
+		40A42DFF1DFB159400F2F996 /* STLConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLConfigurationViewController.h; sourceTree = "<group>"; };
+		40A42E001DFB159400F2F996 /* STLConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLConfigurationViewController.m; sourceTree = "<group>"; };
+		40A42E031DFB1AC200F2F996 /* STLDesignView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLDesignView.h; sourceTree = "<group>"; };
+		40A42E041DFB1AC200F2F996 /* STLDesignView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLDesignView.m; sourceTree = "<group>"; };
+		40A42E061DFB4A4700F2F996 /* STLDownloadCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLDownloadCollectionViewCell.h; sourceTree = "<group>"; };
+		40A42E071DFB4A4700F2F996 /* STLDownloadCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLDownloadCollectionViewCell.m; sourceTree = "<group>"; };
+		40A42E091DFB5C5600F2F996 /* STLAdvancedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLAdvancedViewController.h; sourceTree = "<group>"; };
+		40A42E0A1DFB5C5600F2F996 /* STLAdvancedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLAdvancedViewController.m; sourceTree = "<group>"; };
+		40A42E0C1DFB678000F2F996 /* NS2DArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NS2DArray.h; sourceTree = "<group>"; };
+		40A42E0D1DFB678000F2F996 /* NS2DArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NS2DArray.m; sourceTree = "<group>"; };
 		40B070921DF72ED3002D745F /* StarLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StarLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40B070961DF72ED3002D745F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		40B070981DF72ED3002D745F /* STLAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STLAppDelegate.h; sourceTree = "<group>"; };
@@ -38,9 +57,11 @@
 		40B070A41DF72ED3002D745F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40B070A71DF72ED3002D745F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		40B070A91DF72ED3002D745F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		40DF44851DFCD59D00E392CB /* STLMultiDirectionLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLMultiDirectionLayout.h; sourceTree = "<group>"; };
+		40DF44861DFCD59D00E392CB /* STLMultiDirectionLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLMultiDirectionLayout.m; sourceTree = "<group>"; };
+		40DF448B1DFD058200E392CB /* TransparentToWhiteColor.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TransparentToWhiteColor.fsh; sourceTree = "<group>"; };
 		40E26D251DFA05760023F041 /* STLCalibrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLCalibrationViewController.h; sourceTree = "<group>"; };
 		40E26D261DFA05760023F041 /* STLCalibrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLCalibrationViewController.m; sourceTree = "<group>"; };
-		40E4C5F81DFA24E500AD608B /* test.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.JPG; sourceTree = "<group>"; };
 		91728CC973F06EBA7C225DAA /* Pods-StarLight.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StarLight.release.xcconfig"; path = "Pods/Target Support Files/Pods-StarLight/Pods-StarLight.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -70,6 +91,10 @@
 			children = (
 				40172AFE1DFAE10400DE7445 /* STLRootCollectionViewCell.h */,
 				40172AFF1DFAE10400DE7445 /* STLRootCollectionViewCell.m */,
+				40A42DFB1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.h */,
+				40A42DFC1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m */,
+				40A42E061DFB4A4700F2F996 /* STLDownloadCollectionViewCell.h */,
+				40A42E071DFB4A4700F2F996 /* STLDownloadCollectionViewCell.m */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -77,6 +102,10 @@
 		403B92441DF75DE100B06654 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				40A42E0C1DFB678000F2F996 /* NS2DArray.h */,
+				40A42E0D1DFB678000F2F996 /* NS2DArray.m */,
+				40DF44851DFCD59D00E392CB /* STLMultiDirectionLayout.h */,
+				40DF44861DFCD59D00E392CB /* STLMultiDirectionLayout.m */,
 			);
 			name = Objects;
 			path = ..;
@@ -90,10 +119,29 @@
 			name = CoreData;
 			sourceTree = "<group>";
 		};
+		40A42DFE1DFB156C00F2F996 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				40A42DFF1DFB159400F2F996 /* STLConfigurationViewController.h */,
+				40A42E001DFB159400F2F996 /* STLConfigurationViewController.m */,
+				40A42E091DFB5C5600F2F996 /* STLAdvancedViewController.h */,
+				40A42E0A1DFB5C5600F2F996 /* STLAdvancedViewController.m */,
+			);
+			name = Configuration;
+			sourceTree = "<group>";
+		};
+		40A42E021DFB1AB000F2F996 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				40A42E031DFB1AC200F2F996 /* STLDesignView.h */,
+				40A42E041DFB1AC200F2F996 /* STLDesignView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		40B070891DF72ED3002D745F = {
 			isa = PBXGroup;
 			children = (
-				40E4C5F81DFA24E500AD608B /* test.JPG */,
 				40B070941DF72ED3002D745F /* StarLight */,
 				40B070931DF72ED3002D745F /* Products */,
 				3239FAB6578ABAAFDF5BBC4C /* Pods */,
@@ -156,6 +204,7 @@
 			isa = PBXGroup;
 			children = (
 				40904AFA1DFA351700E92846 /* RedColor.fsh */,
+				40DF448B1DFD058200E392CB /* TransparentToWhiteColor.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -172,6 +221,7 @@
 		40F7A6111DF72FF7000BCFF3 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				40A42E021DFB1AB000F2F996 /* Views */,
 				402A5C0A1DFAD58F0006DFCF /* Cells */,
 				40F7A6121DF72FFC000BCFF3 /* ViewControllers */,
 			);
@@ -183,6 +233,7 @@
 			children = (
 				40B437FC1DF9A777000E94C6 /* Home */,
 				40B437FD1DF9A77C000E94C6 /* NewConnection */,
+				40A42DFE1DFB156C00F2F996 /* Configuration */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -259,10 +310,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				40B070A81DF72ED3002D745F /* LaunchScreen.storyboard in Resources */,
-				40E4C5F91DFA24E500AD608B /* test.JPG in Resources */,
 				40B070A51DF72ED3002D745F /* Assets.xcassets in Resources */,
 				40904AFB1DFA351700E92846 /* RedColor.fsh in Resources */,
 				40B070A01DF72ED3002D745F /* Main.storyboard in Resources */,
+				40DF448C1DFD058200E392CB /* TransparentToWhiteColor.fsh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,10 +374,17 @@
 			files = (
 				40172B001DFAE10500DE7445 /* STLRootCollectionViewCell.m in Sources */,
 				40B070A31DF72ED3002D745F /* StarLight.xcdatamodeld in Sources */,
+				40A42E0E1DFB678000F2F996 /* NS2DArray.m in Sources */,
+				40A42E0B1DFB5C5600F2F996 /* STLAdvancedViewController.m in Sources */,
+				40A42E011DFB159400F2F996 /* STLConfigurationViewController.m in Sources */,
 				40E26D271DFA05760023F041 /* STLCalibrationViewController.m in Sources */,
+				40DF44871DFCD59D00E392CB /* STLMultiDirectionLayout.m in Sources */,
 				40B0709D1DF72ED3002D745F /* STLRootViewController.m in Sources */,
 				40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */,
+				40A42E081DFB4A4700F2F996 /* STLDownloadCollectionViewCell.m in Sources */,
 				40B070971DF72ED3002D745F /* main.m in Sources */,
+				40A42E051DFB1AC200F2F996 /* STLDesignView.m in Sources */,
+				40A42DFD1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

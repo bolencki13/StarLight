@@ -7,9 +7,11 @@
 //
 
 #import "STLCalibrationViewController.h"
+#import "STLCalibrationCollectionViewCell.h"
 
 #import <GPUImage/GPUImage.h>
 #import <ChameleonFramework/Chameleon.h>
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 GPUVector3 GPUVector3FromUIColor(UIColor *color) {
     GPUVector3 vector;
@@ -24,7 +26,9 @@ GPUVector3 GPUVector3FromUIColor(UIColor *color) {
     return vector;
 }
 
-@interface STLCalibrationViewController () {
+@interface STLCalibrationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate> {
+    UICollectionView *clvLights;
+    
     GPUImageVideoCamera *_liveVideo;
     GPUImageView *_backgroundImageView;
     
@@ -34,10 +38,13 @@ GPUVector3 GPUVector3FromUIColor(UIColor *color) {
     GPUImageiOSBlurFilter *blurFilter;
     
     GPUImageUIElement *uiElementInput;
+    
+    NSMutableArray *aryLights;
 }
 @end
 
 @implementation STLCalibrationViewController
+static NSString * const reuseIdentifier = @"starlight.calibration.cell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
@@ -48,23 +55,11 @@ GPUVector3 GPUVector3FromUIColor(UIColor *color) {
     [self.view addSubview:viewExtendNavBar];
 
     if ([GPUImageVideoCamera isBackFacingCameraPresent]) {
-        _backgroundImageView = [[GPUImageView alloc] initWithFrame:self.view.bounds];
-        [self.view addSubview:_backgroundImageView];
+        [self setUpCameraView];
         
-        _liveVideo = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetInputPriority cameraPosition:AVCaptureDevicePositionBack];
-        _liveVideo.outputImageOrientation = UIInterfaceOrientationPortrait;
-        
-        redFilter = [[GPUImageFilter alloc] initWithFragmentShaderFromFile:@"RedColor"];
-        
-        blurFilter = [[GPUImageiOSBlurFilter alloc] init];
-        blurFilter.blurRadiusInPixels = 1.0;
-        
-        [_liveVideo addTarget:redFilter];
-        [redFilter addTarget:_backgroundImageView];
-        [blurFilter addTarget:_backgroundImageView];
-        [_liveVideo addTarget:_backgroundImageView];
-        
-        [_liveVideo startCameraCapture];
+        aryLights = [@[
+                       
+                       ] mutableCopy];
     } else {
         NSString *text = @"Whoops!\nNo rear camera could be found";
         NSMutableAttributedString *astrText = [[NSMutableAttributedString alloc] initWithString:text];
@@ -76,12 +71,75 @@ GPUVector3 GPUVector3FromUIColor(UIColor *color) {
         lblInfo.attributedText = astrText;
         lblInfo.numberOfLines = 2;
         lblInfo.textAlignment = NSTextAlignmentCenter;
+        lblInfo.adjustsFontSizeToFitWidth = YES;
         [self.view addSubview:lblInfo];
     }
+}
+- (void)setUpCameraView {
+    UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    [flowLayout setSectionInset:UIEdgeInsetsMake(10,10,10,10)];
+    [flowLayout setItemSize:CGSizeMake(80, 80)];
+    [flowLayout setMinimumInteritemSpacing:10];
+    [flowLayout setMinimumLineSpacing:10];
 
+    clvLights = [[UICollectionView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.frame)-CGRectGetHeight(self.navigationController.navigationBar.frame)-120, CGRectGetWidth(self.view.frame), 100) collectionViewLayout:flowLayout];
+    clvLights.dataSource = self;
+    clvLights.delegate = self;
+    clvLights.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
+    [clvLights registerClass:[STLCalibrationCollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
+    clvLights.emptyDataSetSource = self;
+    clvLights.emptyDataSetDelegate = self;
+    [self.view addSubview:clvLights];
+    
+    _backgroundImageView = [[GPUImageView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)-CGRectGetHeight(self.navigationController.navigationBar.frame)-120)];
+    [self.view addSubview:_backgroundImageView];
+    
+    _liveVideo = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetPhoto cameraPosition:AVCaptureDevicePositionBack];
+    _liveVideo.outputImageOrientation = UIInterfaceOrientationPortrait;
+    
+    redFilter = [[GPUImageFilter alloc] initWithFragmentShaderFromFile:@"RedColor"];
+    
+    blurFilter = [[GPUImageiOSBlurFilter alloc] init];
+    blurFilter.blurRadiusInPixels = 1.0;
+    
+    [_liveVideo addTarget:redFilter];
+    [redFilter addTarget:_backgroundImageView];
+    [blurFilter addTarget:_backgroundImageView];
+    [_liveVideo addTarget:_backgroundImageView];
+    
+    [_liveVideo startCameraCapture];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - UICollectionViewDataSource
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
+}
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return [aryLights count];
+}
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    STLCalibrationCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
+    
+    cell.titleLabel.numberOfLines = 2;
+    cell.titleLabel.text = [NSString stringWithFormat:@"Light:\n#%ld",(long)indexPath.row+1];
+    cell.titleLabel.textAlignment = NSTextAlignmentCenter;
+    
+    return cell;
+}
+
+#pragma mark - DZNEmptyDataSetSource
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView {
+    NSString *text = @"No StarLights found";
+    
+    NSMutableAttributedString *astrText = [[NSMutableAttributedString alloc] initWithString:text];
+    [astrText addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:[UIFont systemFontSize]+8] range:[text rangeOfString:text]];
+    [astrText addAttribute:NSForegroundColorAttributeName value:self.navigationController.navigationBar.barTintColor range:[text rangeOfString:text]];
+    
+    return astrText;
 }
 @end

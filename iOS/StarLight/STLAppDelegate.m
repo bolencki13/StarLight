@@ -21,7 +21,7 @@
     // Override point for customization after application launch.
     
     /* BLUE: #65C1FC GREEN: #26C281 */
-    [Chameleon setGlobalThemeUsingPrimaryColor:[UIColor colorWithHexString:@"#26C281"] withContentStyle:UIContentStyleContrast];
+    [Chameleon setGlobalThemeUsingPrimaryColor:[UIColor colorWithHexString:@"#65C1FC"] withContentStyle:UIContentStyleContrast];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UINavigationBar appearance].tintColor, NSFontAttributeName : [UIFont boldSystemFontOfSize:[UIFont systemFontSize]+6]}];
     [[UINavigationBar appearance] setTranslucent:NO];

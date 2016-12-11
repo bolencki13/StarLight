@@ -8,11 +8,12 @@
 
 #import "STLRootViewController.h"
 #import "STLRootCollectionViewCell.h"
+#import "STLConfigurationViewController.h"
 
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import <ChameleonFramework/Chameleon.h>
 
-@interface STLRootViewController () <DZNEmptyDataSetSource, DZNEmptyDataSetDelegate> {
+@interface STLRootViewController () <DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLConfigurationViewControllerDelegate> {
     NSArray *aryLightPods;
 }
 @end
@@ -36,7 +37,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [super viewDidLoad];
     
     /* BLUE: #EEF9FF GREEN: #EEFFF9 */
-    self.view.backgroundColor = [UIColor colorWithHexString:@"#EEFFF9"];
+    self.view.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
     
     self.navigationController.hidesNavigationBarHairline = YES;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLights)];
@@ -51,8 +52,12 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [self.collectionView registerClass:[STLRootCollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
     self.collectionView.emptyDataSetSource = self;
     self.collectionView.emptyDataSetDelegate = self;
+    self.collectionView.refreshControl = [[UIRefreshControl alloc] initWithFrame:CGRectZero];
+    [self.collectionView.refreshControl addTarget:self action:@selector(handleRefresh) forControlEvents:UIControlEventValueChanged];
     
     aryLightPods = @[
+                     @"1",
+                     @"2",
                      ];
 }
 - (void)viewWillAppear:(BOOL)animated {
@@ -69,6 +74,12 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+- (void)handleRefresh {
+    
+    /* Refresh lighs in the table. make sure each is reachable */
+    
+    [self.collectionView.refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:1.0];
+}
 
 #pragma mark - Actions
 - (void)addLights {
@@ -80,7 +91,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     return 1;
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 2;//[aryLightPods count];
+    return [aryLightPods count];
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     STLRootCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
@@ -92,6 +103,16 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 
 #pragma mark - UICollectionViewDelegate
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    id hub = [aryLightPods objectAtIndex:indexPath.row];
+    
+    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath]).designView.image];
+    configurationViewController.delegate = self;
+    [self.navigationController pushViewController:configurationViewController animated:YES];
+}
 
 #pragma mark - DZNEmptyDataSetSource
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView {
@@ -109,5 +130,10 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 #pragma mark - DZNEmptyDataSetDelegate
 - (void)emptyDataSet:(UIScrollView *)scrollView didTapView:(UIView *)view {
     [self addLights];
+}
+
+#pragma mark - STLConfigurationViewControllerDelegate
+- (void)configurationViewController:(STLConfigurationViewController *)viewController didFinishWithImage:(UIImage *)image {
+    ((STLRootCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:[aryLightPods indexOfObject:viewController.hub] inSection:0]]).designView.image = image;
 }
 @end
