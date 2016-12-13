@@ -23,6 +23,7 @@
 		40B070A31DF72ED3002D745F /* StarLight.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 40B070A11DF72ED3002D745F /* StarLight.xcdatamodeld */; };
 		40B070A51DF72ED3002D745F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40B070A41DF72ED3002D745F /* Assets.xcassets */; };
 		40B070A81DF72ED3002D745F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40B070A61DF72ED3002D745F /* LaunchScreen.storyboard */; };
+		40BE09201DFED9DF00E5EC36 /* STLAboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40BE091F1DFED9DF00E5EC36 /* STLAboutViewController.m */; };
 		40DF44871DFCD59D00E392CB /* STLMultiDirectionLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 40DF44861DFCD59D00E392CB /* STLMultiDirectionLayout.m */; };
 		40DF448C1DFD058200E392CB /* TransparentToWhiteColor.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 40DF448B1DFD058200E392CB /* TransparentToWhiteColor.fsh */; };
 		40E26D271DFA05760023F041 /* STLCalibrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40E26D261DFA05760023F041 /* STLCalibrationViewController.m */; };
@@ -57,6 +58,8 @@
 		40B070A41DF72ED3002D745F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40B070A71DF72ED3002D745F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		40B070A91DF72ED3002D745F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		40BE091E1DFED9DF00E5EC36 /* STLAboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLAboutViewController.h; sourceTree = "<group>"; };
+		40BE091F1DFED9DF00E5EC36 /* STLAboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLAboutViewController.m; sourceTree = "<group>"; };
 		40DF44851DFCD59D00E392CB /* STLMultiDirectionLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLMultiDirectionLayout.h; sourceTree = "<group>"; };
 		40DF44861DFCD59D00E392CB /* STLMultiDirectionLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLMultiDirectionLayout.m; sourceTree = "<group>"; };
 		40DF448B1DFD058200E392CB /* TransparentToWhiteColor.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = TransparentToWhiteColor.fsh; sourceTree = "<group>"; };
@@ -200,6 +203,15 @@
 			name = NewConnection;
 			sourceTree = "<group>";
 		};
+		40BE091D1DFED9C700E5EC36 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				40BE091E1DFED9DF00E5EC36 /* STLAboutViewController.h */,
+				40BE091F1DFED9DF00E5EC36 /* STLAboutViewController.m */,
+			);
+			name = About;
+			sourceTree = "<group>";
+		};
 		40E4C5F31DFA116100AD608B /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
@@ -234,6 +246,7 @@
 				40B437FC1DF9A777000E94C6 /* Home */,
 				40B437FD1DF9A77C000E94C6 /* NewConnection */,
 				40A42DFE1DFB156C00F2F996 /* Configuration */,
+				40BE091D1DFED9C700E5EC36 /* About */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -372,6 +385,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40BE09201DFED9DF00E5EC36 /* STLAboutViewController.m in Sources */,
 				40172B001DFAE10500DE7445 /* STLRootCollectionViewCell.m in Sources */,
 				40B070A31DF72ED3002D745F /* StarLight.xcdatamodeld in Sources */,
 				40A42E0E1DFB678000F2F996 /* NS2DArray.m in Sources */,

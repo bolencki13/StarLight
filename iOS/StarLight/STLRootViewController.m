@@ -41,6 +41,10 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     
     self.navigationController.hidesNavigationBarHairline = YES;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLights)];
+    UIButton *btnInfo = [UIButton buttonWithType:UIButtonTypeInfoLight];
+    [btnInfo setTintColor:self.navigationController.navigationBar.tintColor];
+    [btnInfo addTarget:self action:@selector(about) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnInfo];
     
     UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
     viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
@@ -84,6 +88,14 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 #pragma mark - Actions
 - (void)addLights {
     [self.navigationController pushViewController:[NSClassFromString(@"STLCalibrationViewController") new] animated:YES];
+}
+- (void)about {
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.30;
+    transition.type = kCATransitionReveal;
+    transition.subtype = kCATransitionFromLeft;
+    [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
+    [self.navigationController pushViewController:[NSClassFromString(@"STLAboutViewController") new] animated:NO];
 }
 
 #pragma mark - UICollectionViewDataSource

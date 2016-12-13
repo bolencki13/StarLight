@@ -84,7 +84,9 @@
     shapeLayer.strokeColor = [[UIColor grayColor] CGColor];
     shapeLayer.lineWidth = 2.0;
     shapeLayer.fillColor = [[UIColor grayColor] CGColor];
-    [imgViewDrawing.layer addSublayer:shapeLayer];
+    [self.layer addSublayer:shapeLayer];
+    
+    [self bringSubviewToFront:imgViewDrawing];
 }
 - (void)erase {
     imgViewDrawing.image = nil;

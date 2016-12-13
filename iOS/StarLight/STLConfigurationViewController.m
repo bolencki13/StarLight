@@ -5,6 +5,7 @@
 //  Created by Brian Olencki on 12/9/16.
 //  Copyright © 2016 Brian Olencki. All rights reserved.
 //
+//http://stackoverflow.com/questions/2342327/how-i-count-red-color-pixel-from-the-uiimage-using-objective-c-in-iphone/2344419#2344419
 
 #import "STLConfigurationViewController.h"
 #import "STLDesignView.h"
