@@ -39,5 +39,18 @@
     _titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]+6];
     _titleLabel.textColor = [UIColor colorWithCGColor:self.layer.borderColor];
     [self.contentView addSubview:_titleLabel];
+    
+    self.active = YES;
+}
+- (void)setActive:(BOOL)active {
+    _active = active;
+    
+    if (_active) {
+        self.layer.borderColor = [UINavigationBar appearance].barTintColor.CGColor;
+    } else {
+        self.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    }
+    
+    _titleLabel.textColor = [UIColor colorWithCGColor:self.layer.borderColor];
 }
 @end

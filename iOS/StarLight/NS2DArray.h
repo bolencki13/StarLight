@@ -17,4 +17,5 @@
 - (void)setObject:(id)object atIndexPath:(NSIndexPath*)indexPath;
 - (void)removeObjects;
 - (NSIndexPath*)indexPathForObject:(id)object;
+- (void)enumerateObjectsUsingBlock:(void(^)(id obj, NSIndexPath *indexPath, BOOL *stop))block;
 @end

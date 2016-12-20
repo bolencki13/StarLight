@@ -9,6 +9,7 @@
 #import "STLAboutViewController.h"
 
 #import <ChameleonFramework/Chameleon.h>
+#import <SafariServices/SafariServices.h>
 
 @interface STLAboutViewController ()
 
@@ -69,6 +70,14 @@ static NSString * const reuseIdentifier = @"starlight.about.cell";
     transition.subtype = kCATransitionFromRight;
     [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+#pragma mark - Updating
+- (BOOL)checkForUpdate {
+    return NO;
+}
+- (void)update {
+    
 }
 
 #pragma mark - UITableViewDataSource
@@ -134,5 +143,42 @@ static NSString * const reuseIdentifier = @"starlight.about.cell";
     }
     
     return cell;
+}
+
+#pragma mark - UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            BOOL updateAvailable = [self checkForUpdate];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:(updateAvailable ? @"Update Available, Would you like to update?" : @"Softare is Up-To-Date") preferredStyle:UIAlertControllerStyleAlert];
+            if (updateAvailable) {
+                [alert addAction:[UIAlertAction actionWithTitle:@"Not now" style:UIAlertActionStyleCancel handler:nil]];
+                [alert addAction:[UIAlertAction actionWithTitle:@"Update" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+                    [self update];
+                }]];
+            } else {
+                [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+            }
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+    } else if (indexPath.section == 1) {
+        if (indexPath.row == 0) {
+            SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://starlight.com/help"] entersReaderIfAvailable:NO];
+            [self presentViewController:safariViewController animated:YES completion:nil];
+        } else if (indexPath.row == 1) {
+            SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://starlight.com/report"] entersReaderIfAvailable:NO];
+            [self presentViewController:safariViewController animated:YES completion:nil];
+        }
+    } else if (indexPath.section == 2) {
+        if (indexPath.row == 0) {
+            SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://starlight.com/terms"] entersReaderIfAvailable:NO];
+            safariViewController.preferredBarTintColor = self.navigationController.navigationBar.barTintColor;
+            [self presentViewController:safariViewController animated:YES completion:nil];
+        } else if (indexPath.row == 1) {
+            [self.navigationController pushViewController:[NSClassFromString(@"STLThirdPartyNoticesViewController") new] animated:YES];
+        }
+    }
 }
 @end

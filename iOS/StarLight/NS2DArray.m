@@ -27,7 +27,7 @@
         _rows = rows;
         
         masterObjects = [NSMutableArray arrayWithCapacity:self.sections];
-        for (NSInteger x = 0; x < _sections; x++) {
+        for (NSInteger x = 0; x < self.sections; x++) {
             [masterObjects addObject:[NSMutableArray arrayWithCapacity:self.rows]];
         }
     }
@@ -72,5 +72,17 @@
     }
     
     return description;
+}
+- (void)enumerateObjectsUsingBlock:(void (^)(id, NSIndexPath *, BOOL *))block {
+    BOOL stop = NO;
+    
+    for (NSInteger section = 0; section < self.sections; section++) {
+        for (NSInteger row = 0; row < self.rows; row++) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
+            block([self objectAtIndexPath:indexPath],indexPath,&stop);
+            if (stop) break;
+        }
+        if (stop) break;
+    }
 }
 @end

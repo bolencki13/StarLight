@@ -56,13 +56,15 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [self.collectionView registerClass:[STLRootCollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
     self.collectionView.emptyDataSetSource = self;
     self.collectionView.emptyDataSetDelegate = self;
-    self.collectionView.refreshControl = [[UIRefreshControl alloc] initWithFrame:CGRectZero];
-    [self.collectionView.refreshControl addTarget:self action:@selector(handleRefresh) forControlEvents:UIControlEventValueChanged];
     
-    aryLightPods = @[
-                     @"1",
-                     @"2",
-                     ];
+    UIRefreshControl *rfcCollectionView = [[UIRefreshControl alloc] initWithFrame:CGRectZero];
+    [rfcCollectionView addTarget:self action:@selector(handleRefresh) forControlEvents:UIControlEventValueChanged];
+    [self.collectionView addSubview:rfcCollectionView];
+    
+//    aryLightPods = @[
+//                     @"1",
+//                     @"2",
+//                     ];
 }
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -97,6 +99,9 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
     [self.navigationController pushViewController:[NSClassFromString(@"STLAboutViewController") new] animated:NO];
 }
+- (void)buy {
+    
+}
 
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -127,21 +132,57 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 
 #pragma mark - DZNEmptyDataSetSource
-- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView {
-    NSString *text = @"Whoops!\nNo StarLights where found";
+- (UIView*)customViewForEmptyDataSet:(UIScrollView *)scrollView {
+    UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(0, self.collectionView.center.x-200, CGRectGetWidth(self.view.frame), 200)];
+    contentView.backgroundColor = [UIColor redColor];
     
+    NSString *text = @"No StarLights found.";
     NSMutableAttributedString *astrText = [[NSMutableAttributedString alloc] initWithString:text];
+    [astrText addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:[UIFont systemFontSize]+16] range:[text rangeOfString:text]];
+    [astrText addAttribute:NSForegroundColorAttributeName value:[UIColor lightGrayColor] range:[text rangeOfString:text]];
 
-    [astrText addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:[UIFont systemFontSize]+26] range:[text rangeOfString:@"Whoops!"]];
-    [astrText addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:[UIFont systemFontSize]+8] range:[text rangeOfString:@"No StarLights where found"]];
-    [astrText addAttribute:NSForegroundColorAttributeName value:self.navigationController.navigationBar.barTintColor range:[text rangeOfString:text]];
+    UILabel *lblTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(contentView.frame), 60)];
+    lblTitle.textAlignment = NSTextAlignmentCenter;
+    lblTitle.attributedText = astrText;
+    [contentView addSubview:lblTitle];
     
-    return astrText;
+    UIButton *btnBuy = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btnBuy setFrame:CGRectMake(20, CGRectGetMaxY(lblTitle.frame), (CGRectGetWidth(contentView.frame)-60)/2, 60)];
+    [btnBuy addTarget:self action:@selector(buy) forControlEvents:UIControlEventTouchUpInside];
+    [btnBuy setTitle:@"Buy StartLight" forState:UIControlStateNormal];
+    [btnBuy setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [btnBuy setBackgroundColor:[UIColor clearColor]];
+    [btnBuy.layer setCornerRadius:7.5];
+    [btnBuy.layer setMasksToBounds:YES];
+    [btnBuy.layer setBorderColor:[btnBuy titleColorForState:UIControlStateNormal].CGColor];
+    [btnBuy.layer setBorderWidth:2];
+    [btnBuy setShowsTouchWhenHighlighted:YES];
+    [contentView addSubview:btnBuy];
+
+    UIButton *btnPair = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btnPair setFrame:CGRectMake(CGRectGetMaxX(btnBuy.frame)+20, CGRectGetMinY(btnBuy.frame), (CGRectGetWidth(contentView.frame)-60)/2, CGRectGetHeight(btnBuy.frame))];
+    [btnPair addTarget:self action:@selector(addLights) forControlEvents:UIControlEventTouchUpInside];
+    [btnPair setTitle:@"Add New" forState:UIControlStateNormal];
+    [btnPair setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    [btnPair setBackgroundColor:[UIColor clearColor]];
+    [btnPair.layer setCornerRadius:7.5];
+    [btnPair.layer setMasksToBounds:YES];
+    [btnPair.layer setBorderColor:[btnPair titleColorForState:UIControlStateNormal].CGColor];
+    [btnPair.layer setBorderWidth:2];
+    [contentView addSubview:btnPair];
+
+    /*
+     
+     XXX: Touches are not passed due to bug in library; Category to override?
+     
+     */
+    
+    return contentView;
 }
 
 #pragma mark - DZNEmptyDataSetDelegate
-- (void)emptyDataSet:(UIScrollView *)scrollView didTapView:(UIView *)view {
-    [self addLights];
+- (BOOL)emptyDataSetShouldAllowTouch:(UIScrollView *)scrollView {
+    return YES;
 }
 
 #pragma mark - STLConfigurationViewControllerDelegate

@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11542" systemVersion="16B2657" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
-    <elements/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16B2657" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+    <entity name="Hub" representedClassName="STLHub" syncable="YES" codeGenerationType="class">
+        <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="lights" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Light" inverseName="hub" inverseEntity="Light" syncable="YES"/>
+    </entity>
+    <entity name="Light" representedClassName="STLLight" syncable="YES" codeGenerationType="class">
+        <attribute name="coordinate" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="on" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="hub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Hub" inverseName="lights" inverseEntity="Hub" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Hub" positionX="-504" positionY="-387" width="128" height="88"/>
+        <element name="Light" positionX="-308" positionY="-207" width="128" height="90"/>
+    </elements>
 </model>

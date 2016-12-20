@@ -1,5 +1,9 @@
+platform :ios, '9.0'
+
 target 'StarLight' do
 	pod 'ChameleonFramework'
 	pod 'DZNEmptyDataSet'
 	pod 'GPUImage'
+	pod 'OpenCV'
+	pod 'BEMCheckBox'
 end

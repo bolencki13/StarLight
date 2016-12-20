@@ -10,4 +10,5 @@
 
 @interface STLCalibrationCollectionViewCell : UICollectionViewCell
 @property (nonatomic, retain, readonly) UILabel *titleLabel;
+@property (nonatomic) BOOL active;
 @end

@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface STLCalibrationViewController : UIViewController
-
+@property (nonatomic, readonly) BOOL calibrating;
 @end

@@ -81,9 +81,9 @@
     
     CAShapeLayer *shapeLayer = [CAShapeLayer layer];
     shapeLayer.path = [path CGPath];
-    shapeLayer.strokeColor = [[UIColor grayColor] CGColor];
+    shapeLayer.strokeColor = [[[UIColor lightGrayColor] colorWithAlphaComponent:0.5] CGColor];
     shapeLayer.lineWidth = 2.0;
-    shapeLayer.fillColor = [[UIColor grayColor] CGColor];
+    shapeLayer.fillColor = shapeLayer.strokeColor;
     [self.layer addSublayer:shapeLayer];
     
     [self bringSubviewToFront:imgViewDrawing];
