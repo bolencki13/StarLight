@@ -12,6 +12,7 @@
 #import "STLDownloadCollectionViewCell.h"
 #import "STLAdvancedViewController.h"
 #import "NS2DArray.h"
+#import "STLDataManager.h"
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
@@ -59,7 +60,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     }
     return YES;
 }
-- (instancetype)initWithHub:(id)hub withCurrentImage:(UIImage *)image {
+- (instancetype)initWithHub:(STLHub*)hub withCurrentImage:(UIImage *)image {
     self = [super init];
     if (self) {
         _hub = hub;

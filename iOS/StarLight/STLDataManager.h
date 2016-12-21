@@ -7,11 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
+#import "STLHub.h"
+#import "STLLight.h"
 
-@class STLHub;
 @interface STLDataManager : NSObject
 + (instancetype)sharedManager;
 - (BOOL)saveData:(NSError **)error;
 - (STLHub*)registerHubWithLights:(NSArray<NSValue*>*)lights error:(NSError**)error;
+- (STLHub*)hubWithName:(NSString*)name;
+- (NSSet<STLHub*>*)hubs;
 @end
