@@ -8,8 +8,10 @@
 
 #import "STLAppDelegate.h"
 #import "STLDataManager.h"
+#import <Chameleon.h>
 
-#import <ChameleonFramework/Chameleon.h>
+#import "STLHub.h"
+#import "STLLight.h"
 
 @interface STLAppDelegate ()
 
@@ -20,7 +22,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    
+
     /* BLUE: #65C1FC GREEN: #26C281 */
     [Chameleon setGlobalThemeUsingPrimaryColor:[UIColor colorWithHexString:@"#65C1FC"] withContentStyle:UIContentStyleContrast];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
@@ -28,6 +30,7 @@
     [[UINavigationBar appearance] setTranslucent:NO];
     
     self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[NSClassFromString(@"STLRootViewController") new]];
+    
     return YES;
 }
 

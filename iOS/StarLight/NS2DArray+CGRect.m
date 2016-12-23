@@ -40,10 +40,17 @@
 
     NS2DArray *matrix = [NS2DArray arrayWithSections:[coordinates count] rows:[coordinates count]];
     
+    /*
+     
+     -1 ==> no light
+     # ==> light position
+     
+     */
+    
     // need to populate with 'dummy' values otherwise will crash when trying to insert if index does not exist
     for (NSInteger section = 0; section < matrix.sections; section++) {
         for (NSInteger row = 0; row < matrix.rows; row++) {
-            [matrix setObject:[NSValue valueWithCGRect:CGRectZero] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            [matrix setObject:[NSNumber numberWithInteger:-1] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
         }
     }
     
@@ -52,7 +59,7 @@
         for (NSInteger row = 0; row < matrix.rows; row++) {
             CGRect rectY = [[aryY objectAtIndex:row] CGRectValue];
             if (CGRectEqualToRect(rectX, rectY)) {
-                [matrix setObject:[NSValue valueWithCGRect:rectX] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+                [matrix setObject:[NSNumber numberWithInteger:section*row] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
                 break;
             }
         }

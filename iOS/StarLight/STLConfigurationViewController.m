@@ -13,6 +13,8 @@
 #import "STLAdvancedViewController.h"
 #import "NS2DArray.h"
 #import "STLDataManager.h"
+#import "STLHub.h"
+#import "STLLight.h"
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
@@ -65,7 +67,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     if (self) {
         _hub = hub;
         currentImage = image;
-        matrix = [NS2DArray arrayWithSections:10 rows:10];
+        matrix = [hub lightMatrix];
     }
     return self;
 }

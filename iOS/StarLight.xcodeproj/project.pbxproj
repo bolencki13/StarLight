@@ -16,6 +16,10 @@
 		4053766B1E09DA2A004C8AE2 /* NS2DArray+CGRect.m in Sources */ = {isa = PBXBuildFile; fileRef = 4053766A1E09DA2A004C8AE2 /* NS2DArray+CGRect.m */; };
 		4053767B1E09E3FD004C8AE2 /* STLDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4053767A1E09E3FD004C8AE2 /* STLDataManager.m */; };
 		40904AFB1DFA351700E92846 /* RedColor.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 40904AFA1DFA351700E92846 /* RedColor.fsh */; };
+		40A0726B1E0C47A100DE7539 /* STLSequenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A0726A1E0C47A000DE7539 /* STLSequenceManager.m */; };
+		40A0726F1E0C4BCC00DE7539 /* NSString+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A0726E1E0C4BCC00DE7539 /* NSString+Hex.m */; };
+		40A072731E0C4C9800DE7539 /* STLBluetoothManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A072721E0C4C9800DE7539 /* STLBluetoothManager.m */; };
+		40A072761E0C792800DE7539 /* STLDeviceDiscoveryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A072751E0C792800DE7539 /* STLDeviceDiscoveryViewController.m */; };
 		40A42DFD1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42DFC1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m */; };
 		40A42E011DFB159400F2F996 /* STLConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42E001DFB159400F2F996 /* STLConfigurationViewController.m */; };
 		40A42E051DFB1AC200F2F996 /* STLDesignView.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A42E041DFB1AC200F2F996 /* STLDesignView.m */; };
@@ -52,6 +56,15 @@
 		405376791E09E3FD004C8AE2 /* STLDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLDataManager.h; sourceTree = "<group>"; };
 		4053767A1E09E3FD004C8AE2 /* STLDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLDataManager.m; sourceTree = "<group>"; };
 		40904AFA1DFA351700E92846 /* RedColor.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = RedColor.fsh; sourceTree = "<group>"; };
+		40A072651E0C069C00DE7539 /* STLHub+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "STLHub+Private.h"; sourceTree = "<group>"; };
+		40A072691E0C47A000DE7539 /* STLSequenceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLSequenceManager.h; sourceTree = "<group>"; };
+		40A0726A1E0C47A000DE7539 /* STLSequenceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLSequenceManager.m; sourceTree = "<group>"; };
+		40A0726D1E0C4BCC00DE7539 /* NSString+Hex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Hex.h"; sourceTree = "<group>"; };
+		40A0726E1E0C4BCC00DE7539 /* NSString+Hex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Hex.m"; sourceTree = "<group>"; };
+		40A072711E0C4C9800DE7539 /* STLBluetoothManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLBluetoothManager.h; sourceTree = "<group>"; };
+		40A072721E0C4C9800DE7539 /* STLBluetoothManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLBluetoothManager.m; sourceTree = "<group>"; };
+		40A072741E0C792800DE7539 /* STLDeviceDiscoveryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLDeviceDiscoveryViewController.h; sourceTree = "<group>"; };
+		40A072751E0C792800DE7539 /* STLDeviceDiscoveryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLDeviceDiscoveryViewController.m; sourceTree = "<group>"; };
 		40A42DFB1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLCalibrationCollectionViewCell.h; sourceTree = "<group>"; };
 		40A42DFC1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLCalibrationCollectionViewCell.m; sourceTree = "<group>"; };
 		40A42DFF1DFB159400F2F996 /* STLConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLConfigurationViewController.h; sourceTree = "<group>"; };
@@ -147,6 +160,9 @@
 				4051A2761E00A485001C44F9 /* UIAlertController+UIImage.m */,
 				405376691E09DA2A004C8AE2 /* NS2DArray+CGRect.h */,
 				4053766A1E09DA2A004C8AE2 /* NS2DArray+CGRect.m */,
+				40A0726D1E0C4BCC00DE7539 /* NSString+Hex.h */,
+				40A0726E1E0C4BCC00DE7539 /* NSString+Hex.m */,
+				40A072651E0C069C00DE7539 /* STLHub+Private.h */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -160,6 +176,25 @@
 				40FF27DA1E09FB7B00A1CF0C /* STLLight.m */,
 			);
 			name = Objects;
+			sourceTree = "<group>";
+		};
+		40A0726C1E0C47A900DE7539 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				40A072691E0C47A000DE7539 /* STLSequenceManager.h */,
+				40A0726A1E0C47A000DE7539 /* STLSequenceManager.m */,
+				40A072701E0C4C8100DE7539 /* BlueTooth */,
+			);
+			name = API;
+			sourceTree = "<group>";
+		};
+		40A072701E0C4C8100DE7539 /* BlueTooth */ = {
+			isa = PBXGroup;
+			children = (
+				40A072711E0C4C9800DE7539 /* STLBluetoothManager.h */,
+				40A072721E0C4C9800DE7539 /* STLBluetoothManager.m */,
+			);
+			name = BlueTooth;
 			sourceTree = "<group>";
 		};
 		40A42DFE1DFB156C00F2F996 /* Configuration */ = {
@@ -208,6 +243,7 @@
 				40F7A6111DF72FF7000BCFF3 /* UI */,
 				403B92441DF75DE100B06654 /* Objects */,
 				403B924B1DF762D800B06654 /* Data */,
+				40A0726C1E0C47A900DE7539 /* API */,
 				40B070951DF72ED3002D745F /* Supporting Files */,
 			);
 			path = StarLight;
@@ -238,6 +274,8 @@
 		40B437FD1DF9A77C000E94C6 /* NewConnection */ = {
 			isa = PBXGroup;
 			children = (
+				40A072741E0C792800DE7539 /* STLDeviceDiscoveryViewController.h */,
+				40A072751E0C792800DE7539 /* STLDeviceDiscoveryViewController.m */,
 				40E26D251DFA05760023F041 /* STLCalibrationViewController.h */,
 				40E26D261DFA05760023F041 /* STLCalibrationViewController.mm */,
 			);
@@ -432,20 +470,24 @@
 				4030BB951E032740005DA406 /* STLThirdPartyNoticesViewController.m in Sources */,
 				4053767B1E09E3FD004C8AE2 /* STLDataManager.m in Sources */,
 				4053766B1E09DA2A004C8AE2 /* NS2DArray+CGRect.m in Sources */,
+				40A0726F1E0C4BCC00DE7539 /* NSString+Hex.m in Sources */,
 				40172B001DFAE10500DE7445 /* STLRootCollectionViewCell.m in Sources */,
 				40A42E0B1DFB5C5600F2F996 /* STLAdvancedViewController.m in Sources */,
 				40A42E011DFB159400F2F996 /* STLConfigurationViewController.m in Sources */,
 				40E26D271DFA05760023F041 /* STLCalibrationViewController.mm in Sources */,
 				4051A2771E00A485001C44F9 /* UIAlertController+UIImage.m in Sources */,
 				40B0709D1DF72ED3002D745F /* STLRootViewController.m in Sources */,
+				40A0726B1E0C47A100DE7539 /* STLSequenceManager.m in Sources */,
 				40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */,
 				40A42E081DFB4A4700F2F996 /* STLDownloadCollectionViewCell.m in Sources */,
+				40A072731E0C4C9800DE7539 /* STLBluetoothManager.m in Sources */,
 				40B070971DF72ED3002D745F /* main.m in Sources */,
 				40A42E051DFB1AC200F2F996 /* STLDesignView.m in Sources */,
 				40503AD61E004FEC0084005B /* STLMultiDirectionLayout.m in Sources */,
 				40FF27D81E09FB7500A1CF0C /* STLHub.m in Sources */,
 				40A42DFD1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m in Sources */,
 				40FF27DB1E09FB7B00A1CF0C /* STLLight.m in Sources */,
+				40A072761E0C792800DE7539 /* STLDeviceDiscoveryViewController.m in Sources */,
 				40503AD51E004FEC0084005B /* NS2DArray.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

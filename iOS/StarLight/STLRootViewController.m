@@ -10,6 +10,7 @@
 #import "STLRootCollectionViewCell.h"
 #import "STLConfigurationViewController.h"
 #import "STLDataManager.h"
+#import "STLSequenceManager.h"
 
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import <ChameleonFramework/Chameleon.h>
@@ -30,7 +31,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     
     self = [super initWithCollectionViewLayout:flowLayout];
     if (self) {
-        
+
     }
     return self;
 }
@@ -64,7 +65,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
     self.title = @"StarLight";
     [self handleRefresh:nil];
 }
@@ -77,15 +78,17 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (void)handleRefresh:(UIRefreshControl*)sender {
-    aryHubs = [[[STLDataManager sharedManager] hubs] allObjects];
-    [self.collectionView reloadData];
-    [sender endRefreshing];
+- (void)handleRefresh:(id)sender {
+    [[STLDataManager sharedManager] reloadData:^(NSArray *hubs) {
+        aryHubs = [NSArray arrayWithArray:hubs];
+        [self.collectionView reloadData];
+        if ([sender isKindOfClass:[UIRefreshControl class]]) [sender endRefreshing];
+    }];
 }
 
 #pragma mark - Actions
 - (void)addLights {
-    [self.navigationController pushViewController:[NSClassFromString(@"STLCalibrationViewController") new] animated:YES];
+    [self.navigationController pushViewController:[NSClassFromString(@"STLDeviceDiscoveryViewController") new] animated:YES];
 }
 - (void)about {
     CATransition *transition = [CATransition animation];
@@ -104,7 +107,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     return 1;
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [aryHubs count];
+    return ([aryHubs count] > 0 ? [aryHubs count] : 0);
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     STLRootCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];

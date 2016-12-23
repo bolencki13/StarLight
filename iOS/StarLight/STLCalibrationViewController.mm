@@ -11,6 +11,9 @@
 #import "UIAlertController+UIImage.h"
 #import "STLAppDelegate.h"
 #import "STLDataManager.h"
+#import "STLBluetoothManager.h"
+#import "STLSequenceManager.h"
+#import "NS2DArray+CGRect.h"
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
@@ -21,13 +24,8 @@
 #import <OpenCV/opencv2/videoio/cap_ios.h>
 
 #define LIGHTS_PER_STRAND (25)
-#define _DEBUG (0)
-
-typedef enum {
-    STLCalibartionColorRed,
-    STLCalibartionColorGreen,
-    STLCalibartionColorBlue,
-} STLCalibartionColor;
+#define DELAY (0.3)
+#define OFFSET (16)
 
 cv::Scalar CVScalarFromUIColor(UIColor *color) {
     CGFloat red,green,blue;
@@ -42,35 +40,47 @@ CGRect CGRectFromRect(cv::Rect frame) {
 }
 
 @interface STLCalibrationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CvVideoCameraDelegate, BEMCheckBoxDelegate> {
-    UICollectionView *clvLights;
-    UIImageView *imgViewCalibration;
+    UICollectionView *clvLights; // collection view used for confirmation
+    UIImageView *imgViewCalibration; // imageview used for preview shown to user
     
-    NSInteger strands;
-    STLCalibartionColor calibrationColor;
+    NSInteger strands; // number of strands input by user
     
-    CvVideoCamera *camera;
-    UIImage *imgCalibration;
+    CvVideoCamera *camera; // camera used for calibration
+    UIImage *imgCalibration; // image stored to be shown in 'imgViewCalibration'
     
-    NSMutableArray *aryLights;
-    NSInteger frames;
+    NSMutableArray *aryCoordinates; // coordinates or 'CGRect' of light positions
+    NSInteger frames; // number of frames used
+    
+    NS2DArray *ary2DLights; // stored 2D array of light coordinates
+    NSMutableDictionary *dictPositionIndexes; // key value pair of index and position (key=>'light.index' : value=>'position')
+    NSInteger positionLightsOn; // seconds will not be accurate this is to keep track of now many lights should be on
+    NSInteger lightsActual; // actual amount of lights found
 }
 @end
 
 @implementation STLCalibrationViewController
 static NSString * const reuseIdentifier = @"starlight.calibration.cell";
+- (instancetype)initWithPeripheral:(CBPeripheral *)peripheral {
+    self = [super init];
+    if (self) {
+        _peripheral = peripheral;
+    }
+    return self;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
     self.navigationController.hidesNavigationBarHairline = YES;
     
     _calibrating = NO;
+    self.title = _peripheral.name;
     
     UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame))];
     viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
     [self.view addSubview:viewExtendNavBar];
 
     if ([GPUImageVideoCamera isBackFacingCameraPresent]) {
-        aryLights = [NSMutableArray new];
+        aryCoordinates = [NSMutableArray new];
 
         UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
         flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
@@ -121,6 +131,9 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
         if (strands < 1) {
             [self exit];
         } else {
+//            XXX: Should probably turn lights off first (zero them) unable to do so due to time constraint with bean
+//            [self turnLightsOn:NO];
+            [self turnLightsOn:YES withDelay:DELAY]; // turning on here due to time constraint
             [self startCalibration];
         }
     }]];
@@ -144,8 +157,8 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     // Dispose of any resources that can be recreated.
 }
 - (void)exit {
-    [self.navigationController popViewControllerAnimated:YES];
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [camera stop];
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 #pragma mark - Camera
@@ -161,46 +174,47 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
         }
     }
 }
-- (BOOL)isTooBright:(UIImage*)image {
-    UIColor *avgColor = [UIColor colorWithAverageColorFromImage:image];
-    
-    size_t count = CGColorGetNumberOfComponents(avgColor.CGColor);
-    const CGFloat *componentColors = CGColorGetComponents(avgColor.CGColor);
-    
-    CGFloat darknessScore = 0;
-    if (count == 2) {
-        darknessScore = (((componentColors[0]*255) * 299) + ((componentColors[0]*255) * 587) + ((componentColors[0]*255) * 114)) / 1000;
-    } else if (count == 4) {
-        darknessScore = (((componentColors[0]*255) * 299) + ((componentColors[1]*255) * 587) + ((componentColors[2]*255) * 114)) / 1000;
-    }
 
-    if (darknessScore >= 150) {
-        return NO;
+#pragma mark - Lights
+- (void)turnLightsOn:(BOOL)on withDelay:(NSTimeInterval)time {
+    if (on) {
+        for (NSInteger x = OFFSET; x < [self calculatedLights]+OFFSET; x++) {
+            [NSThread sleepForTimeInterval:time];
+            [[STLSequenceManager sharedManager] setLightAtPosition:x toColor:[UIColor redColor]];
+        }
     } else {
-        return YES;
+        for (NSInteger x = OFFSET; x < [self calculatedLights]+OFFSET; x++) {
+            [NSThread sleepForTimeInterval:time];
+            [[STLSequenceManager sharedManager] setLightAtPosition:x on:NO];
+        }
     }
 }
 
 #pragma mark - Calibration
 - (void)startCalibration {
+//    XXX: Should really turn lights on here but can't due to time constraint (scan for 5 seconds; takes (0.3*25*strands)(7.5seconds * strands) to turn on)
+//    [self turnLightsOn:NO];
+    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(exit)];
     _calibrating = YES;
+    _positioning = NO;
     frames = 0;
-    calibrationColor = STLCalibartionColorRed;
     imgCalibration = NULL;
-    [aryLights removeAllObjects];
-    aryLights = [NSMutableArray new];
+    [aryCoordinates removeAllObjects];
+    aryCoordinates = [NSMutableArray new];
     [self cameraResetProperties];
 }
 - (void)confirmCalibration {
     if (!imgCalibration) return;
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(finishCalibration)];
+    
+    [self turnLightsOn:NO withDelay:DELAY];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStyleDone target:self action:@selector(positionCalibration)];
     [camera stop];
     imgViewCalibration.image = imgCalibration;
     imgViewCalibration.contentMode = UIViewContentModeScaleAspectFit;
     
-    for (NSInteger x = 0; x < [aryLights count]; x++) {
-        CGRect frame = [[aryLights objectAtIndex:x] CGRectValue];
+    for (NSInteger x = 0; x < [aryCoordinates count]; x++) {
+        CGRect frame = [[aryCoordinates objectAtIndex:x] CGRectValue];
         
         BEMCheckBox *checkBox = [[BEMCheckBox alloc] initWithFrame:frame];
         [checkBox setOn:YES animated:NO];
@@ -211,18 +225,41 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     
     [clvLights reloadData];
 }
-- (void)finishCalibration {
-    NSMutableArray *aryCoordinates = [NSMutableArray new];
-    for (NSInteger x = 0; x < [aryLights count]; x++) {
+- (void)positionCalibration {
+    NSMutableArray *aryTemp = [NSMutableArray new];
+    for (NSInteger x = 0; x < [aryCoordinates count]; x++) {
         BEMCheckBox *checkBox = (BEMCheckBox*)[imgViewCalibration viewWithTag:10+x];
         if (checkBox.on) {
-            [aryCoordinates addObject:[NSValue valueWithCGRect:checkBox.frame]];
+            [aryTemp addObject:[NSValue valueWithCGRect:checkBox.frame]];
         }
     }
+    lightsActual = [aryTemp count];
+
+    ary2DLights = [NS2DArray arrayFromCoordinates:aryTemp];
+    dictPositionIndexes = [NSMutableDictionary new];
+    
+    [camera start];
+    _calibrating = NO;
+    _positioning = YES;
+    
+    dispatch_async(dispatch_queue_create("com.bolencki13.starlight.calibratePosition", 0), ^(void){
+        positionLightsOn = 0;
+        for (NSInteger x = OFFSET; x < [self calculatedLights]+OFFSET; x++) {
+            [NSThread sleepForTimeInterval:1];
+            [[STLSequenceManager sharedManager] setLightAtPosition:x toColor:[UIColor redColor]];
+            positionLightsOn++;
+        }
+    });
+}
+- (void)finishCalibration {
+    [camera stop];
+    [self turnLightsOn:NO withDelay:DELAY];;
     
     NSError *error = nil;
-    [[STLDataManager sharedManager] registerHubWithLights:aryCoordinates error:&error];
+    STLHub *hub = [[STLDataManager sharedManager] registerHubWithLights:ary2DLights withPositions:dictPositionIndexes];
+    hub.name = self.title;
     
+    [[STLDataManager sharedManager] saveData:&error];
     if (error) {
         [self errorWithMessage:@"An error occured during the calibration sequence. Please try again."];
     } else {
@@ -263,7 +300,7 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     return 1;
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [aryLights count];
+    return [aryCoordinates count];
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     STLCalibrationCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
@@ -301,46 +338,36 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
 
 #pragma mark - CvVideoCameraDelegate
 - (void)processImage:(cv::Mat &)image {
+    cv::Mat matHSV;
+    cv::cvtColor(image, matHSV, cv::COLOR_BGR2HSV); // converts image from bgr to hsv (easier to get certain colors from)
+    
+    // finds colors in range of specified value (blue, green, red) (default red)
+    cv::Mat matColor;
+    cv::inRange(matHSV, cv::Scalar(0,0,230), cv::Scalar(150,150,255), matColor);
+    
+    // helps remove noise
+    cv::Mat erodeElement = getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(2,2));
+    cv::Mat dilateElement = getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(2,2));
+    erode(matColor,matColor,erodeElement);
+    dilate(matColor,matColor,dilateElement);
+    
+    // converts image to binary for analysis
+    cv::Mat matBinary;
+    cv::threshold(matColor, matBinary, 0, 255, cv::THRESH_BINARY);
+    
+    cv::GaussianBlur(matBinary, matBinary, cv::Size(9, 9), 2, 2); // applies blur to even out image and remove jaggedness
+    
+    // helps remove even more noise
+    erode(matBinary,matBinary,erodeElement);
+    dilate(matBinary,matBinary,dilateElement);
+    
+    cv::GaussianBlur(matBinary, matBinary, cv::Size(9, 9), 2, 2); // applies blur to even out image and remove jaggedness
+    
+    // counts connected components in binary image
+    cv::Mat labels, stats, centroids;
+    NSInteger count = connectedComponentsWithStats(matBinary, labels, stats, centroids, 8, CV_32S);
+
     if (_calibrating && frames <= 150) {
-        
-        cv::Mat matHSV;
-        cv::cvtColor(image, matHSV, cv::COLOR_BGR2HSV); // converts image from bgr to hsv (easier to get certain colors from)
-        
-        // finds colors in range of specified value (blue, green, red) (default red)
-        cv::Mat matColor;
-        switch (calibrationColor) {
-            case STLCalibartionColorBlue: {
-                cv::inRange(matHSV, cv::Scalar(0,0,255), cv::Scalar(0,0,255), matColor);
-            } break;
-            case STLCalibartionColorGreen:
-            case STLCalibartionColorRed:
-            default: {
-                cv::inRange(matHSV, cv::Scalar(0,0,230), cv::Scalar(150,150,255), matColor);
-            } break;
-        }
-        
-        // helps remove noise
-        cv::Mat erodeElement = getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(2,2));
-        cv::Mat dilateElement = getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(2,2));
-        erode(matColor,matColor,erodeElement);
-        dilate(matColor,matColor,dilateElement);
-        
-        // converts image to binary for analysis
-        cv::Mat matBinary;
-        cv::threshold(matColor, matBinary, 0, 255, cv::THRESH_BINARY);
-        
-        cv::GaussianBlur(matBinary, matBinary, cv::Size(9, 9), 2, 2); // applies blur to even out image and remove jaggedness
-        
-        // helps remove even more noise
-        erode(matBinary,matBinary,erodeElement);
-        dilate(matBinary,matBinary,dilateElement);
-        
-        cv::GaussianBlur(matBinary, matBinary, cv::Size(9, 9), 2, 2); // applies blur to even out image and remove jaggedness
-        
-        // counts connected components in binary image
-        cv::Mat labels, stats, centroids;
-        NSInteger count = connectedComponentsWithStats(matBinary, labels, stats, centroids, 8, CV_32S);
-        
         // converts current frame to RGB for UIImage manipulation
         cv::Mat matRGB;
         cv::cvtColor(image, matRGB, cv::COLOR_BGR2RGB);
@@ -348,18 +375,18 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
         cv::flip(matRGB,matRGB,0);
         
         // loops through frames checking if the frame is close to our estimated frame
-        [aryLights removeAllObjects];
+        [aryCoordinates removeAllObjects];
         for (int x = 1; x < count; x++) {
             cv::Rect frame(cv::Point(stats.at<int>(x,cv::CC_STAT_LEFT),stats.at<int>(x,cv::CC_STAT_TOP)), cv::Point(stats.at<int>(x,cv::CC_STAT_LEFT)+stats.at<int>(x,cv::CC_STAT_WIDTH),stats.at<int>(x,cv::CC_STAT_TOP)+stats.at<int>(x,cv::CC_STAT_HEIGHT))); // Current frame of 'light'
             cv::rectangle(image, frame.tl(), frame.br(), CVScalarFromUIColor([UIColor blueColor]), 2, CV_AA);
-            [aryLights addObject:[NSValue valueWithCGRect:CGRectMake((frame.y*CGRectGetWidth(imgViewCalibration.frame))/matRGB.cols, CGRectGetHeight(imgViewCalibration.frame)-CGRectGetHeight([UIApplication sharedApplication].statusBarFrame)/2-(frame.x*CGRectGetHeight(imgViewCalibration.frame))/matRGB.rows, frame.width, frame.height)]]; // frame qualifies, add to array of light positions; apparently opencv does (y,x) must be switched for everything else (🖕🏼)
+            [aryCoordinates addObject:[NSValue valueWithCGRect:CGRectMake((frame.y*CGRectGetWidth(imgViewCalibration.frame))/matRGB.cols, CGRectGetHeight(imgViewCalibration.frame)-CGRectGetHeight([UIApplication sharedApplication].statusBarFrame)/2-(frame.x*CGRectGetHeight(imgViewCalibration.frame))/matRGB.rows, frame.width, frame.height)]]; // frame qualifies, add to array of light positions; apparently opencv does (y,x) must be switched for everything else (🖕🏼)
         }
         
         // (150) => approximately 5 seconds
         if (frames == 150) {
             imgCalibration = MatToUIImage(matRGB);
             dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Lights Found!" message:[NSString stringWithFormat:@"We have found %lu of %ld lights. Would you like to continue?",(unsigned long)[aryLights count],(long)[self calculatedLights]] preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Lights Found!" message:[NSString stringWithFormat:@"We have found %lu of %ld lights. Would you like to continue?",(unsigned long)[aryCoordinates count],(long)[self calculatedLights]] preferredStyle:UIAlertControllerStyleAlert];
                 [alert addAction:[UIAlertAction actionWithTitle:@"Exit" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
                     [self exit];
                 }]];
@@ -373,6 +400,29 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
             });
         }
         frames++;
+    } else if (_positioning) {
+        NSInteger currentLightCount = count-1;
+        if ([[dictPositionIndexes allKeys] count] < currentLightCount && currentLightCount <= positionLightsOn) {
+            __block NSInteger counter = 0;
+            __block NSNumber *index = nil;
+            [ary2DLights enumerateObjectsUsingBlock:^(NSNumber *obj, NSIndexPath *indexPath, BOOL *stop) {
+                if ([obj integerValue] != -1) {
+                    if (counter == currentLightCount) {
+                        index = obj;
+                        *stop = YES;
+                    }
+                    counter++;
+                }
+            }];
+            if (index) {
+                [dictPositionIndexes setObject:[NSNumber numberWithInteger:currentLightCount] forKey:[NSString stringWithFormat:@"%li",[index integerValue]]]; // error because opencv starts from bottom left always. Will not follow lights directly
+                // if a light was not found curing initial calibration then it is not skipped here rather it is lost from the end (could result in another dropped light)
+                NSLog(@"%@",dictPositionIndexes);
+            }
+            if (currentLightCount >=  lightsActual || positionLightsOn >= lightsActual) {
+                [self finishCalibration];
+            }
+        }
     }
 }
 

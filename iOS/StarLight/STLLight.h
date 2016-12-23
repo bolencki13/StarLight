@@ -11,7 +11,8 @@
 
 @class STLHub;
 @interface STLLight : NSObject
-@property (nonatomic) CGPoint coordinate;
+@property (nonatomic) NSInteger position; // position on strand
+@property (nonatomic) NSInteger index; // index in the matrix
 @property (nonatomic) BOOL on;
 @property (nonatomic, retain) STLHub *hub;
 + (STLLight*)light;

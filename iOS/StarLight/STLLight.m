@@ -13,42 +13,39 @@
 @implementation STLLight
 + (STLLight*)light {
     STLLight *light = [[STLLight alloc] init];
-    light.coordinate = CGPointMake(0, 0);
+    light.position = 0;
+    light.index = -1;
     light.on = NO;
     return light;
 }
 + (STLLight*)lightWithHub:(STLHub *)hub {
     STLLight *light = [self light];
-    light.hub = hub;
+    
+    NSMutableSet *setLights = [[hub lights] mutableCopy];
+    [setLights addObject:light];
+    [hub setLights:setLights];
+    
     return light;
 }
 + (STLLight*)lightWithJSON:(NSDictionary *)json {
     STLLight *light = [STLLight light];
-    light.coordinate = [[json objectForKey:@"coordinate"] CGPointValue];
+    light.position = [[json objectForKey:@"position"] integerValue];
+    light.index = [[json objectForKey:@"index"] integerValue];
     light.on = [[json objectForKey:@"on"] boolValue];
-    light.hub = [[STLDataManager sharedManager] hubWithName:[json objectForKey:@"name"]];
 
+//    STLHub *hub = [[STLDataManager sharedManager] hubWithIdentifier:[json objectForKey:@"identifier"]];
+//    NSMutableSet *setLights = [[hub lights] mutableCopy];
+//    [setLights addObject:light];
+//    [hub setLights:setLights];
+    
     return light;
-}
-- (instancetype)initWithCoder:(NSCoder *)decoder {
-    self = [super init];
-    if (self) {
-        self.coordinate = [[decoder decodeObjectForKey:@"coordinate"] CGPointValue];
-        self.on = [[decoder decodeObjectForKey:@"on"] boolValue];
-        self.hub = [[STLDataManager sharedManager] hubWithName:[decoder decodeObjectForKey:@"name"]];
-    }
-    return self;
-}
-- (void)encodeWithCoder:(NSCoder *)encoder {
-    [encoder encodeObject:[NSValue valueWithCGPoint:self.coordinate] forKey:@"coordinate"];
-    [encoder encodeObject:[NSNumber numberWithBool:self.on] forKey:@"on"];
-    [encoder encodeObject:self.hub.name forKey:@"hub"];
 }
 - (NSDictionary *)JSON {
     NSMutableDictionary *json = [NSMutableDictionary new];
-    [json setObject:[NSValue valueWithCGPoint:self.coordinate] forKey:@"coordinate"];
+    [json setObject:[NSNumber numberWithInteger:self.position] forKey:@"position"];
+    [json setObject:[NSNumber numberWithInteger:self.index] forKey:@"index"];
     [json setObject:[NSNumber numberWithBool:self.on] forKey:@"on"];
-    [json setObject:@"hub" forKey:self.hub.name];
+    [json setObject:self.hub.identifer forKey:@"hub"];
     return json;
 }
 @end
