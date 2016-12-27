@@ -110,8 +110,8 @@ static NSMutableSet *hubs = nil;
     
     for (NSInteger section = 0; section < matrix.sections; section++) {
         for (NSInteger row = 0; row < matrix.rows; row++) {
-            
-            [matrix setObject:[NSNumber numberWithInteger:(section*row)] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            STLLight *light = [self lightAtIndex:(section*(matrix.rows))+row];
+            if (light) [matrix setObject:[NSNumber numberWithInteger:light.index] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
         }
     }
     

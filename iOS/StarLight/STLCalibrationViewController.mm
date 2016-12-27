@@ -410,9 +410,11 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
                     if (counter == currentLightCount) {
                         index = obj;
                         *stop = YES;
+                        // XXX: worked with wrong math (section+row) (should have been section*row) needs to be fixed counter will never equal current light count ??(May still work)?? else => ---((section*(max(rows)))+(current(row)))---
                     }
-                    counter++;
+//                    counter++; // (old, see above)
                 }
+                counter++;
             }];
             if (index) {
                 [dictPositionIndexes setObject:[NSNumber numberWithInteger:currentLightCount] forKey:[NSString stringWithFormat:@"%li",[index integerValue]]]; // error because opencv starts from bottom left always. Will not follow lights directly

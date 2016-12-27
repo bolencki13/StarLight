@@ -69,15 +69,12 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
     reloading = YES;
     dispatch_async(dispatch_queue_create("com.bolencki13.starlight.loadData", 0), ^(void){
         NSArray *json = [self readFile];
-        NSLog(@"Read file. Contains %lu objects",(unsigned long)[json count]);
         NSInteger count = 0;
         for (NSDictionary *hub in json) {
             STLHub *_hub = [STLHub hubWithJSON:hub];
             [hubs addObject:_hub];
             count++;
-            NSLog(@"Loaded hub number %li", count);
         }
-        NSLog(@"Finished loading hubs");
         reloading = NO;
         [[NSNotificationCenter defaultCenter] postNotificationName:STLDataManagerDidFinishLoadingData object:nil];
     });

@@ -18,7 +18,6 @@
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
-#import <GPUImage/GPUImage.h>
 
 @interface STLConfigurationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate> {
     STLDesignView *drawView;
@@ -39,18 +38,12 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
         }        
         return NO;
     }
-    GPUImagePicture *stillImageSource = [[GPUImagePicture alloc] initWithImage:image];
-    GPUImageFilter *colorFilter = [[GPUImageFilter alloc] initWithFragmentShaderFromFile:@"TransparentToWhiteColor"];
-    [stillImageSource addTarget:colorFilter];
-    [colorFilter useNextFrameForImageCapture];
-    [stillImageSource processImage];
-    UIImage *imgColor = [colorFilter imageFromCurrentFramebuffer];
     
-    CGSize cropSize = CGSizeMake(imgColor.size.width/matrix.sections, imgColor.size.height/matrix.rows);
+    CGSize cropSize = CGSizeMake(image.size.width/matrix.sections, image.size.height/matrix.rows);
     for (NSInteger section = 0; section < matrix.sections; section++) {
         for (NSInteger row = 0; row < matrix.rows; row++) {
             CGRect rect = CGRectMake(cropSize.width*section, cropSize.height*row, cropSize.width, cropSize.height);
-            CGImageRef imageRef = CGImageCreateWithImageInRect([imgColor CGImage], rect);
+            CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], rect);
             UIImage *imgCrop = [UIImage imageWithCGImage:imageRef];
             CGImageRelease(imageRef);
             
@@ -82,7 +75,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     [self.view addSubview:viewExtendNavBar];
     
     drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20)withImage:currentImage];
-    [drawView updateValuesForMatrixSize:CGSizeMake(matrix.sections, matrix.rows)];
+    [drawView updateValuesForMatrixSize:CGSizeMake(matrix.rows, matrix.sections)];
     __weak typeof(self) weakSelf = self;
     drawView.didFinishDrawing = ^(UIImage *image){
         weakSelf.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:weakSelf action:@selector(exit)];

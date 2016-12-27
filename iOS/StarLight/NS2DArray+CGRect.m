@@ -59,7 +59,7 @@
         for (NSInteger row = 0; row < matrix.rows; row++) {
             CGRect rectY = [[aryY objectAtIndex:row] CGRectValue];
             if (CGRectEqualToRect(rectX, rectY)) {
-                [matrix setObject:[NSNumber numberWithInteger:section*row] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+                [matrix setObject:[NSNumber numberWithInteger:(section*(matrix.rows))+row] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
                 break;
             }
         }
