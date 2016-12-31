@@ -20,6 +20,7 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
     NSMutableSet<STLHub*> *hubs;
     BOOL reloading;
     BOOL saved;
+    BOOL deleted;
 }
 @end
 
@@ -62,6 +63,7 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
 - (void)loadData {
     if (reloading == YES) return;
     saved = NO;
+    deleted = NO;
     
     [STLHub resetHubs];
     
@@ -103,7 +105,7 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
 
 #pragma mark Data (Hub)
 - (NSSet<STLHub *> *)hubs {
-    if (saved) {
+    if (saved && !deleted) {
         [self loadData];
     }
     
@@ -141,8 +143,17 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
     [newHub setLights:setLights];
     [newHub setMatrix:[NSIndexPath indexPathForRow:indexes.rows inSection:indexes.sections]];
     
-    
     return newHub;
+}
+- (BOOL)removeHub:(STLHub *)hub error:(NSError *__autoreleasing *)error {
+    [self saveData:error];
+    // hub is successfully removed; upon saving the hubs are regrabbed from the file by flagging 'saved' == true
+    deleted = [STLHub removeHub:hub];
+
+    if (deleted) {
+        return deleted;
+    }
+    return deleted;
 }
 
 #pragma mark Data (Light)

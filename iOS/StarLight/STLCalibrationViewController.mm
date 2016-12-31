@@ -14,11 +14,11 @@
 #import "STLBluetoothManager.h"
 #import "STLSequenceManager.h"
 #import "NS2DArray+CGRect.h"
+#import "AVCaptureDevice+DevicePresence.h"
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import "BEMCheckBox.h"
-#import <GPUImage/GPUImage.h>
 #import <OpenCV/opencv2/opencv.hpp>
 #import <OpenCV/opencv2/imgcodecs/ios.h>
 #import <OpenCV/opencv2/videoio/cap_ios.h>
@@ -78,8 +78,8 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame))];
     viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
     [self.view addSubview:viewExtendNavBar];
-
-    if ([GPUImageVideoCamera isBackFacingCameraPresent]) {
+    
+    if ([AVCaptureDevice supportsDeviceType:AVCaptureDevicePositionBack]) {
         aryCoordinates = [NSMutableArray new];
 
         UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];

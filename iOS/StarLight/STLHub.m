@@ -18,6 +18,20 @@ static NSMutableSet *hubs = nil;
 + (void)resetHubs {
     [hubs removeAllObjects];
 }
++ (BOOL)removeHub:(STLHub*)hub {
+    STLHub *hubRemove = nil;
+    for (STLHub *_hub in [self allHubs]) {
+        if ([_hub.identifer isEqualToString:hub.identifer]) {
+            hubRemove = _hub;
+            break;
+        }
+    }
+    
+    if (hubRemove) {
+        [hubs removeObject:hubRemove];
+    }
+    return hubRemove;
+}
 + (void)initialize {
     if (!hubs) {
         hubs = [NSMutableSet new];

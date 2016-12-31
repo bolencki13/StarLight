@@ -15,6 +15,7 @@
 #import "STLDataManager.h"
 #import "STLHub.h"
 #import "STLLight.h"
+#import "STLLightPattern.h"
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
@@ -29,31 +30,19 @@
 
 @implementation STLConfigurationViewController
 static NSString * const reuseIdentifier = @"starlight.download.cell";
-+ (BOOL)convertImage:(UIImage *)image toLightState:(NS2DArray *)matrix {
-    if (image == nil) {
-        for (NSInteger section = 0; section < matrix.sections; section++) {
-            for (NSInteger row = 0; row < matrix.rows; row++) {
-                [matrix setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
-            }
-        }        
-        return NO;
++ (STLLightPattern*)lightPatternFromStates:(NS2DArray*)states {
+    if (states == nil) {
+        return nil;
     }
+    STLLightPattern *pattern = [STLLightPattern pattern];
     
-    CGSize cropSize = CGSizeMake(image.size.width/matrix.sections, image.size.height/matrix.rows);
-    for (NSInteger section = 0; section < matrix.sections; section++) {
-        for (NSInteger row = 0; row < matrix.rows; row++) {
-            CGRect rect = CGRectMake(cropSize.width*section, cropSize.height*row, cropSize.width, cropSize.height);
-            CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], rect);
-            UIImage *imgCrop = [UIImage imageWithCGImage:imageRef];
-            CGImageRelease(imageRef);
+    for (NSInteger section = 0; section < states.sections; section++) {
+        for (NSInteger row = 0; row < states.rows; row++) {
             
-            CGFloat alpha;
-            [[UIColor colorWithAverageColorFromImage:imgCrop] getRed:nil green:nil blue:nil alpha:&alpha];
-            BOOL isOn = (alpha > 0.5) ? YES : NO;
-            [matrix setObject:[NSNumber numberWithBool:isOn] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
         }
     }
-    return YES;
+    
+    return pattern;
 }
 - (instancetype)initWithHub:(STLHub*)hub withCurrentImage:(UIImage *)image {
     self = [super init];
@@ -77,7 +66,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20)withImage:currentImage];
     [drawView updateValuesForMatrixSize:CGSizeMake(matrix.rows, matrix.sections)];
     __weak typeof(self) weakSelf = self;
-    drawView.didFinishDrawing = ^(UIImage *image){
+    drawView.didFinishDrawing = ^(UIImage *image, NS2DArray *states){
         weakSelf.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:weakSelf action:@selector(exit)];
         weakSelf.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStyleDone target:weakSelf action:@selector(saveAndExit)];
     };
@@ -166,13 +155,21 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     
 }
 - (void)advanced {
-    [STLConfigurationViewController convertImage:drawView.image toLightState:matrix];
-    [self presentViewController:[[STLAdvancedViewController alloc] initWithMatrix:matrix] animated:YES completion:nil]; /* hub.matrix */
+    UIViewController *viewController = nil;
+    @try {
+        viewController = [[STLAdvancedViewController alloc] initWithLightsMatrix:matrix withLightState:drawView.states];
+    } @catch (NSException *exception) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:@"An internal error occured. Please try again." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+        viewController = alert;
+    } @finally {
+        [self presentViewController:viewController animated:YES completion:nil];
+    }
 }
 
 #pragma mark - Matrix Image
 - (void)updateMatrixFromImage:(UIImage*)image {
-    /* Convert iamge to matrix of points (int,int) (0 = off, 1 = on) save to coredata */
+    /* Convert image to matrix of points (int,int) (0 = off, 1 = on) save to coredata */
     
     [_delegate configurationViewController:self didFinishWithImage:image];
 }

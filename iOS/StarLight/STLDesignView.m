@@ -7,6 +7,7 @@
 //
 
 #import "STLDesignView.h"
+#import "NS2DArray.h"
 
 @interface STLDesignView () {
     BOOL mouseSwiped;
@@ -67,6 +68,13 @@
     imgViewDrawing.image = image;
 }
 - (void)updateValuesForMatrixSize:(CGSize)size {
+    _states = [NS2DArray arrayWithSections:size.height rows:size.width];
+    for (NSInteger section = 0; section < _states.sections; section++) {
+        for (NSInteger row = 0; row < _states.rows; row++) {
+            [_states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    
     lineSize = CGRectGetWidth(self.frame)/size.width*0.75;
     
     UIBezierPath *path = [UIBezierPath bezierPath];
@@ -90,7 +98,12 @@
 }
 - (void)erase {
     imgViewDrawing.image = nil;
-    if (self.didFinishDrawing) self.didFinishDrawing(self.image);
+    for (NSInteger section = 0; section < _states.sections; section++) {
+        for (NSInteger row = 0; row < _states.rows; row++) {
+            [_states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states);
 }
 
 #pragma mark - Touches
@@ -119,10 +132,18 @@
     UIGraphicsEndImageContext();
     
     lastPoint = currentPoint;
+    
+    // logic for adding drawing state to NS2DArray (needs to convert CGRect relative to NSIndexPath)
+    NSInteger row = 100*((currentPoint.y/CGRectGetHeight(self.frame))/_states.sections);
+    NSInteger section = 100*((currentPoint.x/CGRectGetWidth(self.frame))/_states.rows);
+    NSLog(@"Attempting to change calculated index {%ld,%ld} in matrix with size {%ld,%ld}",(long)section,(long)row,(long)_states.sections,(long)_states.rows);
+    if (row <= _states.rows && section <= _states.sections) {
+        [_states setObject:[NSNumber numberWithBool:YES] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+    }
 }
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     _drawing = NO;
-    if (self.didFinishDrawing) self.didFinishDrawing(self.image);
+    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states);
 }
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     _drawing = NO;

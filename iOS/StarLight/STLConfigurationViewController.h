@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class STLConfigurationViewController, NS2DArray, STLHub;
+@class STLConfigurationViewController, NS2DArray, STLHub, STLLightPattern;
 @protocol STLConfigurationViewControllerDelegate <NSObject>
 - (void)configurationViewController:(STLConfigurationViewController*)viewController didFinishWithImage:(UIImage*)image;
 @end
@@ -16,6 +16,6 @@
 @interface STLConfigurationViewController : UIViewController
 @property (nonatomic, retain, readonly) STLHub *hub;
 @property (nonatomic, retain) id<STLConfigurationViewControllerDelegate> delegate;
-+ (BOOL)convertImage:(UIImage*)image toLightState:(NS2DArray*)matrix;
++ (STLLightPattern*)lightPatternFromStates:(NS2DArray*)states;
 - (instancetype)initWithHub:(STLHub*)hub withCurrentImage:(UIImage*)image;
 @end

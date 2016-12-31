@@ -11,4 +11,5 @@
 @interface STLHub (Private)
 + (NSSet*)allHubs;
 + (void)resetHubs;
++ (BOOL)removeHub:(STLHub*)hub;
 @end

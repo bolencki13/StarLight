@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+@class NS2DArray;
 @interface STLDesignView : UIView
 @property (nonatomic, readonly) BOOL drawing;
 @property (nonatomic, retain) UIImage *image;
-@property (nonatomic, copy) void (^didFinishDrawing)(UIImage *image);
+@property (nonatomic, retain, readonly) NS2DArray *states;
+@property (nonatomic, copy) void (^didFinishDrawing)(UIImage *image, NS2DArray *states);
 - (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage*)image;
 - (void)updateValuesForMatrixSize:(CGSize)size;
 - (void)erase;

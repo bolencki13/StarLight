@@ -7,7 +7,7 @@
 //
 
 #import "STLRootViewController.h"
-#import "STLRootCollectionViewCell.h"
+#import "STLRootTableViewCell.h"
 #import "STLConfigurationViewController.h"
 #import "STLDataManager.h"
 #import "STLSequenceManager.h"
@@ -16,20 +16,14 @@
 #import <ChameleonFramework/Chameleon.h>
 
 @interface STLRootViewController () <DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLConfigurationViewControllerDelegate> {
-    NSArray<STLHub*>*aryHubs;
+    NSMutableArray<STLHub*> *aryHubs;
 }
 @end
 
 @implementation STLRootViewController
 static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (instancetype)init {
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    [flowLayout setSectionInset:UIEdgeInsetsMake(15,15,15,15)];
-    [flowLayout setItemSize:CGSizeMake(CGRectGetWidth([UIScreen mainScreen].bounds)-30, 100)];
-    [flowLayout setMinimumInteritemSpacing:15];
-    [flowLayout setMinimumLineSpacing:15];
-    
-    self = [super initWithCollectionViewLayout:flowLayout];
+    self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
 
     }
@@ -48,20 +42,17 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [btnInfo addTarget:self action:@selector(about) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnInfo];
     
-    UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
-    viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
-    [self.view insertSubview:viewExtendNavBar belowSubview:self.collectionView];
+//    UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
+//    viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
+//    [self.view insertSubview:viewExtendNavBar belowSubview:self.tableView];
     
-    self.collectionView.alwaysBounceVertical = YES;
-    self.collectionView.bounces = YES;
-    self.collectionView.backgroundColor = [UIColor clearColor];
-    [self.collectionView registerClass:[STLRootCollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
-    self.collectionView.emptyDataSetSource = self;
-    self.collectionView.emptyDataSetDelegate = self;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.emptyDataSetSource = self;
+    self.tableView.emptyDataSetDelegate = self;
     
     UIRefreshControl *rfcCollectionView = [[UIRefreshControl alloc] initWithFrame:CGRectZero];
     [rfcCollectionView addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
-    [self.collectionView addSubview:rfcCollectionView];
+    [self.tableView addSubview:rfcCollectionView];
 }
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -80,8 +71,8 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 - (void)handleRefresh:(id)sender {
     [[STLDataManager sharedManager] reloadData:^(NSArray *hubs) {
-        aryHubs = [NSArray arrayWithArray:hubs];
-        [self.collectionView reloadData];
+        aryHubs = [[NSArray arrayWithArray:hubs] mutableCopy];
+        [self.tableView reloadData];
         if ([sender isKindOfClass:[UIRefreshControl class]]) [sender endRefreshing];
     }];
 }
@@ -102,37 +93,58 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     
 }
 
-#pragma mark - UICollectionViewDataSource
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+#pragma mark - UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return ([aryHubs count] > 0 ? [aryHubs count] : 0);
 }
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    STLRootCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 108; // 8 due to the 'GAP_ACTION' found in 'STLRootTableViewCell'
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    STLRootTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+    if (cell == nil) {
+        cell = [[STLRootTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
+    }
     
-    cell.titleLabel.text = [aryHubs objectAtIndex:indexPath.row].name;
-    cell.locationLabel.text = [aryHubs objectAtIndex:indexPath.row].location;
+    [cell setDrawImage:[UIImage new]];
+    [cell setTitle:[aryHubs objectAtIndex:indexPath.row].name];
+    [cell setLocation:[aryHubs objectAtIndex:indexPath.row].location];
+    [cell setCellShouldBeRemoved:^{
+        NSError *error = nil;
+        if ([[STLDataManager sharedManager] removeHub:[aryHubs objectAtIndex:indexPath.row] error:&error]) {
+            [aryHubs removeObjectAtIndex:indexPath.row];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else if (error) {
+            NSLog(@"Error while deleting hub: %@",error);
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Whoops!" message:@"An error occured while trying to delete the StarLight. Try again." preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+    }];
+    [cell setCellDetailActivate:^{
+        NSLog(@"Details activate");
+    }];
     
     return cell;
 }
 
-#pragma mark - UICollectionViewDelegate
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+#pragma mark - UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
     
-    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:indexPath]).designView.image];
+    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).drawImage];
     configurationViewController.delegate = self;
     [self.navigationController pushViewController:configurationViewController animated:YES];
 }
 
 #pragma mark - DZNEmptyDataSetSource
 - (UIView*)customViewForEmptyDataSet:(UIScrollView *)scrollView {
-    UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(0, self.collectionView.center.x-200, CGRectGetWidth(self.view.frame), 200)];
+    UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(0, self.tableView.center.x-200, CGRectGetWidth(self.view.frame), 200)];
     contentView.backgroundColor = [UIColor redColor];
     
     NSString *text = @"No StarLights found.";
@@ -186,6 +198,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 
 #pragma mark - STLConfigurationViewControllerDelegate
 - (void)configurationViewController:(STLConfigurationViewController *)viewController didFinishWithImage:(UIImage *)image {
-    ((STLRootCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]).designView.image = image;
+    // image is not being set
+    ((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]).drawImage = image;
 }
 @end

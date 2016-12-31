@@ -14,6 +14,7 @@
 @end
 
 @interface STLAdvancedViewController : UIViewController
-@property (nonatomic, readonly) NS2DArray *matrix;
-- (instancetype)initWithMatrix:(NS2DArray*)matrix;
+@property (nonatomic, retain, readonly) NS2DArray *matrix;
+@property (nonatomic, retain, readonly) NS2DArray *lightState;
+- (instancetype)initWithLightsMatrix:(NS2DArray*)matrix withLightState:(NS2DArray*)state; // 'matrix' is the light configuration; 'state' is the light state in the configuration; error will occure if size is not the same
 @end

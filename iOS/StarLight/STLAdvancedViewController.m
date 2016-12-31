@@ -22,10 +22,14 @@
 
 @implementation STLAdvancedViewController
 static NSString * const reuseIdentifier = @"starlight.advanced.cell";
-- (instancetype)initWithMatrix:(NS2DArray *)matrix {
+- (instancetype)initWithLightsMatrix:(NS2DArray*)matrix withLightState:(NS2DArray*)state {
     self = [super init];
     if (self) {
+        if (matrix.sections != state.sections && matrix.rows != state.rows) {
+            @throw [NSException exceptionWithName:@"STLMatrixStateSizeConfiguration" reason:[NSString stringWithFormat:@"State size is not equal to matrix size (Matrix {%ld,%ld} State {%ld,%ld})",(long)matrix.sections,(long)matrix.rows,(long)state.sections,(long)state.rows] userInfo:nil];
+        }
         _matrix = matrix;
+        _lightState = state;
         self.providesPresentationContextTransitionStyle = YES;
         self.definesPresentationContext = YES;
         self.modalPresentationStyle = UIModalPresentationOverCurrentContext;
@@ -100,8 +104,15 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
     STLDownloadCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     cell.titleLabel.text = [NSString stringWithFormat:@"(%ld,%ld)",(long)indexPath.section+1, (long)indexPath.row+1];
-    cell.previewImage.backgroundColor = ([[_matrix objectAtIndexPath:indexPath] boolValue] == YES) ? [UIColor flatGreenColor] : [UIColor flatRedColor];
+    if ([[_matrix objectAtIndexPath:indexPath] integerValue] != -1) {
+        cell.previewImage.backgroundColor = ([[_lightState objectAtIndexPath:indexPath] boolValue] == YES) ? [UIColor flatGreenColor] : [UIColor flatRedColor];
+    } else {
+        cell.previewImage.backgroundColor = [UIColor lightGrayColor];
+        cell.userInteractionEnabled = NO;
+    }
     cell.layer.cornerRadius = 0.0;
+    cell.contentView.layer.cornerRadius = 0.0;
+    cell.previewImage.layer.cornerRadius = 0.0;
     return cell;
 }
 
@@ -110,7 +121,7 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
     return YES;
 }
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [_matrix setObject:[NSNumber numberWithBool:![[_matrix objectAtIndexPath:indexPath] boolValue]] atIndexPath:indexPath];
+    [_lightState setObject:[NSNumber numberWithBool:![[_matrix objectAtIndexPath:indexPath] boolValue]] atIndexPath:indexPath];
     [collectionView reloadItemsAtIndexPaths:@[indexPath]];
     
     navItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(exit)];

@@ -27,8 +27,10 @@
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UINavigationBar appearance].tintColor, NSFontAttributeName : [UIFont boldSystemFontOfSize:[UIFont systemFontSize]+6]}];
     [[UINavigationBar appearance] setTranslucent:NO];
     
+#if DEBUG
     [self populateDummyData];
-
+#endif
+    
     self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[NSClassFromString(@"STLRootViewController") new]];
     
     return YES;
