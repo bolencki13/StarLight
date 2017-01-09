@@ -163,6 +163,7 @@
         if (location.x > _startingX) {
             _startingX = location.x;
         }
+        
         CGFloat translated = translation.x - _panningX;
         if (CGRectGetMinX(viewRootContent.frame) + translated <= GAP_ACTION) {
             if (CGRectGetMinX(viewRootContent.frame) + translated <= (CGRectGetWidth(viewRootContent.frame)*0.95)*-1) {
@@ -170,8 +171,8 @@
             } else {
                 viewRootContent.frame = CGRectMake(CGRectGetMinX(viewRootContent.frame)+translated, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(viewRootContent.frame), CGRectGetHeight(viewRootContent.frame));
             }
-        } else if (CGRectGetMinX(viewRootContent.frame) + translated > 8) {
-            viewRootContent.frame = CGRectMake(CGRectGetMinX(viewRootContent.frame)+translated, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(viewRootContent.frame), CGRectGetHeight(viewRootContent.frame));
+        } else if (CGRectGetMinX(viewRootContent.frame) + translated > GAP_ACTION) {
+            viewRootContent.frame = DEFAULT_ROOT_FRAME;//CGRectMake(CGRectGetMinX(viewRootContent.frame)+translated, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(viewRootContent.frame), CGRectGetHeight(viewRootContent.frame));
         }
         [self updateFrames];
         _panningX = translation.x;
