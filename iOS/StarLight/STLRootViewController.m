@@ -15,20 +15,14 @@
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import <ChameleonFramework/Chameleon.h>
 
-@interface STLRootViewController () <DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLConfigurationViewControllerDelegate> {
+@interface STLRootViewController () <UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLConfigurationViewControllerDelegate> {
     NSMutableArray<STLHub*> *aryHubs;
 }
+@property (nonatomic, retain, readonly) UITableView *tableView;
 @end
 
 @implementation STLRootViewController
 static NSString * const reuseIdentifier = @"starlight.root.cell";
-- (instancetype)init {
-    self = [super initWithStyle:UITableViewStyleGrouped];
-    if (self) {
-
-    }
-    return self;
-}
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -42,13 +36,18 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [btnInfo addTarget:self action:@selector(about) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnInfo];
     
-//    UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
-//    viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
-//    [self.view insertSubview:viewExtendNavBar belowSubview:self.tableView];
+    UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
+    viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
+    [self.view addSubview:viewExtendNavBar];
     
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.emptyDataSetSource = self;
-    self.tableView.emptyDataSetDelegate = self;
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 20, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)-20) style:UITableViewStylePlain];
+    _tableView.dataSource = self;
+    _tableView.delegate = self;
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableView.emptyDataSetSource = self;
+    _tableView.emptyDataSetDelegate = self;
+    _tableView.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:_tableView];
     
     UIRefreshControl *rfcCollectionView = [[UIRefreshControl alloc] initWithFrame:CGRectZero];
     [rfcCollectionView addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
@@ -101,7 +100,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     return ([aryHubs count] > 0 ? [aryHubs count] : 0);
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 108; // 8 due to the 'GAP_ACTION' found in 'STLRootTableViewCell'
+    return [STLRootTableViewCell defaultCellHeight];
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     STLRootTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
@@ -117,7 +116,8 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
         if ([[STLDataManager sharedManager] removeHub:[aryHubs objectAtIndex:indexPath.row] error:&error]) {
             [aryHubs removeObjectAtIndex:indexPath.row];
             [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-        } else if (error) {
+            [self.tableView reloadEmptyDataSet];
+        } else {
             NSLog(@"Error while deleting hub: %@",error);
             UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Whoops!" message:@"An error occured while trying to delete the StarLight. Try again." preferredStyle:UIAlertControllerStyleAlert];
             [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
@@ -125,7 +125,11 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
         }
     }];
     [cell setCellDetailActivate:^{
-        NSLog(@"Details activate");
+        STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
+        
+        STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).drawImage];
+        configurationViewController.delegate = self;
+        [self.navigationController pushViewController:configurationViewController animated:YES];
     }];
     
     return cell;
@@ -135,11 +139,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
-    
-    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).drawImage];
-    configurationViewController.delegate = self;
-    [self.navigationController pushViewController:configurationViewController animated:YES];
+    NSLog(@"Cell has been tapped");
 }
 
 #pragma mark - DZNEmptyDataSetSource

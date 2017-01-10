@@ -20,7 +20,7 @@
 @implementation STLAppDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-
+    
     /* BLUE: #65C1FC GREEN: #26C281 */
     [Chameleon setGlobalThemeUsingPrimaryColor:[UIColor colorWithHexString:@"#65C1FC"] withContentStyle:UIContentStyleContrast];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];

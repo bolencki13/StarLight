@@ -12,6 +12,7 @@
 @property (nonatomic, copy) void (^cellShouldBeRemoved)();
 @property (nonatomic, copy) void (^cellDetailActivate)();
 @property (nonatomic, retain) UIImage *drawImage;
++ (CGFloat)defaultCellHeight;
 - (void)setTitle:(NSString*)title;
 - (void)setLocation:(NSString*)location;
 @end

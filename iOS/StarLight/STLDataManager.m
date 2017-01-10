@@ -64,11 +64,11 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
     if (reloading == YES) return;
     saved = NO;
     deleted = NO;
-    
+    reloading = YES;
+
     [STLHub resetHubs];
     
     hubs = [NSMutableSet new];
-    reloading = YES;
     dispatch_async(dispatch_queue_create("com.bolencki13.starlight.loadData", 0), ^(void){
         NSArray *json = [self readFile];
         NSInteger count = 0;
@@ -92,6 +92,9 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
     
     BOOL success = [self writeToFile:json];
     [self loadData];
+    while (reloading) {
+        [NSThread sleepForTimeInterval:0];
+    }
     return success;
 }
 - (void)reloadData:(STLDataManagerDidFinishLoading)complete {
@@ -146,14 +149,14 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
     return newHub;
 }
 - (BOOL)removeHub:(STLHub *)hub error:(NSError *__autoreleasing *)error {
-    [self saveData:error];
-    // hub is successfully removed; upon saving the hubs are regrabbed from the file by flagging 'saved' == true
-    deleted = [STLHub removeHub:hub];
-
-    if (deleted) {
-        return deleted;
+    if (![self saveData:error]) {
+        return NO;
     }
-    return deleted;
+    BOOL success = deleted = [STLHub removeHub:hub];
+    if (![self saveData:error]) {
+        return NO;
+    }
+    return success;
 }
 
 #pragma mark Data (Light)

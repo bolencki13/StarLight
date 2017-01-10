@@ -35,6 +35,9 @@
 @end
 
 @implementation STLRootTableViewCell
++ (CGFloat)defaultCellHeight {
+    return 100+GAP_ACTION;
+}
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
@@ -77,7 +80,11 @@
     imgViewDrawing.backgroundColor = [UIColor colorWithHexString:@"EEF9FF"];
     imgViewDrawing.layer.borderColor = [UINavigationBar appearance].barTintColor.CGColor;
     imgViewDrawing.layer.borderWidth = 1.0;
+    imgViewDrawing.userInteractionEnabled = YES;
     [viewRootContent addSubview:imgViewDrawing];
+    
+    UITapGestureRecognizer *tgrImage = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDetails)];
+    [imgViewDrawing addGestureRecognizer:tgrImage];
     
     lblTitle = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(imgViewDrawing.frame)+10, CGRectGetMinY(imgViewDrawing.frame), CGRectGetWidth(viewRootContent.frame)-10-CGRectGetMaxX(imgViewDrawing.frame)-10, CGRectGetHeight(imgViewDrawing.frame)/2)];
     lblTitle.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]+6];
@@ -115,6 +122,7 @@
     [btnDelete setTitle:@"Delete" forState:UIControlStateNormal];
     [btnDelete.titleLabel setFont:lblTitle.font];
     btnDelete.layer.cornerRadius = viewActionContent.layer.cornerRadius;
+    [btnDelete setBackgroundColor:[UIColor colorWithHexString:@"#FF3B31"]];
     [viewActionContent addSubview:btnDelete];
     
     [self bringSubviewToFront:viewRootContent];
@@ -172,7 +180,7 @@
                 viewRootContent.frame = CGRectMake(CGRectGetMinX(viewRootContent.frame)+translated, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(viewRootContent.frame), CGRectGetHeight(viewRootContent.frame));
             }
         } else if (CGRectGetMinX(viewRootContent.frame) + translated > GAP_ACTION) {
-            viewRootContent.frame = DEFAULT_ROOT_FRAME;//CGRectMake(CGRectGetMinX(viewRootContent.frame)+translated, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(viewRootContent.frame), CGRectGetHeight(viewRootContent.frame));
+            viewRootContent.frame = DEFAULT_ROOT_FRAME;
         }
         [self updateFrames];
         _panningX = translation.x;
