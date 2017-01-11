@@ -89,7 +89,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [self.navigationController pushViewController:[NSClassFromString(@"STLAboutViewController") new] animated:NO];
 }
 - (void)buy {
-    
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://starlight.com/product"]];
 }
 
 #pragma mark - UITableViewDataSource
@@ -143,57 +143,40 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 
 #pragma mark - DZNEmptyDataSetSource
-- (UIView*)customViewForEmptyDataSet:(UIScrollView *)scrollView {
-    UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(0, self.tableView.center.x-200, CGRectGetWidth(self.view.frame), 200)];
-    contentView.backgroundColor = [UIColor redColor];
-    
-    NSString *text = @"No StarLights found.";
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView {
+    NSString *text = @"No StarLights found";
     NSMutableAttributedString *astrText = [[NSMutableAttributedString alloc] initWithString:text];
     [astrText addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:[UIFont systemFontSize]+16] range:[text rangeOfString:text]];
     [astrText addAttribute:NSForegroundColorAttributeName value:[UIColor lightGrayColor] range:[text rangeOfString:text]];
 
-    UILabel *lblTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(contentView.frame), 60)];
-    lblTitle.textAlignment = NSTextAlignmentCenter;
-    lblTitle.attributedText = astrText;
-    [contentView addSubview:lblTitle];
+    return astrText;
+}
+- (NSAttributedString *)buttonTitleForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state {
+    Class DZNEmptyDataSetView = objc_getClass("DZNEmptyDataSetView");
     
-    UIButton *btnBuy = [UIButton buttonWithType:UIButtonTypeCustom];
-    [btnBuy setFrame:CGRectMake(20, CGRectGetMaxY(lblTitle.frame), (CGRectGetWidth(contentView.frame)-60)/2, 60)];
-    [btnBuy addTarget:self action:@selector(buy) forControlEvents:UIControlEventTouchUpInside];
-    [btnBuy setTitle:@"Buy StartLight" forState:UIControlStateNormal];
-    [btnBuy setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    [btnBuy setBackgroundColor:[UIColor clearColor]];
-    [btnBuy.layer setCornerRadius:7.5];
-    [btnBuy.layer setMasksToBounds:YES];
-    [btnBuy.layer setBorderColor:[btnBuy titleColorForState:UIControlStateNormal].CGColor];
-    [btnBuy.layer setBorderWidth:2];
-    [btnBuy setShowsTouchWhenHighlighted:YES];
-    [contentView addSubview:btnBuy];
-
-    UIButton *btnPair = [UIButton buttonWithType:UIButtonTypeCustom];
-    [btnPair setFrame:CGRectMake(CGRectGetMaxX(btnBuy.frame)+20, CGRectGetMinY(btnBuy.frame), (CGRectGetWidth(contentView.frame)-60)/2, CGRectGetHeight(btnBuy.frame))];
-    [btnPair addTarget:self action:@selector(addLights) forControlEvents:UIControlEventTouchUpInside];
-    [btnPair setTitle:@"Add New" forState:UIControlStateNormal];
-    [btnPair setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-    [btnPair setBackgroundColor:[UIColor clearColor]];
-    [btnPair.layer setCornerRadius:7.5];
-    [btnPair.layer setMasksToBounds:YES];
-    [btnPair.layer setBorderColor:[btnPair titleColorForState:UIControlStateNormal].CGColor];
-    [btnPair.layer setBorderWidth:2];
-    [contentView addSubview:btnPair];
-
-    /*
-     
-     XXX: Touches are not passed due to bug in library; Category to override?
-     
-     */
+    if (DZNEmptyDataSetView) {
+        for (UIView *view in scrollView.subviews) {
+            if ([view isKindOfClass:DZNEmptyDataSetView]) {
+                Ivar ivar_button = class_getInstanceVariable([((id)view) class], "_button");
+                UIButton *button = object_getIvar(view, ivar_button);
+                button.layer.borderWidth = 2.5;
+                button.layer.borderColor = [UIColor lightGrayColor].CGColor;
+                button.layer.cornerRadius = 7.5;
+                button.layer.masksToBounds = YES;
+            }
+        }
+    }
     
-    return contentView;
+    NSString *text = @"Buy StarLight";
+    NSMutableAttributedString *astrText = [[NSMutableAttributedString alloc] initWithString:text];
+    [astrText addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:[UIFont systemFontSize]+10] range:[text rangeOfString:text]];
+    [astrText addAttribute:NSForegroundColorAttributeName value:[UIColor lightGrayColor] range:[text rangeOfString:text]];
+    return astrText;
 }
 
 #pragma mark - DZNEmptyDataSetDelegate
-- (BOOL)emptyDataSetShouldAllowTouch:(UIScrollView *)scrollView {
-    return YES;
+- (void)emptyDataSet:(UIScrollView *)scrollView didTapButton:(UIButton *)button {
+    [self buy];
 }
 
 #pragma mark - STLConfigurationViewControllerDelegate

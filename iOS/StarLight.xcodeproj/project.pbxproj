@@ -15,6 +15,7 @@
 		4051A2771E00A485001C44F9 /* UIAlertController+UIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4051A2761E00A485001C44F9 /* UIAlertController+UIImage.m */; };
 		4053766B1E09DA2A004C8AE2 /* NS2DArray+CGRect.m in Sources */ = {isa = PBXBuildFile; fileRef = 4053766A1E09DA2A004C8AE2 /* NS2DArray+CGRect.m */; };
 		4053767B1E09E3FD004C8AE2 /* STLDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4053767A1E09E3FD004C8AE2 /* STLDataManager.m */; };
+		407057571E25723A009699CE /* STLApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 407057561E25723A009699CE /* STLApplication.m */; };
 		40904AFB1DFA351700E92846 /* RedColor.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 40904AFA1DFA351700E92846 /* RedColor.fsh */; };
 		40A0726B1E0C47A100DE7539 /* STLSequenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A0726A1E0C47A000DE7539 /* STLSequenceManager.m */; };
 		40A0726F1E0C4BCC00DE7539 /* NSString+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A0726E1E0C4BCC00DE7539 /* NSString+Hex.m */; };
@@ -57,6 +58,8 @@
 		4053766A1E09DA2A004C8AE2 /* NS2DArray+CGRect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NS2DArray+CGRect.m"; sourceTree = "<group>"; };
 		405376791E09E3FD004C8AE2 /* STLDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLDataManager.h; sourceTree = "<group>"; };
 		4053767A1E09E3FD004C8AE2 /* STLDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLDataManager.m; sourceTree = "<group>"; };
+		407057551E25723A009699CE /* STLApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLApplication.h; sourceTree = "<group>"; };
+		407057561E25723A009699CE /* STLApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLApplication.m; sourceTree = "<group>"; };
 		40904AFA1DFA351700E92846 /* RedColor.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = RedColor.fsh; sourceTree = "<group>"; };
 		40A072651E0C069C00DE7539 /* STLHub+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "STLHub+Private.h"; sourceTree = "<group>"; };
 		40A072691E0C47A000DE7539 /* STLSequenceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLSequenceManager.h; sourceTree = "<group>"; };
@@ -315,6 +318,8 @@
 		40F7A6101DF72FF1000BCFF3 /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				407057551E25723A009699CE /* STLApplication.h */,
+				407057561E25723A009699CE /* STLApplication.m */,
 				40B070981DF72ED3002D745F /* STLAppDelegate.h */,
 				40B070991DF72ED3002D745F /* STLAppDelegate.m */,
 			);
@@ -488,6 +493,7 @@
 				4051A2771E00A485001C44F9 /* UIAlertController+UIImage.m in Sources */,
 				40B0709D1DF72ED3002D745F /* STLRootViewController.m in Sources */,
 				40C6DDCC1E170C950093CC56 /* STLLightPattern.m in Sources */,
+				407057571E25723A009699CE /* STLApplication.m in Sources */,
 				40A0726B1E0C47A100DE7539 /* STLSequenceManager.m in Sources */,
 				40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */,
 				40A42E081DFB4A4700F2F996 /* STLDownloadCollectionViewCell.m in Sources */,

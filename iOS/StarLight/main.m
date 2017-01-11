@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "STLAppDelegate.h"
+#import "STLApplication.h"
 
 int main(int argc, char * argv[]) {
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([STLAppDelegate class]));
+        return UIApplicationMain(argc, argv, NSStringFromClass([STLApplication class]), NSStringFromClass([STLAppDelegate class]));
     }
 }
