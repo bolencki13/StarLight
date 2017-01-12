@@ -1,0 +1,4 @@
+!*/.DS_Store
+!iOS/Pods/*
+!iOS/Podfile.lock
+!iOS/Pods/OpenCV/opencv2.framework/opencv2
