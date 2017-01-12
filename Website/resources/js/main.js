@@ -51,7 +51,7 @@ function JSONToHTML(json) {
     card.appendChild(content);
 
     if (json.hasOwnProperty("button")) {
-        var action = "";
+        var action = "#";
         if (json.hasOwnProperty("button-url")) {
             action = json['button-url'];
         }
