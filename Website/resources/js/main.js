@@ -1,6 +1,6 @@
-function loadPosts(elementName) {
+function loadPosts(fileLocation,elementName,reverse = false) {
     var client = new XMLHttpRequest();
-    client.open('GET', './resources/feeds/home.json');
+    client.open('GET', fileLocation);
     client.onreadystatechange = function() {
         if (!client.responseText) return;
         var element = document.getElementById(elementName);
@@ -8,8 +8,15 @@ function loadPosts(elementName) {
             element.removeChild(element.firstChild);
         }
         var aryJSON = JSON.parse(client.responseText);
-        for (var i = aryJSON.length-1; i >= 0; i--) {
-            document.getElementById(elementName).appendChild(JSONToHTML(aryJSON[i]));
+
+        if (reverse == true) {
+            for (var i = aryJSON.length-1; i >= 0; i--) {
+                document.getElementById(elementName).appendChild(JSONToHTML(aryJSON[i]));
+            }
+        } else {
+            for (var i = 0; i < aryJSON.length; i++) {
+                document.getElementById(elementName).appendChild(JSONToHTML(aryJSON[i]));
+            }
         }
     }
     client.send();
