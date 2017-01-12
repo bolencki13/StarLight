@@ -63,6 +63,9 @@
     position: relative;
     background-color: #EEF9FF;
 }
+.card-content > .mdl-card__actions {
+    background-color: #EEF9FF;
+}
 .card-content > .mdl-card__title > .mdl-card__title-text {
     color: #6C7A89;
     font-weight: bold;

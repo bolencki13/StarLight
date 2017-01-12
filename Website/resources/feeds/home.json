@@ -1,12 +1,12 @@
 [
-  {
-    "title" : "Coming Soon...",
-    "content" : "StarLight is currently finishing developement, it is available for pre-order through Kickstarter.",
-    "button" : "Pre-Order",
-    "button-url" : "https://kickstarter.com/"
-  },
-  {
-    "video-url" : "https://www.youtube.com/embed/nvdiJdOHNds",
-    "button" : "Demo"
-  }
+    {
+        "title" : "Coming Soon...",
+        "content" : "StarLight is currently finishing developement, it is available for pre-order through Kickstarter.",
+        "button" : "Pre-Order",
+        "button-url" : "https://kickstarter.com/"
+    },
+    {
+        "video-url" : "https://www.youtube.com/embed/nvdiJdOHNds",
+        "button" : "Demo"
+    }
 ]
