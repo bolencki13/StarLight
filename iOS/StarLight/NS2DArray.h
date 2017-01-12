@@ -13,6 +13,7 @@
 @property (nonatomic, readonly) NSInteger rows;
 + (NS2DArray*)arrayWithSections:(NSInteger)sections rows:(NSInteger)rows;
 - (instancetype)initWithSections:(NSInteger)sections rows:(NSInteger)rows;
+- (instancetype)initWith2DArray:(NS2DArray*)matrix;
 - (id)objectAtIndexPath:(NSIndexPath*)indexPath;
 - (void)setObject:(id)object atIndexPath:(NSIndexPath*)indexPath;
 - (void)removeObjects;

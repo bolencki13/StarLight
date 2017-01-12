@@ -33,6 +33,23 @@
     }
     return self;
 }
+- (instancetype)initWith2DArray:(NS2DArray*)matrix {
+    self = [super init];
+    if (self) {
+        _sections = matrix.sections;
+        _rows = matrix.rows;
+        
+        masterObjects = [NSMutableArray arrayWithCapacity:self.sections];
+        for (NSInteger x = 0; x < self.sections; x++) {
+            [masterObjects addObject:[NSMutableArray arrayWithCapacity:self.rows]];
+        }
+        
+        [matrix enumerateObjectsUsingBlock:^(id obj, NSIndexPath *indexPath, BOOL *stop) {
+            [self setObject:obj atIndexPath:indexPath];
+        }];
+    }
+    return self;
+}
 - (id)objectAtIndexPath:(NSIndexPath*)indexPath {
     return [[masterObjects objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 }

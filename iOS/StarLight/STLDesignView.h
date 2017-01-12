@@ -14,7 +14,8 @@
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic, retain, readonly) NS2DArray *states;
 @property (nonatomic, copy) void (^didFinishDrawing)(UIImage *image, NS2DArray *states);
-- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage*)image;
-- (void)updateValuesForMatrixSize:(CGSize)size;
+- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage*)image withStates:(NS2DArray*)states;
+- (void)updateValuesForMatrixSize:(NSIndexPath*)size;
 - (void)erase;
+- (void)highlightAtIndex:(NSIndexPath*)indexPath;
 @end

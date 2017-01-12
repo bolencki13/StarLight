@@ -34,17 +34,21 @@
     }
     return self;
 }
-- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage *)image {
+- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage *)image withStates:(NS2DArray *)states {
     self = [super initWithFrame:frame];
     if (self) {
         [self sharedInit];
         imgViewDrawing.image = image;
+        if (states) {
+            [self updateValuesForMatrixSize:[NSIndexPath indexPathForRow:states.rows inSection:states.sections]];
+            _states = states;
+        }
     }
     return self;
 }
 - (void)sharedInit {
     _drawing = NO;
-    [self updateValuesForMatrixSize:CGSizeMake(10, 10)];
+    [self updateValuesForMatrixSize:[NSIndexPath indexPathForRow:10 inSection:10]];
     
     self.layer.borderColor = [UINavigationBar appearance].barTintColor.CGColor;
     self.layer.borderWidth = 1.0;
@@ -67,24 +71,24 @@
 - (void)setImage:(UIImage *)image {
     imgViewDrawing.image = image;
 }
-- (void)updateValuesForMatrixSize:(CGSize)size {
-    _states = [NS2DArray arrayWithSections:size.height rows:size.width];
+- (void)updateValuesForMatrixSize:(NSIndexPath*)size {
+    _states = [NS2DArray arrayWithSections:size.section rows:size.row];
     for (NSInteger section = 0; section < _states.sections; section++) {
         for (NSInteger row = 0; row < _states.rows; row++) {
             [_states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
         }
     }
     
-    lineSize = CGRectGetWidth(self.frame)/size.width*0.75;
+    lineSize = CGRectGetWidth(self.frame)/size.row*0.75;
     
     UIBezierPath *path = [UIBezierPath bezierPath];
-    for (NSInteger section = 1; section < size.height; section++) {
-        [path moveToPoint:CGPointMake(0, CGRectGetHeight(imgViewDrawing.frame)/size.height*section)];
-        [path addLineToPoint:CGPointMake(CGRectGetWidth(imgViewDrawing.frame), CGRectGetHeight(imgViewDrawing.frame)/size.height*section)];
+    for (NSInteger section = 1; section < size.section; section++) {
+        [path moveToPoint:CGPointMake(0, CGRectGetHeight(imgViewDrawing.frame)/size.section*section)];
+        [path addLineToPoint:CGPointMake(CGRectGetWidth(imgViewDrawing.frame), CGRectGetHeight(imgViewDrawing.frame)/size.section*section)];
     }
-    for (NSInteger row = 1; row < size.width; row++) {
-        [path moveToPoint:CGPointMake(CGRectGetWidth(imgViewDrawing.frame)/size.width*row, 0)];
-        [path addLineToPoint:CGPointMake(CGRectGetWidth(imgViewDrawing.frame)/size.width*row, CGRectGetHeight(imgViewDrawing.frame))];
+    for (NSInteger row = 1; row < size.row; row++) {
+        [path moveToPoint:CGPointMake(CGRectGetWidth(imgViewDrawing.frame)/size.row*row, 0)];
+        [path addLineToPoint:CGPointMake(CGRectGetWidth(imgViewDrawing.frame)/size.row*row, CGRectGetHeight(imgViewDrawing.frame))];
     }
     
     CAShapeLayer *shapeLayer = [CAShapeLayer layer];
@@ -97,13 +101,36 @@
     [self bringSubviewToFront:imgViewDrawing];
 }
 - (void)erase {
-    imgViewDrawing.image = nil;
+    imgViewDrawing.image = [UIImage new];
     for (NSInteger section = 0; section < _states.sections; section++) {
         for (NSInteger row = 0; row < _states.rows; row++) {
             [_states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
         }
     }
     if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states);
+}
+- (void)highlightAtIndex:(NSIndexPath *)indexPath {
+    if (indexPath.row < _states.rows && indexPath.section < _states.sections) {
+        [_states setObject:[NSNumber numberWithBool:YES] atIndexPath:indexPath];
+        
+//        XXX: not a universal solution
+        CGFloat x = (CGRectGetWidth(imgViewDrawing.frame)/_states.rows/indexPath.row)+((CGRectGetWidth(self.frame)/_states.rows)/2);
+        CGFloat y = (CGRectGetHeight(imgViewDrawing.frame)/_states.sections*indexPath.section)+((CGRectGetWidth(self.frame)/_states.rows)/2);
+        CGPoint currentPoint = CGPointMake(x,y);
+        
+        UIGraphicsBeginImageContext(self.frame.size);
+        [imgViewDrawing.image drawInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        CGContextMoveToPoint(UIGraphicsGetCurrentContext(), currentPoint.x, currentPoint.y);
+        CGContextAddLineToPoint(UIGraphicsGetCurrentContext(), currentPoint.x, currentPoint.y);
+        CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapRound);
+        CGContextSetLineWidth(UIGraphicsGetCurrentContext(), lineSize);
+        CGContextSetFillColorWithColor(UIGraphicsGetCurrentContext(), [UINavigationBar appearance].barTintColor.CGColor);
+        CGContextSetBlendMode(UIGraphicsGetCurrentContext(),kCGBlendModeNormal);
+        
+        CGContextStrokePath(UIGraphicsGetCurrentContext());
+        imgViewDrawing.image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    }
 }
 
 #pragma mark - Touches
@@ -117,6 +144,7 @@
     mouseSwiped = YES;
     UITouch *touch = [touches anyObject];
     CGPoint currentPoint = [touch locationInView:self];
+    if (!CGRectContainsPoint(self.bounds,currentPoint)) return;
     
     UIGraphicsBeginImageContext(self.frame.size);
     [imgViewDrawing.image drawInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
@@ -134,10 +162,9 @@
     lastPoint = currentPoint;
     
     // logic for adding drawing state to NS2DArray (needs to convert CGRect relative to NSIndexPath)
-    NSInteger row = 100*((currentPoint.y/CGRectGetHeight(self.frame))/_states.sections);
-    NSInteger section = 100*((currentPoint.x/CGRectGetWidth(self.frame))/_states.rows);
-    NSLog(@"Attempting to change calculated index {%ld,%ld} in matrix with size {%ld,%ld}",(long)section,(long)row,(long)_states.sections,(long)_states.rows);
-    if (row <= _states.rows && section <= _states.sections) {
+    NSInteger row = 100*((currentPoint.x/CGRectGetWidth(self.frame))/(_states.sections+1));
+    NSInteger section = 100*((currentPoint.y/CGRectGetHeight(self.frame))/(_states.rows+1));
+    if (row < _states.rows && section < _states.sections) {
         [_states setObject:[NSNumber numberWithBool:YES] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
     }
 }

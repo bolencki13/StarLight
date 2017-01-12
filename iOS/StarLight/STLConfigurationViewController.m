@@ -20,9 +20,10 @@
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
-@interface STLConfigurationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate> {
+@interface STLConfigurationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLAdvancedViewControllerDelegate> {
     STLDesignView *drawView;
     UIImage *currentImage;
+    NS2DArray *currentStates;
     
     NS2DArray *matrix;
 }
@@ -44,11 +45,12 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     
     return pattern;
 }
-- (instancetype)initWithHub:(STLHub*)hub withCurrentImage:(UIImage *)image {
+- (instancetype)initWithHub:(STLHub*)hub withCurrentImage:(UIImage *)image withStates:(NS2DArray *)states {
     self = [super init];
     if (self) {
         _hub = hub;
         currentImage = image;
+        currentStates = states;
         matrix = [hub lightMatrix];
     }
     return self;
@@ -63,8 +65,10 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
     [self.view addSubview:viewExtendNavBar];
     
-    drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20)withImage:currentImage];
-    [drawView updateValuesForMatrixSize:CGSizeMake(matrix.rows, matrix.sections)];
+    drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20)withImage:currentImage withStates:currentStates];
+    if (!currentStates) {
+        [drawView updateValuesForMatrixSize:[NSIndexPath indexPathForRow:matrix.rows inSection:matrix.sections]];
+    }
     __weak typeof(self) weakSelf = self;
     drawView.didFinishDrawing = ^(UIImage *image, NS2DArray *states){
         weakSelf.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:weakSelf action:@selector(exit)];
@@ -144,7 +148,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 
 #pragma mark - Actions
 - (void)saveAndExit {
-    [self updateMatrixFromImage:drawView.image];
+    [_delegate configurationViewController:self didFinishWithImage:drawView.image states:drawView.states];
     [self exit];
 }
 - (void)exit {
@@ -158,6 +162,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     UIViewController *viewController = nil;
     @try {
         viewController = [[STLAdvancedViewController alloc] initWithLightsMatrix:matrix withLightState:drawView.states];
+        ((STLAdvancedViewController*)viewController).delegate = self;
     } @catch (NSException *exception) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:@"An internal error occured. Please try again." preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
@@ -165,13 +170,6 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     } @finally {
         [self presentViewController:viewController animated:YES completion:nil];
     }
-}
-
-#pragma mark - Matrix Image
-- (void)updateMatrixFromImage:(UIImage*)image {
-    /* Convert image to matrix of points (int,int) (0 = off, 1 = on) save to coredata */
-    
-    [_delegate configurationViewController:self didFinishWithImage:image];
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -193,4 +191,16 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 }
 
 #pragma mark - UICollectionViewDelegate
+
+#pragma mark - STLAdvancedViewControllerDelegate
+- (void)configurationViewController:(STLAdvancedViewController *)viewController didFinishWithStates:(NS2DArray *)states {
+    NS2DArray *aryTemp = [[NS2DArray alloc] initWith2DArray:states]; // for some reason after erase 'states' is reset as well 🤔
+    [drawView erase];
+
+    [aryTemp enumerateObjectsUsingBlock:^(id obj, NSIndexPath *indexPath, BOOL *stop) {
+        if ([obj boolValue] == YES) {
+            [drawView highlightAtIndex:indexPath];
+        }
+    }];
+}
 @end

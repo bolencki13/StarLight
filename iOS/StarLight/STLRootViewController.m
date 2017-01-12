@@ -108,7 +108,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
         cell = [[STLRootTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     }
     
-    [cell setDrawImage:[UIImage new]];
+//    [cell setDrawImage:[UIImage new]];
     [cell setTitle:[aryHubs objectAtIndex:indexPath.row].name];
     [cell setLocation:[aryHubs objectAtIndex:indexPath.row].location];
     [cell setCellShouldBeRemoved:^{
@@ -127,7 +127,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [cell setCellDetailActivate:^{
         STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
         
-        STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).drawImage];
+        STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).drawImage withStates:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).states];
         configurationViewController.delegate = self;
         [self.navigationController pushViewController:configurationViewController animated:YES];
     }];
@@ -180,8 +180,8 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 
 #pragma mark - STLConfigurationViewControllerDelegate
-- (void)configurationViewController:(STLConfigurationViewController *)viewController didFinishWithImage:(UIImage *)image {
-    // image is not being set
-    ((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]).drawImage = image;
+- (void)configurationViewController:(STLConfigurationViewController *)viewController didFinishWithImage:(UIImage *)image states:(NS2DArray *)states {
+    [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setDrawImage:image];
+    [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setStates:states];
 }
 @end

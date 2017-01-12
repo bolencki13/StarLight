@@ -40,7 +40,7 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
     [super viewDidLoad];
     self.navigationController.interactivePopGestureRecognizer.enabled = NO;
 
-    contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 40, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame))];
+    contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 30, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame))];
     contentView.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
     contentView.layer.cornerRadius = 7.5;
     contentView.layer.masksToBounds = YES;
@@ -85,7 +85,7 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
     // Dispose of any resources that can be recreated.
 }
 - (void)saveAndExit {
-    
+    [_delegate configurationViewController:self didFinishWithStates:_lightState];
     [self exit];
 }
 - (void)exit {
@@ -106,6 +106,7 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
     cell.titleLabel.text = [NSString stringWithFormat:@"(%ld,%ld)",(long)indexPath.section+1, (long)indexPath.row+1];
     if ([[_matrix objectAtIndexPath:indexPath] integerValue] != -1) {
         cell.previewImage.backgroundColor = ([[_lightState objectAtIndexPath:indexPath] boolValue] == YES) ? [UIColor flatGreenColor] : [UIColor flatRedColor];
+        cell.userInteractionEnabled = YES;
     } else {
         cell.previewImage.backgroundColor = [UIColor lightGrayColor];
         cell.userInteractionEnabled = NO;
@@ -121,7 +122,7 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
     return YES;
 }
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [_lightState setObject:[NSNumber numberWithBool:![[_matrix objectAtIndexPath:indexPath] boolValue]] atIndexPath:indexPath];
+    [_lightState setObject:[NSNumber numberWithBool:![[_lightState objectAtIndexPath:indexPath] boolValue]] atIndexPath:indexPath];
     [collectionView reloadItemsAtIndexPaths:@[indexPath]];
     
     navItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(exit)];
