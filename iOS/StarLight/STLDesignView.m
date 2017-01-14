@@ -113,10 +113,7 @@
     if (indexPath.row < _states.rows && indexPath.section < _states.sections) {
         [_states setObject:[NSNumber numberWithBool:YES] atIndexPath:indexPath];
         
-//        XXX: not a universal solution
-        CGFloat x = (CGRectGetWidth(imgViewDrawing.frame)/_states.rows/indexPath.row)+((CGRectGetWidth(self.frame)/_states.rows)/2);
-        CGFloat y = (CGRectGetHeight(imgViewDrawing.frame)/_states.sections*indexPath.section)+((CGRectGetWidth(self.frame)/_states.rows)/2);
-        CGPoint currentPoint = CGPointMake(x,y);
+        CGPoint currentPoint = CGPointMake((indexPath.row*(CGRectGetWidth(imgViewDrawing.frame)/_states.rows))+((CGRectGetWidth(self.frame)/_states.rows)/2),(indexPath.section*(CGRectGetHeight(imgViewDrawing.frame)/_states.sections))+((CGRectGetWidth(self.frame)/_states.rows)/2));
         
         UIGraphicsBeginImageContext(self.frame.size);
         [imgViewDrawing.image drawInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
