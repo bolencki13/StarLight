@@ -80,6 +80,7 @@
     imgViewDrawing.backgroundColor = [UIColor colorWithHexString:@"EEF9FF"];
     imgViewDrawing.layer.borderColor = [UINavigationBar appearance].barTintColor.CGColor;
     imgViewDrawing.layer.borderWidth = 1.0;
+    imgViewDrawing.layer.masksToBounds = YES;
     imgViewDrawing.userInteractionEnabled = YES;
     [viewRootContent addSubview:imgViewDrawing];
     

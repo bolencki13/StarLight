@@ -8,11 +8,12 @@
 
 #import "STLDesignView.h"
 #import "NS2DArray.h"
+#import "STLLightPattern.h"
+#import "STLHub.h"
 
 @interface STLDesignView () {
     BOOL mouseSwiped;
     
-    CGPoint lastPoint;
     CGFloat lineSize;
     
     UIImageView *imgViewDrawing;
@@ -34,11 +35,12 @@
     }
     return self;
 }
-- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage *)image withStates:(NS2DArray *)states {
+- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage *)image withHub:(id)hub withStates:(NS2DArray *)states {
     self = [super initWithFrame:frame];
     if (self) {
         [self sharedInit];
         imgViewDrawing.image = image;
+        _hub = hub;
         if (states) {
             [self updateValuesForMatrixSize:[NSIndexPath indexPathForRow:states.rows inSection:states.sections]];
             _states = states;
@@ -72,6 +74,7 @@
     imgViewDrawing.image = image;
 }
 - (void)updateValuesForMatrixSize:(NSIndexPath*)size {
+    _lightPattern = [STLLightPattern patternForHub:_hub];
     _states = [NS2DArray arrayWithSections:size.section rows:size.row];
     for (NSInteger section = 0; section < _states.sections; section++) {
         for (NSInteger row = 0; row < _states.rows; row++) {
@@ -79,7 +82,7 @@
         }
     }
     
-    lineSize = CGRectGetWidth(self.frame)/size.row*0.75;
+    lineSize = CGRectGetWidth(self.frame)/fmin(size.section, size.row);
     
     UIBezierPath *path = [UIBezierPath bezierPath];
     for (NSInteger section = 1; section < size.section; section++) {
@@ -107,22 +110,21 @@
             [_states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
         }
     }
-    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states);
+    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states, self.lightPattern);
 }
 - (void)highlightAtIndex:(NSIndexPath *)indexPath {
     if (indexPath.row < _states.rows && indexPath.section < _states.sections) {
         [_states setObject:[NSNumber numberWithBool:YES] atIndexPath:indexPath];
         
-        CGPoint currentPoint = CGPointMake((indexPath.row*(CGRectGetWidth(imgViewDrawing.frame)/_states.rows))+((CGRectGetWidth(self.frame)/_states.rows)/2),(indexPath.section*(CGRectGetHeight(imgViewDrawing.frame)/_states.sections))+((CGRectGetWidth(self.frame)/_states.rows)/2));
+        CGPoint currentPoint = CGPointMake((indexPath.row*(CGRectGetWidth(imgViewDrawing.frame)/_states.rows))+((CGRectGetWidth(self.frame)/fmin(_states.sections, _states.rows))/2),(indexPath.section*(CGRectGetHeight(imgViewDrawing.frame)/_states.sections))+((CGRectGetWidth(self.frame)/fmin(_states.sections, _states.rows))/2));
         
         UIGraphicsBeginImageContext(self.frame.size);
         [imgViewDrawing.image drawInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         CGContextMoveToPoint(UIGraphicsGetCurrentContext(), currentPoint.x, currentPoint.y);
-        CGContextAddLineToPoint(UIGraphicsGetCurrentContext(), currentPoint.x, currentPoint.y);
-        CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapRound);
+        CGContextAddLineToPoint(UIGraphicsGetCurrentContext(), currentPoint.x+1, currentPoint.y);
+        CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapSquare);
         CGContextSetLineWidth(UIGraphicsGetCurrentContext(), lineSize);
         CGContextSetFillColorWithColor(UIGraphicsGetCurrentContext(), [UINavigationBar appearance].barTintColor.CGColor);
-        CGContextSetBlendMode(UIGraphicsGetCurrentContext(),kCGBlendModeNormal);
         
         CGContextStrokePath(UIGraphicsGetCurrentContext());
         imgViewDrawing.image = UIGraphicsGetImageFromCurrentImageContext();
@@ -134,8 +136,6 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     _drawing = YES;
     mouseSwiped = NO;
-    UITouch *touch = [touches anyObject];
-    lastPoint = [touch locationInView:self];
 }
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     mouseSwiped = YES;
@@ -143,31 +143,17 @@
     CGPoint currentPoint = [touch locationInView:self];
     if (!CGRectContainsPoint(self.bounds,currentPoint)) return;
     
-    UIGraphicsBeginImageContext(self.frame.size);
-    [imgViewDrawing.image drawInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    CGContextMoveToPoint(UIGraphicsGetCurrentContext(), lastPoint.x, lastPoint.y);
-    CGContextAddLineToPoint(UIGraphicsGetCurrentContext(), currentPoint.x, currentPoint.y);
-    CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapRound);
-    CGContextSetLineWidth(UIGraphicsGetCurrentContext(), lineSize);
-    CGContextSetFillColorWithColor(UIGraphicsGetCurrentContext(), [UINavigationBar appearance].barTintColor.CGColor);
-    CGContextSetBlendMode(UIGraphicsGetCurrentContext(),kCGBlendModeNormal);
-    
-    CGContextStrokePath(UIGraphicsGetCurrentContext());
-    imgViewDrawing.image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    lastPoint = currentPoint;
-    
     // logic for adding drawing state to NS2DArray (needs to convert CGRect relative to NSIndexPath)
     NSInteger row = 100*((currentPoint.x/CGRectGetWidth(self.frame))/(_states.sections+1));
     NSInteger section = 100*((currentPoint.y/CGRectGetHeight(self.frame))/(_states.rows+1));
     if (row < _states.rows && section < _states.sections) {
         [_states setObject:[NSNumber numberWithBool:YES] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        [self highlightAtIndex:[NSIndexPath indexPathForRow:row inSection:section]];
     }
 }
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     _drawing = NO;
-    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states);
+    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states,self.lightPattern);
 }
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     _drawing = NO;

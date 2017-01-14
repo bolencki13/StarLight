@@ -7,6 +7,7 @@
 //
 
 #import "STLLightPattern.h"
+#import "STLHub.h"
 
 #import <UIKit/UIColor.h>
 #import <Chameleon.h>
@@ -17,13 +18,14 @@
 @end
 
 @implementation STLLightPattern
-+ (STLLightPattern*)pattern {
-    return [[STLLightPattern alloc] init];
++ (STLLightPattern*)patternForHub:(STLHub *)hub {
+    return [[STLLightPattern alloc] initWithHub:hub];
 }
-- (instancetype)init {
+- (instancetype)initWithHub:(STLHub*)hub {
     self = [super init];
     if (self) {
-        pattern = @"";
+        _hub = hub;
+        pattern = [NSString stringWithFormat:@"%@\n",_hub.identifer];
     }
     return self;
 }

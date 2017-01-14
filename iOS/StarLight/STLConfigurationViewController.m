@@ -12,6 +12,7 @@
 #import "STLDownloadCollectionViewCell.h"
 #import "STLAdvancedViewController.h"
 #import "NS2DArray.h"
+#import "STLLightPattern.h"
 #import "STLDataManager.h"
 #import "STLHub.h"
 #import "STLLight.h"
@@ -31,11 +32,11 @@
 
 @implementation STLConfigurationViewController
 static NSString * const reuseIdentifier = @"starlight.download.cell";
-+ (STLLightPattern*)lightPatternFromStates:(NS2DArray*)states {
++ (STLLightPattern*)lightPatternFromStates:(NS2DArray*)states forHub:(STLHub*)hub {
     if (states == nil) {
         return nil;
     }
-    STLLightPattern *pattern = [STLLightPattern pattern];
+    STLLightPattern *pattern = [STLLightPattern patternForHub:hub];
     
     for (NSInteger section = 0; section < states.sections; section++) {
         for (NSInteger row = 0; row < states.rows; row++) {
@@ -65,12 +66,12 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
     [self.view addSubview:viewExtendNavBar];
     
-    drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20)withImage:currentImage withStates:currentStates];
+    drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20) withImage:currentImage withHub:_hub withStates:currentStates];
     if (!currentStates) {
         [drawView updateValuesForMatrixSize:[NSIndexPath indexPathForRow:matrix.rows inSection:matrix.sections]];
     }
     __weak typeof(self) weakSelf = self;
-    drawView.didFinishDrawing = ^(UIImage *image, NS2DArray *states){
+    drawView.didFinishDrawing = ^(UIImage *image, NS2DArray *states, STLLightPattern *lightPattern){
         weakSelf.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:weakSelf action:@selector(exit)];
         weakSelf.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStyleDone target:weakSelf action:@selector(saveAndExit)];
     };

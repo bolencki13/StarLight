@@ -8,10 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-@class UIColor;
+@class UIColor, STLHub;
 @interface STLLightPattern : NSObject
 @property (nonatomic, retain, readonly) NSString *visualPattern;
-+ (STLLightPattern*)pattern;
+@property (nonatomic, retain, readonly) STLHub *hub;
++ (STLLightPattern*)patternForHub:(STLHub*)hub;
 - (void)addLightAtPosition:(NSInteger)position withColor:(UIColor*)color;
 - (void)addDelayForTime:(NSTimeInterval)time;
 - (void)removeLastItem;

@@ -13,9 +13,10 @@
 - (void)configurationViewController:(STLConfigurationViewController*)viewController didFinishWithImage:(UIImage*)image states:(NS2DArray*)states;
 @end
 
+@class STLHub;
 @interface STLConfigurationViewController : UIViewController
 @property (nonatomic, retain, readonly) STLHub *hub;
 @property (nonatomic, retain) id<STLConfigurationViewControllerDelegate> delegate;
-+ (STLLightPattern*)lightPatternFromStates:(NS2DArray*)states;
++ (STLLightPattern*)lightPatternFromStates:(NS2DArray*)states forHub:(STLHub*)hub;
 - (instancetype)initWithHub:(STLHub*)hub withCurrentImage:(UIImage*)image withStates:(NS2DArray*)states;
 @end
