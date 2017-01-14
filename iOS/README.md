@@ -6,7 +6,6 @@ StarLight iOS application is the best way to interact with your StarLight Hub. S
 - Download existing Patterns directly to the phone, play them on StarLights
 
 ### Known Bugs
-* Lights states converted back to UIImage is not accurate
 * Calibration does not include lights relative to strand (yet)
 
 
