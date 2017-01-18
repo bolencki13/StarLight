@@ -35,7 +35,7 @@
     }
     return self;
 }
-- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage *)image withHub:(id)hub withStates:(NS2DArray *)states {
+- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage *)image withHub:(STLHub*)hub withStates:(NS2DArray *)states {
     self = [super initWithFrame:frame];
     if (self) {
         [self sharedInit];

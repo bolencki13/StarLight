@@ -11,6 +11,7 @@
 #import "STLDesignView.h"
 #import "STLDownloadCollectionViewCell.h"
 #import "STLAdvancedViewController.h"
+#import "STLPreviewViewController.h"
 #import "NS2DArray.h"
 #import "STLLightPattern.h"
 #import "STLDataManager.h"
@@ -27,6 +28,9 @@
     NS2DArray *currentStates;
     
     NS2DArray *matrix;
+    
+    UICollectionView *clvFrames;
+    NSMutableArray *aryFrames;
 }
 @end
 
@@ -62,6 +66,8 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     self.navigationController.hidesNavigationBarHairline = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = NO;
 
+    aryFrames = [NSMutableArray new];
+    
     UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
     viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
     [self.view addSubview:viewExtendNavBar];
@@ -84,14 +90,14 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     [flowLayout setMinimumInteritemSpacing:10];
     [flowLayout setMinimumLineSpacing:10];
     
-    UICollectionView *clvDownloads = [[UICollectionView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(drawView.frame), CGRectGetWidth(self.view.frame), 130) collectionViewLayout:flowLayout];
-    clvDownloads.dataSource = self;
-    clvDownloads.delegate = self;
-    clvDownloads.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
-    [clvDownloads registerClass:[STLDownloadCollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
-    clvDownloads.emptyDataSetSource = self;
-    clvDownloads.emptyDataSetDelegate = self;
-    [self.view addSubview:clvDownloads];
+    clvFrames = [[UICollectionView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(drawView.frame), CGRectGetWidth(self.view.frame), 130) collectionViewLayout:flowLayout];
+    clvFrames.dataSource = self;
+    clvFrames.delegate = self;
+    clvFrames.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
+    [clvFrames registerClass:[STLDownloadCollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
+    clvFrames.emptyDataSetSource = self;
+    clvFrames.emptyDataSetDelegate = self;
+    [self.view addSubview:clvFrames];
     
     UIButton *btnErase = [UIButton buttonWithType:UIButtonTypeCustom];
     [btnErase setFrame:CGRectMake(15, CGRectGetHeight(self.view.frame)-CGRectGetHeight(self.navigationController.navigationBar.frame)*2-40, (CGRectGetWidth(self.view.frame)-34)/3, 40)];
@@ -104,7 +110,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     btnErase.layer.shadowRadius = 8.0;
     btnErase.layer.shadowOffset = CGSizeZero;
     [self.view addSubview:btnErase];
-    [clvDownloads setFrame:CGRectMake(0, CGRectGetMaxY(drawView.frame)+((CGRectGetMinY(btnErase.frame)-CGRectGetMaxY(drawView.frame))-CGRectGetHeight(clvDownloads.frame))/2, CGRectGetWidth(self.view.frame), CGRectGetHeight(clvDownloads.frame))];
+    [clvFrames setFrame:CGRectMake(0, CGRectGetMaxY(drawView.frame)+((CGRectGetMinY(btnErase.frame)-CGRectGetMaxY(drawView.frame))-CGRectGetHeight(clvFrames.frame))/2, CGRectGetWidth(self.view.frame), CGRectGetHeight(clvFrames.frame))];
     
     UIBezierPath *leftPath = [UIBezierPath bezierPathWithRoundedRect:btnErase.bounds byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerTopLeft) cornerRadii:CGSizeMake(CGRectGetHeight(btnErase.frame)/2, CGRectGetHeight(btnErase.frame)/2)];
     CAShapeLayer *leftMask = [CAShapeLayer layer];
@@ -157,7 +163,11 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 - (void)preview {
-    
+    NSMutableArray *aryImages = [NSMutableArray new];
+    for (NSDictionary *dict in aryFrames) {
+        [aryImages addObject:[dict objectForKey:@"image"]];
+    }
+    [self presentViewController:[[STLPreviewViewController alloc] initWithImages:aryImages animationDuration:1.0] animated:YES completion:nil];
 }
 - (void)advanced {
     UIViewController *viewController = nil;
@@ -172,26 +182,72 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
         [self presentViewController:viewController animated:YES completion:nil];
     }
 }
+- (void)newFrame {
+    if ([aryFrames count] == 20) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Whoops!" message:@"The max number of frames as been met." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    if (!drawView.image) return;
+    [aryFrames addObject:@{
+                           @"image" : drawView.image,
+                           @"states" : drawView.states,
+                           }];
+    
+    [clvFrames performBatchUpdates:^{
+        [clvFrames insertItemsAtIndexPaths:@[
+                                             [NSIndexPath indexPathForRow:[aryFrames count]-1 inSection:0],
+                                             ]];
+    } completion:^(BOOL finished) {
+        [clvFrames scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:[aryFrames count] inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+    }];
+}
 
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 1;
+    return [aryFrames count]+1;
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     STLDownloadCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
-    cell.previewImage.image = currentImage;
-    cell.titleLabel.text = @"Title Goes Here";
+    if (indexPath.row < [aryFrames count]) {
+        cell.previewImage.image = [[aryFrames objectAtIndex:indexPath.row] objectForKey:@"image"];
+        cell.previewImage.contentMode = UIViewContentModeScaleAspectFit;
+        cell.titleLabel.text = [NSString stringWithFormat:@"%ld",indexPath.row+1];
+    } else {
+        UIImage *imgPlus = [UIImage imageNamed:@"Plus"];
+        UIImage *imgPlusTint = [imgPlus imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIGraphicsBeginImageContextWithOptions(imgPlus.size, NO, imgPlus.scale);
+        [cell.titleLabel.textColor set];
+        [imgPlusTint drawInRect:CGRectMake(0, 0, imgPlus.size.width, imgPlus.size.height)];
+        imgPlusTint = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        cell.previewImage.image = imgPlusTint;
+        cell.previewImage.contentMode = UIViewContentModeCenter;
+        cell.titleLabel.text = @"New Frame";
+    }
     cell.titleLabel.adjustsFontSizeToFitWidth = YES;
-    cell.titleLabel.minimumScaleFactor = 0.7;
-    
+    cell.titleLabel.minimumScaleFactor = 0.6;
+
     return cell;
 }
 
 #pragma mark - UICollectionViewDelegate
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row < [aryFrames count]) {
+        
+    } else {
+        [self newFrame];
+    }
+}
 
 #pragma mark - STLAdvancedViewControllerDelegate
 - (void)configurationViewController:(STLAdvancedViewController *)viewController didFinishWithStates:(NS2DArray *)states {

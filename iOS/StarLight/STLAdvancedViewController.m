@@ -64,10 +64,7 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
     [contentView addSubview:navBar];
     
     STLMultiDirectionLayout *multiDirectionLayout = [STLMultiDirectionLayout new];
-//    [multiDirectionLayout setSectionInset:UIEdgeInsetsMake(10,10,10,10)];
     [multiDirectionLayout setItemSize:CGSizeMake(80, 110)];
-//    [multiDirectionLayout setMinimumInteritemSpacing:10];
-//    [multiDirectionLayout setMinimumLineSpacing:10];
     
     UICollectionView *clvMatrix = [[UICollectionView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(navBar.frame), CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)-CGRectGetMinY(contentView.frame)-CGRectGetMaxY(navBar.frame)) collectionViewLayout:multiDirectionLayout];
     clvMatrix.dataSource = self;

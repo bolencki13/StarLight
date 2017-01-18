@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface STLRootViewController : UIViewController
-
-
+- (void)addLights;
 @end
 

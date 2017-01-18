@@ -8,10 +8,11 @@
 
 #import "STLAppDelegate.h"
 #import "STLDataManager.h"
-#import <Chameleon.h>
-
 #import "STLHub.h"
 #import "STLLight.h"
+#import "STLRootViewController.h"
+
+#import <Chameleon.h>
 
 @interface STLAppDelegate ()
 
@@ -27,11 +28,16 @@
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UINavigationBar appearance].tintColor, NSFontAttributeName : [UIFont boldSystemFontOfSize:[UIFont systemFontSize]+6]}];
     [[UINavigationBar appearance] setTranslucent:NO];
     
+    [UIApplication sharedApplication].shortcutItems = @[
+                                                        /*[[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@-draw",[[NSBundle mainBundle] bundleIdentifier]] localizedTitle:@"Draw" localizedSubtitle:nil icon:[UIApplicationShortcutIcon iconWithType:UIApplicationShortcutIconTypeCompose] userInfo:nil],*/
+                                                        [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@-new",[[NSBundle mainBundle] bundleIdentifier]] localizedTitle:@"New StarLight" localizedSubtitle:nil icon:[UIApplicationShortcutIcon iconWithType:UIApplicationShortcutIconTypeAdd] userInfo:nil],
+                                                        ];
+    
 #if DEBUG
     [self populateDummyData];
 #endif
     
-    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[NSClassFromString(@"STLRootViewController") new]];
+    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[STLRootViewController new]];
     
     return YES;
 }
@@ -53,6 +59,16 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
     [[STLDataManager sharedManager] saveData:nil];
+}
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
+    
+    NSString *type = [shortcutItem.type stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@-",[[NSBundle mainBundle] bundleIdentifier]] withString:@""];
+    
+    [((UINavigationController*)self.window.rootViewController) popToRootViewControllerAnimated:NO];
+    if ([type isEqualToString:@"new"]) {
+        [((STLRootViewController*)((UINavigationController*)self.window.rootViewController).topViewController) addLights];
+    }
+    
 }
 
 #pragma mark - Other

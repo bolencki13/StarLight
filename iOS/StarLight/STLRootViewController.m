@@ -15,7 +15,7 @@
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import <ChameleonFramework/Chameleon.h>
 
-@interface STLRootViewController () <UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLConfigurationViewControllerDelegate> {
+@interface STLRootViewController () <UITableViewDataSource, UITableViewDelegate, UIViewControllerPreviewingDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLConfigurationViewControllerDelegate> {
     NSMutableArray<STLHub*> *aryHubs;
 }
 @property (nonatomic, retain, readonly) UITableView *tableView;
@@ -89,7 +89,14 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [self.navigationController pushViewController:[NSClassFromString(@"STLAboutViewController") new] animated:NO];
 }
 - (void)buy {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://starlight.com/product"]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://starlighthub.com/index.html#purchase"]];
+}
+- (UIViewController*)actionForIndexPath:(NSIndexPath*)indexPath {
+    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
+    
+    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).drawImage withStates:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).states];
+    configurationViewController.delegate = self;
+    return configurationViewController;
 }
 
 #pragma mark - UITableViewDataSource
@@ -108,7 +115,6 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
         cell = [[STLRootTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     }
     
-//    [cell setDrawImage:[UIImage new]];
     [cell setTitle:[aryHubs objectAtIndex:indexPath.row].name];
     [cell setLocation:[aryHubs objectAtIndex:indexPath.row].location];
     [cell setCellShouldBeRemoved:^{
@@ -125,12 +131,11 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
         }
     }];
     [cell setCellDetailActivate:^{
-        STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
-        
-        STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).drawImage withStates:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).states];
-        configurationViewController.delegate = self;
-        [self.navigationController pushViewController:configurationViewController animated:YES];
+        [self.navigationController pushViewController:[self actionForIndexPath:indexPath] animated:YES];
     }];
+    if (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
+        [self registerForPreviewingWithDelegate:self sourceView:cell];
+    }
     
     return cell;
 }
@@ -139,7 +144,16 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSLog(@"Cell has been tapped");
+    [self.navigationController pushViewController:[self actionForIndexPath:indexPath] animated:YES];
+}
+
+#pragma mark - UIViewControllerPreviewingDelegate
+- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
+    return [self actionForIndexPath:[self.tableView indexPathForRowAtPoint:location]];
+}
+
+- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
+    [self.navigationController pushViewController:viewControllerToCommit animated:YES];
 }
 
 #pragma mark - DZNEmptyDataSetSource

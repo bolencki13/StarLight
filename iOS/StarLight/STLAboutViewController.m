@@ -165,17 +165,13 @@ static NSString * const reuseIdentifier = @"starlight.about.cell";
         }
     } else if (indexPath.section == 1) {
         if (indexPath.row == 0) {
-            SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://starlight.com/help"] entersReaderIfAvailable:NO];
-            [self presentViewController:safariViewController animated:YES completion:nil];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://starlighthub.com/help"]];
         } else if (indexPath.row == 1) {
-            SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://starlight.com/report"] entersReaderIfAvailable:NO];
-            [self presentViewController:safariViewController animated:YES completion:nil];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://starlighthub.com/report"]];
         }
     } else if (indexPath.section == 2) {
         if (indexPath.row == 0) {
-            SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"https://starlight.com/terms"] entersReaderIfAvailable:NO];
-            safariViewController.preferredBarTintColor = self.navigationController.navigationBar.barTintColor;
-            [self presentViewController:safariViewController animated:YES completion:nil];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://starlighthub.com/terms"]];
         } else if (indexPath.row == 1) {
             [self.navigationController pushViewController:[NSClassFromString(@"STLThirdPartyNoticesViewController") new] animated:YES];
         }
