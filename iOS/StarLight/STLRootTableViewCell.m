@@ -7,6 +7,7 @@
 //
 
 #import "STLRootTableViewCell.h"
+#import "STLDesignView.h"
 
 #import <ChameleonFramework/Chameleon.h>
 
@@ -242,6 +243,23 @@
 - (void)setLocation:(NSString *)location {
     lblLocation.text = location;
     [lblLocation sizeToFit];
+}
+- (void)setStates:(NSArray<NS2DArray *> *)states {
+    _states = states;
+    
+    NSMutableArray *aryImages = [NSMutableArray new];
+    for (NS2DArray *state in _states) {
+        UIImage *image = [STLDesignView imageFromStates:state];
+        [aryImages addObject:image];
+    }
+    
+    imgViewDrawing.animationImages = aryImages;
+    imgViewDrawing.animationDuration = 1.0*[aryImages count];
+    imgViewDrawing.image = [aryImages lastObject];
+}
+- (void)animate {
+    imgViewDrawing.animationRepeatCount = 1;
+    [imgViewDrawing startAnimating];
 }
 
 #pragma mark - UIGestureRecognizerDelegate

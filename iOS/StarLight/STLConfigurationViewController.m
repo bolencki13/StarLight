@@ -18,19 +18,20 @@
 #import "STLHub.h"
 #import "STLLight.h"
 #import "STLLightPattern.h"
+#import "STLStepper.h"
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
 @interface STLConfigurationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLAdvancedViewControllerDelegate> {
     STLDesignView *drawView;
-    UIImage *currentImage;
     NS2DArray *currentStates;
     
     NS2DArray *matrix;
     
     UICollectionView *clvFrames;
     NSMutableArray *aryFrames;
+    STLStepper *stpDelay;
 }
 @end
 
@@ -50,12 +51,14 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     
     return pattern;
 }
-- (instancetype)initWithHub:(STLHub*)hub withCurrentImage:(UIImage *)image withStates:(NS2DArray *)states {
+- (instancetype)initWithHub:(STLHub*)hub withStates:(NSArray<NS2DArray *>*)states {
     self = [super init];
     if (self) {
         _hub = hub;
-        currentImage = image;
-        currentStates = states;
+        _states = states;
+        if ([_states count] > 1) {
+            currentStates = [states objectAtIndex:0];
+        }
         matrix = [hub lightMatrix];
     }
     return self;
@@ -68,11 +71,18 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 
     aryFrames = [NSMutableArray new];
     
+    stpDelay = [[STLStepper alloc] initWithFrame:CGRectMake(0, 0, 60, 40)];
+    stpDelay.minimumValue = 0.5;
+    stpDelay.maximumValue = 2.0;
+    stpDelay.value = 1.0;
+    stpDelay.stepValue = 0.5;
+    self.navigationItem.titleView = stpDelay;
+    
     UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
     viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
     [self.view addSubview:viewExtendNavBar];
     
-    drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20) withImage:currentImage withHub:_hub withStates:currentStates];
+    drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20) withHub:_hub withStates:currentStates];
     if (!currentStates) {
         [drawView updateValuesForMatrixSize:[NSIndexPath indexPathForRow:matrix.rows inSection:matrix.sections]];
     }
@@ -155,7 +165,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 
 #pragma mark - Actions
 - (void)saveAndExit {
-    [_delegate configurationViewController:self didFinishWithImage:drawView.image states:drawView.states];
+    [_delegate configurationViewController:self states:aryFrames];
     [self exit];
 }
 - (void)exit {
@@ -164,10 +174,11 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 }
 - (void)preview {
     NSMutableArray *aryImages = [NSMutableArray new];
-    for (NSDictionary *dict in aryFrames) {
-        [aryImages addObject:[dict objectForKey:@"image"]];
+    for (NS2DArray *state in aryFrames) {
+        UIImage *image = [STLDesignView imageFromStates:state];
+        [aryImages addObject:image];
     }
-    [self presentViewController:[[STLPreviewViewController alloc] initWithImages:aryImages animationDuration:1.0] animated:YES completion:nil];
+    [self presentViewController:[[STLPreviewViewController alloc] initWithImages:aryImages animationDuration:stpDelay.value] animated:YES completion:nil];
 }
 - (void)advanced {
     UIViewController *viewController = nil;
@@ -190,10 +201,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
         return;
     }
     if (!drawView.image) return;
-    [aryFrames addObject:@{
-                           @"image" : drawView.image,
-                           @"states" : drawView.states,
-                           }];
+    [aryFrames addObject:[[NS2DArray alloc] initWith2DArray:drawView.states]];
     
     [clvFrames performBatchUpdates:^{
         [clvFrames insertItemsAtIndexPaths:@[
@@ -202,6 +210,24 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     } completion:^(BOOL finished) {
         [clvFrames scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:[aryFrames count] inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
     }];
+}
+- (void)deleteFrame:(UIButton *)sender {
+    if ([aryFrames count] <= 0) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Whoops!" message:@"An internal error has occured. There are no other cells to delete." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    [aryFrames removeObjectAtIndex:sender.tag];
+    [clvFrames performBatchUpdates:^{
+        [clvFrames deleteItemsAtIndexPaths:@[
+                                             [NSIndexPath indexPathForRow:sender.tag inSection:0],
+                                             ]];
+    } completion:^(BOOL finished) {
+        [clvFrames reloadData];
+        [clvFrames scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:[aryFrames count] inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+    }];
+    // XXX: actually deletes cell but delete button is added to the next cell as well
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -215,7 +241,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     STLDownloadCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     if (indexPath.row < [aryFrames count]) {
-        cell.previewImage.image = [[aryFrames objectAtIndex:indexPath.row] objectForKey:@"image"];
+        cell.previewImage.image = [STLDesignView imageFromStates:[aryFrames objectAtIndex:indexPath.row]];
         cell.previewImage.contentMode = UIViewContentModeScaleAspectFit;
         cell.titleLabel.text = [NSString stringWithFormat:@"%ld",indexPath.row+1];
     } else {
@@ -243,7 +269,8 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 }
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < [aryFrames count]) {
-        
+        currentStates = [aryFrames objectAtIndex:indexPath.row];
+        drawView.states = currentStates;
     } else {
         [self newFrame];
     }
@@ -253,11 +280,6 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 - (void)configurationViewController:(STLAdvancedViewController *)viewController didFinishWithStates:(NS2DArray *)states {
     NS2DArray *aryTemp = [[NS2DArray alloc] initWith2DArray:states]; // for some reason after erase 'states' is reset as well 🤔
     [drawView erase];
-
-    [aryTemp enumerateObjectsUsingBlock:^(id obj, NSIndexPath *indexPath, BOOL *stop) {
-        if ([obj boolValue] == YES) {
-            [drawView highlightAtIndex:indexPath];
-        }
-    }];
+    drawView.states = aryTemp;
 }
 @end

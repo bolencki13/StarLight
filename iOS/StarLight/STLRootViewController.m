@@ -11,6 +11,7 @@
 #import "STLConfigurationViewController.h"
 #import "STLDataManager.h"
 #import "STLSequenceManager.h"
+#import "NS2DArray.h"
 
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import <ChameleonFramework/Chameleon.h>
@@ -93,8 +94,9 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 - (UIViewController*)actionForIndexPath:(NSIndexPath*)indexPath {
     STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
+    NSArray<NS2DArray*> *states = ((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).states;
     
-    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withCurrentImage:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).drawImage withStates:((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).states];
+    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withStates:states];
     configurationViewController.delegate = self;
     return configurationViewController;
 }
@@ -115,11 +117,12 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
         cell = [[STLRootTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     }
     
-    [cell setTitle:[aryHubs objectAtIndex:indexPath.row].name];
-    [cell setLocation:[aryHubs objectAtIndex:indexPath.row].location];
+    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
+    [cell setTitle:hub.name];
+    [cell setLocation:hub.location];
     [cell setCellShouldBeRemoved:^{
         NSError *error = nil;
-        if ([[STLDataManager sharedManager] removeHub:[aryHubs objectAtIndex:indexPath.row] error:&error]) {
+        if ([[STLDataManager sharedManager] removeHub:hub error:&error]) {
             [aryHubs removeObjectAtIndex:indexPath.row];
             [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
             [self.tableView reloadEmptyDataSet];
@@ -144,7 +147,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [self.navigationController pushViewController:[self actionForIndexPath:indexPath] animated:YES];
+    [((STLRootTableViewCell*)[tableView cellForRowAtIndexPath:indexPath]) animate];
 }
 
 #pragma mark - UIViewControllerPreviewingDelegate
@@ -194,8 +197,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 
 #pragma mark - STLConfigurationViewControllerDelegate
-- (void)configurationViewController:(STLConfigurationViewController *)viewController didFinishWithImage:(UIImage *)image states:(NS2DArray *)states {
-    [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setDrawImage:image];
+- (void)configurationViewController:(STLConfigurationViewController *)viewController states:(NSArray<NS2DArray *> *)states {
     [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setStates:states];
 }
 @end

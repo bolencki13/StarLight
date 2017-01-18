@@ -10,10 +10,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NS2DArray () {
-    NSMutableArray *masterObjects;
-}
-
+@interface NS2DArray ()
+@property (nonatomic, retain, readonly) NSMutableArray *masterObjects;
 @end
 
 @implementation NS2DArray
@@ -26,9 +24,9 @@
         _sections = sections;
         _rows = rows;
         
-        masterObjects = [NSMutableArray arrayWithCapacity:self.sections];
+        _masterObjects = [NSMutableArray arrayWithCapacity:self.sections];
         for (NSInteger x = 0; x < self.sections; x++) {
-            [masterObjects addObject:[NSMutableArray arrayWithCapacity:self.rows]];
+            [_masterObjects addObject:[NSMutableArray arrayWithCapacity:self.rows]];
         }
     }
     return self;
@@ -39,9 +37,9 @@
         _sections = matrix.sections;
         _rows = matrix.rows;
         
-        masterObjects = [NSMutableArray arrayWithCapacity:self.sections];
+        _masterObjects = [NSMutableArray arrayWithCapacity:self.sections];
         for (NSInteger x = 0; x < self.sections; x++) {
-            [masterObjects addObject:[NSMutableArray arrayWithCapacity:self.rows]];
+            [_masterObjects addObject:[NSMutableArray arrayWithCapacity:self.rows]];
         }
         
         [matrix enumerateObjectsUsingBlock:^(id obj, NSIndexPath *indexPath, BOOL *stop) {
@@ -51,15 +49,15 @@
     return self;
 }
 - (id)objectAtIndexPath:(NSIndexPath*)indexPath {
-    return [[masterObjects objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    return [[_masterObjects objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 }
 - (void)setObject:(id)object atIndexPath:(NSIndexPath*)indexPath {
-    masterObjects[indexPath.section][indexPath.row] = object;
+    _masterObjects[indexPath.section][indexPath.row] = object;
 }
 - (void)removeObjects {
-    masterObjects = [NSMutableArray arrayWithCapacity:self.sections];
+    _masterObjects = [NSMutableArray arrayWithCapacity:self.sections];
     for (NSInteger x = 0; x < _sections; x++) {
-        [masterObjects addObject:[NSMutableArray arrayWithCapacity:self.rows]];
+        [_masterObjects addObject:[NSMutableArray arrayWithCapacity:self.rows]];
     }
 }
 - (NSIndexPath *)indexPathForObject:(id)object {
@@ -67,7 +65,7 @@
     for (NSInteger section = 0; section < self.sections; section++) {
         BOOL shouldExit = NO;
         for (NSInteger row = 0; row < self.rows; row++) {
-            if ([masterObjects[section][row] isEqual:object]) {
+            if ([_masterObjects[section][row] isEqual:object]) {
                 indexPath = [NSIndexPath indexPathForRow:row inSection:section];
                 shouldExit = YES;
                 break;
@@ -82,7 +80,7 @@
     
     for (NSUInteger section = 0; section < self.sections; section++) {
         for (NSUInteger row = 0; row < self.rows; row++) {
-            id object = masterObjects[section][row];
+            id object = _masterObjects[section][row];
             [description appendFormat:@"%@", object];
         }
         [description appendString:@"\n"];

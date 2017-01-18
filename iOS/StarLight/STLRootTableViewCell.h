@@ -13,8 +13,9 @@
 @property (nonatomic, copy) void (^cellShouldBeRemoved)();
 @property (nonatomic, copy) void (^cellDetailActivate)();
 @property (nonatomic, retain) UIImage *drawImage;
-@property (nonatomic, retain) NS2DArray *states;
+@property (nonatomic, retain) NSArray<NS2DArray*> *states;
 + (CGFloat)defaultCellHeight;
 - (void)setTitle:(NSString*)title;
 - (void)setLocation:(NSString*)location;
+- (void)animate;
 @end

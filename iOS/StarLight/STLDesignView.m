@@ -21,6 +21,12 @@
 @end
 
 @implementation STLDesignView
++ (UIImage *)imageFromStates:(NS2DArray *)states {
+    STLDesignView *designView = [[STLDesignView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds)) withHub:nil withStates:states];
+    UIImage *image = [UIImage imageWithCGImage:designView.image.CGImage];
+    designView = nil;
+    return image;
+}
 - (instancetype)init {
     self = [super init];
     if (self) {
@@ -35,15 +41,14 @@
     }
     return self;
 }
-- (instancetype)initWithFrame:(CGRect)frame withImage:(UIImage *)image withHub:(STLHub*)hub withStates:(NS2DArray *)states {
+- (instancetype)initWithFrame:(CGRect)frame withHub:(STLHub*)hub withStates:(NS2DArray *)states {
     self = [super initWithFrame:frame];
     if (self) {
         [self sharedInit];
-        imgViewDrawing.image = image;
         _hub = hub;
         if (states) {
             [self updateValuesForMatrixSize:[NSIndexPath indexPathForRow:states.rows inSection:states.sections]];
-            _states = states;
+            self.states = states;
         }
     }
     return self;
@@ -70,8 +75,14 @@
 - (UIImage*)image {
     return (_drawing ? nil :imgViewDrawing.image);
 }
-- (void)setImage:(UIImage *)image {
-    imgViewDrawing.image = image;
+- (void)setStates:(NS2DArray *)states {
+    _states = states;
+    
+    [states enumerateObjectsUsingBlock:^(NSNumber *obj, NSIndexPath *indexPath, BOOL *stop) {
+        if ([obj boolValue] == YES) {
+            [self highlightAtIndex:indexPath];
+        }
+    }];
 }
 - (void)updateValuesForMatrixSize:(NSIndexPath*)size {
     _lightPattern = [STLLightPattern patternForHub:_hub];

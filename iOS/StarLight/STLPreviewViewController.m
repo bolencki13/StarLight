@@ -58,7 +58,7 @@
     
     imgViewAnimation = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame)-8-8, CGRectGetWidth(self.view.frame)-8-8)];
     imgViewAnimation.animationImages = _images;
-    imgViewAnimation.animationDuration = _duration;
+    imgViewAnimation.animationDuration = _duration*[_images count];
     imgViewAnimation.animationRepeatCount = 0;
     imgViewAnimation.center = self.view.center;
     [self.view addSubview:imgViewAnimation];

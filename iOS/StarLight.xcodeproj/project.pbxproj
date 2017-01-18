@@ -10,6 +10,8 @@
 		0D8A0E5ABAE1C6C01CB5FC6B /* libPods-StarLight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0458FD1BAC91985E35FACFF2 /* libPods-StarLight.a */; };
 		40172B001DFAE10500DE7445 /* STLRootTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 40172AFF1DFAE10400DE7445 /* STLRootTableViewCell.m */; };
 		4030BB951E032740005DA406 /* STLThirdPartyNoticesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4030BB941E032740005DA406 /* STLThirdPartyNoticesViewController.m */; };
+		403DC63A1E30075E00B48E07 /* NS2DArray+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 403DC6391E30075E00B48E07 /* NS2DArray+JSON.m */; };
+		403DC6421E3010DC00B48E07 /* STLStepper.m in Sources */ = {isa = PBXBuildFile; fileRef = 403DC6411E3010DC00B48E07 /* STLStepper.m */; };
 		40503AD51E004FEC0084005B /* NS2DArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 40503AD21E004FEC0084005B /* NS2DArray.m */; };
 		40503AD61E004FEC0084005B /* STLMultiDirectionLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 40503AD41E004FEC0084005B /* STLMultiDirectionLayout.m */; };
 		4051A2771E00A485001C44F9 /* UIAlertController+UIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4051A2761E00A485001C44F9 /* UIAlertController+UIImage.m */; };
@@ -49,6 +51,10 @@
 		40172AFF1DFAE10400DE7445 /* STLRootTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLRootTableViewCell.m; sourceTree = "<group>"; };
 		4030BB931E032740005DA406 /* STLThirdPartyNoticesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLThirdPartyNoticesViewController.h; sourceTree = "<group>"; };
 		4030BB941E032740005DA406 /* STLThirdPartyNoticesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLThirdPartyNoticesViewController.m; sourceTree = "<group>"; };
+		403DC6381E30075E00B48E07 /* NS2DArray+JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NS2DArray+JSON.h"; sourceTree = "<group>"; };
+		403DC6391E30075E00B48E07 /* NS2DArray+JSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NS2DArray+JSON.m"; sourceTree = "<group>"; };
+		403DC6401E3010DC00B48E07 /* STLStepper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLStepper.h; sourceTree = "<group>"; };
+		403DC6411E3010DC00B48E07 /* STLStepper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLStepper.m; sourceTree = "<group>"; };
 		40503AD11E004FEC0084005B /* NS2DArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NS2DArray.h; path = StarLight/NS2DArray.h; sourceTree = "<group>"; };
 		40503AD21E004FEC0084005B /* NS2DArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NS2DArray.m; path = StarLight/NS2DArray.m; sourceTree = "<group>"; };
 		40503AD31E004FEC0084005B /* STLMultiDirectionLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = STLMultiDirectionLayout.h; path = StarLight/STLMultiDirectionLayout.h; sourceTree = "<group>"; };
@@ -165,18 +171,60 @@
 			name = Data;
 			sourceTree = "<group>";
 		};
-		4051A2741E00A473001C44F9 /* Categories */ = {
+		403DC63B1E300E0300B48E07 /* NS2DArray */ = {
+			isa = PBXGroup;
+			children = (
+				405376691E09DA2A004C8AE2 /* NS2DArray+CGRect.h */,
+				4053766A1E09DA2A004C8AE2 /* NS2DArray+CGRect.m */,
+				403DC6381E30075E00B48E07 /* NS2DArray+JSON.h */,
+				403DC6391E30075E00B48E07 /* NS2DArray+JSON.m */,
+			);
+			name = NS2DArray;
+			sourceTree = "<group>";
+		};
+		403DC63C1E300E0B00B48E07 /* NSString */ = {
+			isa = PBXGroup;
+			children = (
+				40A0726D1E0C4BCC00DE7539 /* NSString+Hex.h */,
+				40A0726E1E0C4BCC00DE7539 /* NSString+Hex.m */,
+			);
+			name = NSString;
+			sourceTree = "<group>";
+		};
+		403DC63D1E300E1600B48E07 /* AVCaptureDevice */ = {
+			isa = PBXGroup;
+			children = (
+				40A410CE1E1228CA0023D885 /* AVCaptureDevice+DevicePresence.h */,
+				40A410CF1E1228CA0023D885 /* AVCaptureDevice+DevicePresence.m */,
+			);
+			name = AVCaptureDevice;
+			sourceTree = "<group>";
+		};
+		403DC63E1E300E1E00B48E07 /* UIAlertController */ = {
 			isa = PBXGroup;
 			children = (
 				4051A2751E00A485001C44F9 /* UIAlertController+UIImage.h */,
 				4051A2761E00A485001C44F9 /* UIAlertController+UIImage.m */,
-				405376691E09DA2A004C8AE2 /* NS2DArray+CGRect.h */,
-				4053766A1E09DA2A004C8AE2 /* NS2DArray+CGRect.m */,
-				40A0726D1E0C4BCC00DE7539 /* NSString+Hex.h */,
-				40A0726E1E0C4BCC00DE7539 /* NSString+Hex.m */,
-				40A410CE1E1228CA0023D885 /* AVCaptureDevice+DevicePresence.h */,
-				40A410CF1E1228CA0023D885 /* AVCaptureDevice+DevicePresence.m */,
+			);
+			name = UIAlertController;
+			sourceTree = "<group>";
+		};
+		403DC63F1E300E3500B48E07 /* STLHub */ = {
+			isa = PBXGroup;
+			children = (
 				40A072651E0C069C00DE7539 /* STLHub+Private.h */,
+			);
+			name = STLHub;
+			sourceTree = "<group>";
+		};
+		4051A2741E00A473001C44F9 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				403DC63E1E300E1E00B48E07 /* UIAlertController */,
+				403DC63B1E300E0300B48E07 /* NS2DArray */,
+				403DC63C1E300E0B00B48E07 /* NSString */,
+				403DC63D1E300E1600B48E07 /* AVCaptureDevice */,
+				403DC63F1E300E3500B48E07 /* STLHub */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -231,6 +279,8 @@
 			children = (
 				40A42E031DFB1AC200F2F996 /* STLDesignView.h */,
 				40A42E041DFB1AC200F2F996 /* STLDesignView.m */,
+				403DC6401E3010DC00B48E07 /* STLStepper.h */,
+				403DC6411E3010DC00B48E07 /* STLStepper.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -509,9 +559,11 @@
 				40503AD61E004FEC0084005B /* STLMultiDirectionLayout.m in Sources */,
 				40FF27D81E09FB7500A1CF0C /* STLHub.m in Sources */,
 				40A42DFD1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m in Sources */,
+				403DC6421E3010DC00B48E07 /* STLStepper.m in Sources */,
 				40FF27DB1E09FB7B00A1CF0C /* STLLight.m in Sources */,
 				40A072761E0C792800DE7539 /* STLDeviceDiscoveryViewController.m in Sources */,
 				40A410D01E1228CA0023D885 /* AVCaptureDevice+DevicePresence.m in Sources */,
+				403DC63A1E30075E00B48E07 /* NS2DArray+JSON.m in Sources */,
 				40503AD51E004FEC0084005B /* NS2DArray.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
