@@ -26,9 +26,10 @@
 @interface STLLightPattern : NSObject
 @property (nonatomic, retain) NSArray<NS2DArray*> *states;
 @property (nonatomic, retain) NS2DArray *lights;
-@property (nonatomic) CGFloat delay;
+@property (nonatomic) uint32_t delay;
 @property (nonatomic, copy) UIColor* (^colorForLightIndexWithFrame)(NSInteger lightIndex, NSInteger frame);
 @property (nonatomic, retain, readonly) NSString *absolutePattern;
+@property (nonatomic, retain, readonly) NSData *dataPattern;
 + (STLLightPattern*)pattern;
 - (void)reloadPattern;
 @end

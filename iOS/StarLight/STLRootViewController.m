@@ -116,6 +116,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     if (cell == nil) {
         cell = [[STLRootTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     }
+    __weak typeof(STLRootTableViewCell*) weakCell = cell;
     
     STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
     [cell setTitle:hub.name];
@@ -136,9 +137,20 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [cell setCellDetailActivate:^{
         [self.navigationController pushViewController:[self actionForIndexPath:indexPath] animated:YES];
     }];
-    if (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
-        [self registerForPreviewingWithDelegate:self sourceView:cell];
-    }
+    [cell setCellShouldBeFlash:^{
+        STLLightPattern *pattern = [STLLightPattern pattern];
+        pattern.delay = (uint32_t)weakCell.delay;
+        pattern.states = weakCell.states;
+        pattern.lights = hub.lightMatrix;
+        pattern.colorForLightIndexWithFrame = ^ UIColor *(NSInteger lightIndex, NSInteger frame) {
+            return [UIColor redColor];
+        };
+        [pattern reloadPattern];
+        [[STLSequenceManager sharedManager] uploadPattern:pattern];
+    }];
+    [cell setCellLongHoldActivate:^{
+        [weakCell animate];
+    }];
     
     return cell;
 }
@@ -147,7 +159,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [((STLRootTableViewCell*)[tableView cellForRowAtIndexPath:indexPath]) animate];
+    
 }
 
 #pragma mark - UIViewControllerPreviewingDelegate
@@ -197,7 +209,8 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 
 #pragma mark - STLConfigurationViewControllerDelegate
-- (void)configurationViewController:(STLConfigurationViewController *)viewController states:(NSArray<NS2DArray *> *)states {
+- (void)configurationViewController:(STLConfigurationViewController *)viewController states:(NSArray<NS2DArray *> *)states withDelay:(NSInteger)delay {
     [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setStates:states];
+    [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setDelay:delay];
 }
 @end

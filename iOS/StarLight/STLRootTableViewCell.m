@@ -24,10 +24,14 @@
     UILabel *lblLocation;
     UIButton *btnDetails;
     
-    UIView *viewActionContent;
+    UIView *viewRightActionContent;
     UIButton *btnDelete;
     
-    BOOL _actionMenuOpen;
+    UIView *viewLeftActionContent;
+    UIButton *btnFlash;
+    
+    BOOL _actionMenuOpenRight;
+    BOOL _actionMenuOpenLeft;
     BOOL _panning;
     CGFloat _startingX;
     CGFloat _panningX;
@@ -61,7 +65,8 @@
     return self;
 }
 - (void)sharedInit {
-    _actionMenuOpen = NO;
+    _actionMenuOpenRight = NO;
+    _actionMenuOpenLeft = NO;
     _panning = NO;
     
     self.backgroundColor = [UIColor clearColor];
@@ -109,25 +114,47 @@
     pgrSwipeAction.delegate = self;
     [viewRootContent addGestureRecognizer:pgrSwipeAction];
     
-    viewActionContent = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(viewRootContent.frame)+GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(self.frame)-CGRectGetMaxX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame))];
-    viewActionContent.layer.cornerRadius = viewRootContent.layer.cornerRadius;
-    viewActionContent.backgroundColor = viewRootContent.backgroundColor;
-    viewActionContent.layer.shadowColor = viewRootContent.layer.shadowColor;
-    viewActionContent.layer.shadowOpacity = viewRootContent.layer.shadowOpacity;
-    viewActionContent.layer.shadowOffset = viewRootContent.layer.shadowOffset;
-    viewActionContent.alpha = 0.0;
-    [self.contentView insertSubview:viewActionContent belowSubview:viewRootContent];
+    viewRightActionContent = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(viewRootContent.frame)+GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(self.frame)-CGRectGetMaxX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame))];
+    viewRightActionContent.layer.cornerRadius = viewRootContent.layer.cornerRadius;
+    viewRightActionContent.backgroundColor = viewRootContent.backgroundColor;
+    viewRightActionContent.layer.shadowColor = viewRootContent.layer.shadowColor;
+    viewRightActionContent.layer.shadowOpacity = viewRootContent.layer.shadowOpacity;
+    viewRightActionContent.layer.shadowOffset = viewRootContent.layer.shadowOffset;
+    viewRightActionContent.alpha = 0.0;
+    [self.contentView insertSubview:viewRightActionContent belowSubview:viewRootContent];
     
     btnDelete = [UIButton buttonWithType:UIButtonTypeCustom];
-    [btnDelete addTarget:self action:@selector(handleAction) forControlEvents:UIControlEventTouchUpInside];
-    [btnDelete setFrame:viewActionContent.bounds];
+    [btnDelete addTarget:self action:@selector(handleAction:) forControlEvents:UIControlEventTouchUpInside];
+    [btnDelete setFrame:viewRightActionContent.bounds];
     [btnDelete setTitle:@"Delete" forState:UIControlStateNormal];
     [btnDelete.titleLabel setFont:lblTitle.font];
-    btnDelete.layer.cornerRadius = viewActionContent.layer.cornerRadius;
+    btnDelete.layer.cornerRadius = viewRightActionContent.layer.cornerRadius;
     [btnDelete setBackgroundColor:[UIColor colorWithHexString:@"#FF3B31"]];
-    [viewActionContent addSubview:btnDelete];
+    [viewRightActionContent addSubview:btnDelete];
+    
+    viewLeftActionContent = [[UIView alloc] initWithFrame:CGRectMake(GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetMinX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame))];
+    viewLeftActionContent.layer.cornerRadius = viewRootContent.layer.cornerRadius;
+    viewLeftActionContent.backgroundColor = viewRootContent.backgroundColor;
+    viewLeftActionContent.layer.shadowColor = viewRootContent.layer.shadowColor;
+    viewLeftActionContent.layer.shadowOpacity = viewRootContent.layer.shadowOpacity;
+    viewLeftActionContent.layer.shadowOffset = viewRootContent.layer.shadowOffset;
+    viewLeftActionContent.alpha = 0.0;
+    [self.contentView insertSubview:viewLeftActionContent belowSubview:viewRootContent];
+    
+    btnFlash = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btnFlash addTarget:self action:@selector(handleAction:) forControlEvents:UIControlEventTouchUpInside];
+    [btnFlash setFrame:viewLeftActionContent.bounds];
+    [btnFlash setTitle:@"Flash" forState:UIControlStateNormal];
+    [btnFlash.titleLabel setFont:lblTitle.font];
+    btnFlash.layer.cornerRadius = viewLeftActionContent.layer.cornerRadius;
+    [btnFlash setBackgroundColor:[UIColor flatGreenColor]];
+    [viewLeftActionContent addSubview:btnFlash];
     
     [self bringSubviewToFront:viewRootContent];
+    
+    UILongPressGestureRecognizer *lpgrAction = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    lpgrAction.minimumPressDuration = 1.0;
+    [viewRootContent addGestureRecognizer:lpgrAction];
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -138,8 +165,10 @@
 #pragma mark - Private
 - (void)updateFrames {
     if (!_panning) {
-        if (_actionMenuOpen) {
+        if (_actionMenuOpenRight == YES) {
             viewRootContent.frame = CGRectMake(CGRectGetMinY(DEFAULT_ROOT_FRAME)-MAX_ACTION_WIDTH-GAP_ACTION, CGRectGetMinY(DEFAULT_ROOT_FRAME), CGRectGetWidth(DEFAULT_ROOT_FRAME), CGRectGetHeight(DEFAULT_ROOT_FRAME));
+        } else if (_actionMenuOpenLeft == YES) {
+            viewRootContent.frame = CGRectMake(CGRectGetMinY(DEFAULT_ROOT_FRAME)+MAX_ACTION_WIDTH+GAP_ACTION, CGRectGetMinY(DEFAULT_ROOT_FRAME), CGRectGetWidth(DEFAULT_ROOT_FRAME), CGRectGetHeight(DEFAULT_ROOT_FRAME));
         } else {
             viewRootContent.frame = DEFAULT_ROOT_FRAME;
         }
@@ -148,13 +177,17 @@
     lblTitle.frame = CGRectMake(CGRectGetMaxX(imgViewDrawing.frame)+10, CGRectGetMinY(imgViewDrawing.frame)+7, CGRectGetWidth(viewRootContent.frame)-10-CGRectGetMaxX(imgViewDrawing.frame)-10, CGRectGetHeight(imgViewDrawing.frame)/2);
     lblLocation.frame = CGRectMake(CGRectGetMaxX(imgViewDrawing.frame)+10, CGRectGetMaxY(lblTitle.frame)-10, CGRectGetWidth(lblTitle.frame), CGRectGetHeight(lblTitle.frame));
     btnDetails.frame = CGRectMake(CGRectGetWidth(viewRootContent.frame)-50, (CGRectGetHeight(viewRootContent.frame)-40)/2, 40, 40);
-    viewActionContent.frame = CGRectMake(CGRectGetMaxX(viewRootContent.frame)+GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(self.frame)-CGRectGetMaxX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame));
-    btnDelete.frame = viewActionContent.bounds;
+    viewRightActionContent.frame = CGRectMake(CGRectGetMaxX(viewRootContent.frame)+GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(self.frame)-CGRectGetMaxX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame));
+    btnDelete.frame = viewRightActionContent.bounds;
+    viewLeftActionContent.frame = CGRectMake(GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetMinX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame));
+    btnFlash.frame = viewLeftActionContent.bounds;
     
-    if (_actionMenuOpen) {
-        viewActionContent.alpha = 1.0;
+    if (_actionMenuOpenRight == YES || _actionMenuOpenLeft == YES) {
+        viewRightActionContent.alpha = 1.0;
+        viewLeftActionContent.alpha = 1.0;
     } else {
-        viewActionContent.alpha = [self alphaForPercentRevealed:(CGFloat)((CGFloat)(ABS(CGRectGetMinX(viewRootContent.frame))-GAP_ACTION)/CGRectGetMinX(viewActionContent.frame))*4];
+        viewRightActionContent.alpha = [self alphaForPercentRevealed:(CGFloat)((CGFloat)(ABS(CGRectGetMinX(viewRootContent.frame))-GAP_ACTION)/CGRectGetMinX(viewRightActionContent.frame))*4];
+        viewLeftActionContent.alpha = [self alphaForPercentRevealed:(CGFloat)((CGFloat)(ABS(CGRectGetMinX(viewRootContent.frame))-GAP_ACTION)/CGRectGetMinX(viewRightActionContent.frame))*4];
     }
 }
 - (void)handlePan:(UIPanGestureRecognizer*)recognizer {
@@ -182,7 +215,7 @@
                 viewRootContent.frame = CGRectMake(CGRectGetMinX(viewRootContent.frame)+translated, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(viewRootContent.frame), CGRectGetHeight(viewRootContent.frame));
             }
         } else if (CGRectGetMinX(viewRootContent.frame) + translated > GAP_ACTION) {
-            viewRootContent.frame = DEFAULT_ROOT_FRAME;
+            viewRootContent.frame = CGRectMake(CGRectGetMinX(viewRootContent.frame)+translated, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(viewRootContent.frame), CGRectGetHeight(viewRootContent.frame));
         }
         [self updateFrames];
         _panningX = translation.x;
@@ -201,32 +234,46 @@
         }
         
         if (CGRectGetMinX(viewRootContent.frame)*-1 > MAX_ACTION_WIDTH || (finalSpeed.x < (CGFloat)-500 && CGRectGetMinX(viewRootContent.frame) < 8)) {
-            _actionMenuOpen = YES;
-
+            _actionMenuOpenRight = YES;
+            _actionMenuOpenLeft = NO;
+        } else if (CGRectGetMinX(viewRootContent.frame) > MAX_ACTION_WIDTH || (finalSpeed.x > (CGFloat)+500 && CGRectGetMinX(viewRootContent.frame) > 8)) {
+            _actionMenuOpenRight = NO;
+            _actionMenuOpenLeft = YES;
         } else {
-            _actionMenuOpen = NO;
+            _actionMenuOpenRight = NO;
+            _actionMenuOpenLeft = NO;
         }
         [UIView animateWithDuration:0.25f animations:^{
             [self updateFrames];
         }];
         return;
     }
-    viewActionContent.alpha = [self alphaForPercentRevealed:(CGFloat)((CGFloat)(ABS(CGRectGetMinX(viewRootContent.frame))-GAP_ACTION)/CGRectGetMinX(viewActionContent.frame))*4];
+    viewRightActionContent.alpha = [self alphaForPercentRevealed:(CGFloat)((CGFloat)(ABS(CGRectGetMinX(viewRootContent.frame))-GAP_ACTION)/CGRectGetMinX(viewRightActionContent.frame))*4];
+    viewLeftActionContent.alpha = [self alphaForPercentRevealed:(CGFloat)((CGFloat)(ABS(CGRectGetMinX(viewRootContent.frame))-GAP_ACTION)/CGRectGetMinX(viewRightActionContent.frame))*4];
 }
 - (CGFloat)alphaForPercentRevealed:(CGFloat)percent {
     CGFloat arg1 = fmin((CGFloat)1.0,percent);
-    CGFloat arg3 = (CGFloat)CGRectGetMinX(viewActionContent.frame);
+    CGFloat arg3 = (CGFloat)CGRectGetMinX(viewRightActionContent.frame);
     CGFloat arg2 = (CGFloat)0.0;
     if ((arg1 * arg3) > 30.0) {
         arg2 = ((arg1 * arg3) + -30.0) / (arg3 + -30.0);
     }
     return arg2;
 }
-- (void)handleAction {
-    if (self.cellShouldBeRemoved) self.cellShouldBeRemoved();
+- (void)handleAction:(UIButton*)sender {
+    if ([[sender titleForState:UIControlStateNormal] isEqualToString:@"Delete"]) {
+        if (self.cellShouldBeRemoved) self.cellShouldBeRemoved();
+    } else if ([[sender titleForState:UIControlStateNormal] isEqualToString:@"Flash"]) {
+        if (self.cellShouldBeFlash) self.cellShouldBeFlash();
+    }
 }
 - (void)handleDetails {
     if (self.cellDetailActivate) self.cellDetailActivate();
+}
+- (void)handleLongPress:(UILongPressGestureRecognizer*)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        if (self.cellLongHoldActivate) self.cellLongHoldActivate();
+    }
 }
 
 #pragma mark - Public
@@ -254,10 +301,10 @@
     }
     
     imgViewDrawing.animationImages = aryImages;
-    imgViewDrawing.animationDuration = 1.0*[aryImages count];
     imgViewDrawing.image = [aryImages lastObject];
 }
 - (void)animate {
+    imgViewDrawing.animationDuration = self.delay/1000*[imgViewDrawing.animationImages count];
     imgViewDrawing.animationRepeatCount = 1;
     [imgViewDrawing startAnimating];
 }

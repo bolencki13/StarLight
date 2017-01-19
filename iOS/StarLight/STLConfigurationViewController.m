@@ -56,19 +56,23 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     self.navigationController.interactivePopGestureRecognizer.enabled = NO;
 
     aryFrames = [NSMutableArray new];
+    if (_states) {
+        aryFrames = [_states mutableCopy];
+    }
     
     stpDelay = [[STLStepper alloc] initWithFrame:CGRectMake(0, 0, 60, 40)];
     stpDelay.minimumValue = 0.5;
     stpDelay.maximumValue = 2.0;
     stpDelay.value = 1.0;
     stpDelay.stepValue = 0.5;
+    stpDelay.color = self.navigationController.navigationBar.tintColor;
     self.navigationItem.titleView = stpDelay;
     
     UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];
     viewExtendNavBar.backgroundColor = self.navigationController.navigationBar.barTintColor;
     [self.view addSubview:viewExtendNavBar];
     
-    drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20) withHub:_hub withStates:currentStates];
+    drawView = [[STLDesignView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(self.view.frame)-20, CGRectGetWidth(self.view.frame)-20) withHub:_hub withStates:[[NS2DArray alloc] initWith2DArray:currentStates]];
     if (!currentStates) {
         [drawView updateValuesForMatrixSize:[NSIndexPath indexPathForRow:matrix.rows inSection:matrix.sections]];
     }
@@ -151,7 +155,10 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 
 #pragma mark - Actions
 - (void)saveAndExit {
-    [_delegate configurationViewController:self states:aryFrames];
+    if ([aryFrames count] == 0) {
+        [self newFrame];
+    }
+    [_delegate configurationViewController:self states:aryFrames withDelay:(1000*stpDelay.value)];
     [self exit];
 }
 - (void)exit {
@@ -256,7 +263,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < [aryFrames count]) {
         currentStates = [aryFrames objectAtIndex:indexPath.row];
-        drawView.states = currentStates;
+        drawView.states = [[NS2DArray alloc] initWith2DArray:currentStates];
     } else {
         [self newFrame];
     }

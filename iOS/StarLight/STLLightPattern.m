@@ -8,6 +8,7 @@
 
 #import "STLLightPattern.h"
 #import "NS2DArray.h"
+#import "NSString+Hex.h"
 
 #import <Chameleon.h>
 
@@ -32,23 +33,27 @@
 - (NSString*)absolutePattern {
     return strPattern;
 }
+- (NSData *)dataPattern {
+    return [self.absolutePattern hexData];
+}
 - (void)reloadPattern {
     strPattern = @"";
 
-    if (!_delay || !_states || !_lights || self.colorForLightIndexWithFrame) {
+    if (!_delay || !_states || !_lights) {
         return;
     }
     
-    [self addCommand:[NSString stringWithFormat:@"%f",_delay]];
-    [self addCommand:@"\n"];
+    [self addCommand:[NSString stringWithFormat:@"%u",_delay]];
     
     NSInteger frame = 0;
     for (NS2DArray *state in _states) {
         [state enumerateObjectsUsingBlock:^(id obj, NSIndexPath *indexPath, BOOL *stop) {
             NSInteger lightNumber = [[_lights objectAtIndexPath:indexPath] integerValue];
-            [NSString stringWithFormat:@"%li%@",(long)lightNumber,[self.colorForLightIndexWithFrame(lightNumber,frame) hexValue]];
+            if (lightNumber != -1 && [obj boolValue] == YES) {
+                [self addCommand:[NSString stringWithFormat:@"%hi%@",(int16_t)lightNumber,[[self.colorForLightIndexWithFrame(lightNumber,frame) hexValue] stringByReplacingOccurrencesOfString:@"#" withString:@""]]];
+            }
         }];
-        [self addCommand:@"\n"];
+        [self addCommand:@"FF"];
         frame++;
     }
 }

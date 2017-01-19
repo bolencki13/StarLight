@@ -76,6 +76,7 @@
     return (_drawing ? nil :imgViewDrawing.image);
 }
 - (void)setStates:(NS2DArray *)states {
+    [self erase];
     _states = states;
     
     [states enumerateObjectsUsingBlock:^(NSNumber *obj, NSIndexPath *indexPath, BOOL *stop) {

@@ -47,6 +47,11 @@
     
     [peripheral writeValue:command forCharacteristic:[[peripheral.services objectAtIndex:0].characteristics objectAtIndex:0] type:CBCharacteristicWriteWithoutResponse];
 }
+- (void)uploadPattern:(STLLightPattern *)pattern {
+    NSData *command = [pattern dataPattern];
+    
+    
+}
 
 #pragma mark - Other
 - (CBPeripheral*)peripheralForLight:(STLLight*)light {

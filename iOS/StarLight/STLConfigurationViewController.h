@@ -10,7 +10,7 @@
 
 @class STLConfigurationViewController, NS2DArray, STLHub, STLLightPattern;
 @protocol STLConfigurationViewControllerDelegate <NSObject>
-- (void)configurationViewController:(STLConfigurationViewController*)viewController states:(NSArray<NS2DArray*>*)states;
+- (void)configurationViewController:(STLConfigurationViewController*)viewController states:(NSArray<NS2DArray*>*)states withDelay:(NSInteger)delay;
 @end
 
 @class STLHub;
