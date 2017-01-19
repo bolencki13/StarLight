@@ -85,7 +85,6 @@
     }];
 }
 - (void)updateValuesForMatrixSize:(NSIndexPath*)size {
-    _lightPattern = [STLLightPattern patternForHub:_hub];
     _states = [NS2DArray arrayWithSections:size.section rows:size.row];
     for (NSInteger section = 0; section < _states.sections; section++) {
         for (NSInteger row = 0; row < _states.rows; row++) {

@@ -37,20 +37,6 @@
 
 @implementation STLConfigurationViewController
 static NSString * const reuseIdentifier = @"starlight.download.cell";
-+ (STLLightPattern*)lightPatternFromStates:(NS2DArray*)states forHub:(STLHub*)hub {
-    if (states == nil) {
-        return nil;
-    }
-    STLLightPattern *pattern = [STLLightPattern patternForHub:hub];
-    
-    for (NSInteger section = 0; section < states.sections; section++) {
-        for (NSInteger row = 0; row < states.rows; row++) {
-            
-        }
-    }
-    
-    return pattern;
-}
 - (instancetype)initWithHub:(STLHub*)hub withStates:(NSArray<NS2DArray *>*)states {
     self = [super init];
     if (self) {

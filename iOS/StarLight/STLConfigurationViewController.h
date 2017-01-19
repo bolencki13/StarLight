@@ -18,6 +18,5 @@
 @property (nonatomic, retain, readonly) STLHub *hub;
 @property (nonatomic, retain, readonly) NSArray<NS2DArray*> *states;
 @property (nonatomic, retain) id<STLConfigurationViewControllerDelegate> delegate;
-+ (STLLightPattern*)lightPatternFromStates:(NS2DArray*)states forHub:(STLHub*)hub;
 - (instancetype)initWithHub:(STLHub*)hub withStates:(NSArray<NS2DArray *>*)states;
 @end

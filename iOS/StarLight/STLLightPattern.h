@@ -5,15 +5,30 @@
 //  Created by Brian Olencki on 12/26/16.
 //  Copyright © 2016 Brian Olencki. All rights reserved.
 //
+//  Will return the pattern string that is passed to the board
+//
+//  FORMAT:
+//
+//  delay
+//  \n
+//  frame1:
+//    #color
+//  frame...
+//  \n
+//
+//
+// If light number does not exist in frame turn light off
+//
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-@class UIColor, STLHub;
+@class NS2DArray;
 @interface STLLightPattern : NSObject
-@property (nonatomic, retain, readonly) NSString *visualPattern;
-@property (nonatomic, retain, readonly) STLHub *hub;
-+ (STLLightPattern*)patternForHub:(STLHub*)hub;
-- (void)addLightAtPosition:(NSInteger)position withColor:(UIColor*)color;
-- (void)addDelayForTime:(NSTimeInterval)time;
-- (void)removeLastItem;
+@property (nonatomic, retain) NSArray<NS2DArray*> *states;
+@property (nonatomic, retain) NS2DArray *lights;
+@property (nonatomic) CGFloat delay;
+@property (nonatomic, copy) UIColor* (^colorForLightIndexWithFrame)(NSInteger lightIndex, NSInteger frame);
+@property (nonatomic, retain, readonly) NSString *absolutePattern;
++ (STLLightPattern*)pattern;
+- (void)reloadPattern;
 @end
