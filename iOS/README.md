@@ -13,6 +13,5 @@ StarLight iOS application is the best way to interact with your StarLight Hub. S
 
 ### Features Not Implemented
 * Pattern sharing
-* 3D touch peek & pop
 * Update firmware on board
 * Communication with real board
