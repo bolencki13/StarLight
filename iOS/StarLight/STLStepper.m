@@ -19,7 +19,6 @@
     [super layoutSubviews];
     
     lblValue.frame = CGRectMake(0, 0, 40, CGRectGetHeight(self.frame));
-    self.tintColor = self.color;
 }
 - (void)setValue:(double)value {
     [super setValue:value];

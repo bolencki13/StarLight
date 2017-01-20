@@ -54,18 +54,23 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     self.view.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
     self.navigationController.hidesNavigationBarHairline = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    [self.navigationController.navigationBar setTitleTextAttributes:@{
+                                                           NSForegroundColorAttributeName: self.navigationController.navigationBar.tintColor,
+                                                           }];
 
+    
     aryFrames = [NSMutableArray new];
     if (_states) {
         aryFrames = [_states mutableCopy];
     }
     
+    // XXX: tintColor broken, idk 🤷🏼‍♂️
     stpDelay = [[STLStepper alloc] initWithFrame:CGRectMake(0, 0, 60, 40)];
     stpDelay.minimumValue = 0.5;
     stpDelay.maximumValue = 2.0;
     stpDelay.value = 1.0;
     stpDelay.stepValue = 0.5;
-    stpDelay.color = self.navigationController.navigationBar.tintColor;
+    stpDelay.tintColor = self.navigationController.navigationBar.tintColor;
     self.navigationItem.titleView = stpDelay;
     
     UIView *viewExtendNavBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetMaxY(self.navigationController.navigationBar.frame)+8)];

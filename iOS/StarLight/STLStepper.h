@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface STLStepper : UIStepper
-@property (nonatomic, retain) UIColor *color;
+
 @end
