@@ -42,8 +42,7 @@
     navItem = [[UINavigationItem alloc] init];
     navItem.title = @"Preview";
     
-    UIBarButtonItem *btnDone = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(exit)];
-    navItem.leftBarButtonItem = btnDone;
+    navItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(exit)];
     
     UINavigationBar *navBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
     navBar.tintColor = [UINavigationBar appearance].barTintColor;

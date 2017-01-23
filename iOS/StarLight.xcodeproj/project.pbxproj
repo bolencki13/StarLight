@@ -17,6 +17,7 @@
 		4051A2771E00A485001C44F9 /* UIAlertController+UIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4051A2761E00A485001C44F9 /* UIAlertController+UIImage.m */; };
 		4053766B1E09DA2A004C8AE2 /* NS2DArray+CGRect.m in Sources */ = {isa = PBXBuildFile; fileRef = 4053766A1E09DA2A004C8AE2 /* NS2DArray+CGRect.m */; };
 		4053767B1E09E3FD004C8AE2 /* STLDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4053767A1E09E3FD004C8AE2 /* STLDataManager.m */; };
+		405A959E1E369EE50080803D /* STLStoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 405A959D1E369EE50080803D /* STLStoreViewController.m */; };
 		407057571E25723A009699CE /* STLApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 407057561E25723A009699CE /* STLApplication.m */; };
 		40904AFB1DFA351700E92846 /* RedColor.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 40904AFA1DFA351700E92846 /* RedColor.fsh */; };
 		409412541E2F003300FBCECA /* STLPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 409412531E2F003300FBCECA /* STLPreviewViewController.m */; };
@@ -65,6 +66,8 @@
 		4053766A1E09DA2A004C8AE2 /* NS2DArray+CGRect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NS2DArray+CGRect.m"; sourceTree = "<group>"; };
 		405376791E09E3FD004C8AE2 /* STLDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLDataManager.h; sourceTree = "<group>"; };
 		4053767A1E09E3FD004C8AE2 /* STLDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLDataManager.m; sourceTree = "<group>"; };
+		405A959C1E369EE50080803D /* STLStoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLStoreViewController.h; sourceTree = "<group>"; };
+		405A959D1E369EE50080803D /* STLStoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLStoreViewController.m; sourceTree = "<group>"; };
 		407057551E25723A009699CE /* STLApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLApplication.h; sourceTree = "<group>"; };
 		407057561E25723A009699CE /* STLApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLApplication.m; sourceTree = "<group>"; };
 		40904AFA1DFA351700E92846 /* RedColor.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = RedColor.fsh; sourceTree = "<group>"; };
@@ -240,6 +243,15 @@
 			name = Objects;
 			sourceTree = "<group>";
 		};
+		405A959B1E369EC00080803D /* DataBase */ = {
+			isa = PBXGroup;
+			children = (
+				405A959C1E369EE50080803D /* STLStoreViewController.h */,
+				405A959D1E369EE50080803D /* STLStoreViewController.m */,
+			);
+			name = DataBase;
+			sourceTree = "<group>";
+		};
 		40A0726C1E0C47A900DE7539 /* API */ = {
 			isa = PBXGroup;
 			children = (
@@ -397,6 +409,7 @@
 				40B437FC1DF9A777000E94C6 /* Home */,
 				40B437FD1DF9A77C000E94C6 /* NewConnection */,
 				40A42DFE1DFB156C00F2F996 /* Configuration */,
+				405A959B1E369EC00080803D /* DataBase */,
 				40BE091D1DFED9C700E5EC36 /* About */,
 			);
 			name = ViewControllers;
@@ -560,6 +573,7 @@
 				40FF27D81E09FB7500A1CF0C /* STLHub.m in Sources */,
 				40A42DFD1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m in Sources */,
 				403DC6421E3010DC00B48E07 /* STLStepper.m in Sources */,
+				405A959E1E369EE50080803D /* STLStoreViewController.m in Sources */,
 				40FF27DB1E09FB7B00A1CF0C /* STLLight.m in Sources */,
 				40A072761E0C792800DE7539 /* STLDeviceDiscoveryViewController.m in Sources */,
 				40A410D01E1228CA0023D885 /* AVCaptureDevice+DevicePresence.m in Sources */,
@@ -691,6 +705,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bolencki13.StarLight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -705,6 +720,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bolencki13.StarLight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

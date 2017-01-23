@@ -9,6 +9,7 @@
 #import "STLRootViewController.h"
 #import "STLRootTableViewCell.h"
 #import "STLConfigurationViewController.h"
+#import "STLStoreViewController.h"
 #import "STLDataManager.h"
 #import "STLSequenceManager.h"
 #import "NS2DArray.h"
@@ -159,7 +160,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    
+    [self.navigationController pushViewController:[STLStoreViewController new] animated:YES];
 }
 
 #pragma mark - UIViewControllerPreviewingDelegate
