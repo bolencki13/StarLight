@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Documentation</title>
+	<link rel="stylesheet" href="resources/css/style.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
+	<meta name="generator" content="appledoc 2.2 (build 963)">
+</head>
+<body>
+	<header>
+		<div class="container" class="hide-in-xcode">
+			<h1 id="library-title">
+				<a href="http://starlighthub.com/">StarLight </a>
+			</h1>
+			<p id="developer-home">
+				<a href="./index.html">Documentation</a>
+			</p>
+		</div>
+	</header>
+	<aside>
+		<div class="container">
+			<nav>
+				<ul id="header-buttons" role="toolbar">
+					<!-- <li><a href="hierarchy.html">Hierarchy</a></li> -->
+				</ul>
+			</nav>
+		</div>
+	</aside>
+	<article>
+		<div id="overview-contents" class="container">
+			<div id="content">
+				<main role="main">
+					<h1 class="title">StarLight Reference</h1>
+					<div class="section section-overview index-overview">
+						<h1>API</h1>
+						<p>The StarLight Hub communicates over Bluetooth LE. This allows direct control over the individual LEDs.</p>
+						<p>Data to the StarLight Hub is presented in a specific pattern. The pattern consists of three parts:</p>
+						<ol>
+							<li><strong>Delay</strong> sets the frame rate for the sequence being sent to the StarLight Hub.</li>
+							<li><strong>Frames</strong> are grouping of commands that signify which lights are to be activated at a given point in the squence.</li>
+							<li><strong>Frame ends</strong> are used to separate different sequences from each other. This allows animations to be achieved.</li>
+						</ol>
+						<h2>Example</h2>
+						<pre><code><01000013 ff000001 7ff00000 18ff0000 028ff000 0032ff00 00033ff0 000036ff 0000037f f0000058 ff000006 1ff00000 72ff0000 073ff000 0075ff00 000f0f13 ff000003 2ff00000 33ff0000 036ff000 0037ff00 00058ff0 000061ff 0000072f f0000073 ff000007 5ff00000 ff></code></pre>
+						<p>The above example translates into a 10x9 grid with an sequence of:</p>
+						<img src="resources/media/animation.gif" style="width:30%;height:auto;" alt="Demo of data code" /><br><br>
+						<pre><code><010000...</code></pre>
+						<p>The first 6 bits represent the delay between frames.</p>
+						<p>The pattern afterwords is repairing 8 bits. The first two bits are the light index on the strands. The last 6 bits are the hex representation of a color. The above example is red (#FF0000).</p>
+						<p>Frames are then separated by the first two bits, typically the light index, being 'FF'. This represents the end of a frame. After this, the StarLight Hub will present a delay, initially set at the beginning of the sequence, and move to the next frame. The StarLight Hub will continue to repeat as necessary.</p>
+						<h2>License</h2>
+						<p>Licensed under <a href="resources/media/LICENSE.md">MIT License</a>.</p>
+					</div>
+					<footer>
+						<div class="footer-copyright">
+							<p class="copyright">Copyright &copy; 2017 bolencki13. All rights reserved. Updated: 2017-01-24</p>
+						</div>
+					</footer>
+				</main>
+			</div>
+		</div>
+	</article>
+	<script src="js/script.js"></script>
+</body>
+</html>

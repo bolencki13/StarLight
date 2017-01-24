@@ -61,7 +61,7 @@ static NSString *reuseIdentifier = @"com.bolencki13.starlight.cell.store";
     return 1;
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [aryPatterns count];
+    return 4;//[aryPatterns count];
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return [STLRootTableViewCell defaultCellHeight];
