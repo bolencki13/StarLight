@@ -23,10 +23,13 @@
 #import <OpenCV/opencv2/imgcodecs/ios.h>
 #import <OpenCV/opencv2/videoio/cap_ios.h>
 
-#define LIGHTS_PER_STRAND (25)
+#define LIGHTS_PER_STRAND (5) // 25
 #define DELAY (0.3)
-#define OFFSET (16)
+#define OFFSET (0)
 
+UIColor *UIColorFromCVScalar(cv::Scalar color) {
+    return [UIColor colorWithRed:color[0]/255 green:color[1]/255 blue:color[2]/255 alpha:1.0];
+}
 cv::Scalar CVScalarFromUIColor(UIColor *color) {
     CGFloat red,green,blue;
     [color getRed:&red green:&green blue:&blue alpha:nil];
@@ -46,11 +49,11 @@ CGRect CGRectFromRect(cv::Rect frame) {
     NSInteger strands; // number of strands input by user
     
     CvVideoCamera *camera; // camera used for calibration
-    UIImage *imgCalibration; // image stored to be shown in 'imgViewCalibration'
+    cv::Mat matCalibration; // mat stored to be shown in 'imgViewCalibration'
     
     NSMutableDictionary *dictLights; // dictionary to store light position relative light index
-    cv::Mat *matTotal; // mat containing total lights found
-    NSInteger currentLight; // current light that is turned off
+    NSInteger frames; // frames scanned
+    NSInteger currentLight; // current light being tracked
 }
 @end
 
@@ -172,19 +175,37 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
 - (void)startCalibration {
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(exit)];
     
-    imgCalibration = NULL;
+    matCalibration = NULL;
     
     for (NSInteger x = OFFSET; x < [self calculatedLights]+OFFSET; x++) {
         [NSThread sleepForTimeInterval:DELAY];
-        [[STLSequenceManager sharedManager] setLightAtPosition:x toColor:[UIColor redColor]];
+        if (x == OFFSET) {
+            [[STLSequenceManager sharedManager] setLightAtPosition:x toColor:[UIColor greenColor]];
+        } else {
+            [[STLSequenceManager sharedManager] setLightAtPosition:x toColor:[UIColor redColor]];
+        }
     }
+    
+    frames = 0;
     currentLight = 0;
+    dictLights = [NSMutableDictionary new];
     
     [self cameraResetProperties];
     _calibrating = YES;
 }
 - (void)confirmCalibration {
+    _calibrating = NO;
+    [camera stop];
     
+    imgViewCalibration.image = MatToUIImage(matCalibration);
+    
+    for (NSInteger x = 0; x < [[dictLights allKeys] count]; x++) {
+        BEMCheckBox *checkBox = [[BEMCheckBox alloc] initWithFrame:[[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)x]] CGRectValue]];
+        [checkBox setOn:YES animated:NO];
+        checkBox.delegate = self;
+        checkBox.tag = 10+x;
+        [imgViewCalibration addSubview:checkBox];
+    }
 }
 - (void)errorWithMessage:(NSString*)message {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Uh, Oh" message:message preferredStyle:UIAlertControllerStyleAlert];
@@ -196,22 +217,10 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
 - (NSInteger)calculatedLights {
     return strands * LIGHTS_PER_STRAND;
 }
-- (BOOL)isPossibleLightFrame:(cv::Rect)next estimatedLightFrame:(cv::Rect)frame withErrorPercent:(CGFloat)errMargin {
-    if (next.width < (frame.width*(1.0-errMargin)) || next.width > (frame.width*(1.0+errMargin))) {
-        return NO;
-    } else if (next.height < (frame.height*(1.0-errMargin)) || next.height > (frame.height*(1.0+errMargin))) {
-        return NO;
-    }
-    return YES;
-}
-- (CGFloat)distanceFromRect:(CGRect)rect1 to:(CGRect)rect2 {
-    CGPoint center1 = CGPointMake(CGRectGetMidX(rect1), CGRectGetMidY(rect1));
-    CGPoint center2 = CGPointMake(CGRectGetMidX(rect2), CGRectGetMidY(rect2));
-    
-    double dx = (center2.x-center1.x);
-    double dy = (center2.y-center1.y);
-    double dist = sqrt(dx*dx + dy*dy);
-    
+- (CGFloat)distanceBetweenPoint:(CGPoint)p1 andPoint:(CGPoint)p2 {
+    double dx = (p2.x-p1.x);
+    double dy = (p2.y-p1.y);
+    double dist = dx*dx + dy*dy;
     return dist;
 }
 
@@ -294,22 +303,57 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
         cv::transpose(matRGB,matRGB);
         cv::flip(matRGB,matRGB,0);
         
-        for (int x = 0; x < count; x++) {
+        for (int x = 1; x < count; x++) {
             cv::Rect frame(cv::Point(stats.at<int>(x,cv::CC_STAT_LEFT),stats.at<int>(x,cv::CC_STAT_TOP)), cv::Point(stats.at<int>(x,cv::CC_STAT_LEFT)+stats.at<int>(x,cv::CC_STAT_WIDTH),stats.at<int>(x,cv::CC_STAT_TOP)+stats.at<int>(x,cv::CC_STAT_HEIGHT)));
-            cv::rectangle(image, frame.tl(), frame.br(), CVScalarFromUIColor([UIColor blueColor]), 2, CV_AA);
+            cv::Mat1b mask(image.rows, image.cols, uchar(0));
+            
+            cv::Point pts[1][4];
+            pts[0][0] = cv::Point(frame.tl().x,frame.tl().y);
+            pts[0][1] = cv::Point(frame.tl().x, frame.tl().y+frame.height);
+            pts[0][2] = cv::Point(frame.tl().x+frame.width, frame.tl().y+frame.height);
+            pts[0][3] = cv::Point(frame.tl().x+frame.width,frame.tl().y);
+            const cv::Point *points[1] = {pts[0]};
+            int npoints = 4;
+            cv::fillPoly(mask, points, &npoints, 1, cv::Scalar(255));
+            cv::Scalar avgColor = mean(image, mask);
+
+            int green = avgColor[1];
+            int red = avgColor[2];
+            
+            if (green > red) {
+                cv::rectangle(image, frame.tl(), frame.br(), CVScalarFromUIColor([UIColor blueColor]), 2, CV_AA);
+                
+                if (frames > 60) {
+                    [dictLights setObject:[NSValue valueWithCGRect:CGRectMake(frame.tl().x, frame.tl().y, frame.width, frame.height)] forKey:[NSString stringWithFormat:@"%lu",(unsigned long)[[dictLights allKeys] count]]];
+                    
+                    [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor redColor]];
+                    [NSThread sleepForTimeInterval:DELAY];
+                    currentLight++;
+                    [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor greenColor]];
+                    frames = 0;
+                    
+                    if (currentLight >= [self calculatedLights]) {
+                        matCalibration = matRGB;
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self confirmCalibration];
+                        });
+                    }
+                }
+            } else {
+                NSInteger index = 0;
+                CGFloat distance = CGFLOAT_MAX;
+                for (NSInteger x = 1; x < [[dictLights allKeys] count]; x++) {
+                    CGPoint previous = [[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)index]] CGRectValue].origin;
+                    CGPoint current = [[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)x]] CGRectValue].origin;
+                    if ([self distanceBetweenPoint:previous andPoint:current] < distance) {
+                        distance = [self distanceBetweenPoint:previous andPoint:current];
+                        index = x;
+                    }
+                }
+                [dictLights setObject:[NSValue valueWithCGRect:CGRectMake(frame.tl().x, frame.tl().y, frame.width, frame.height)] forKey:[NSString stringWithFormat:@"%ld",(long)index]];
+            }
         }
-        
-        if (matTotal->empty() == YES && count == [self calculatedLights]) {
-            NSLog(@"RAN");
-            matTotal = &matBinary;
-            [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET on:NO];
-            currentLight++;
-        } else if (matTotal->empty() == NO && count == [self calculatedLights]-1) {
-            cv::Mat matDifference;
-            NSLog(@"matTotal: %d,%d\nmatBinary: %d,%d",matTotal->size().width,matTotal->size().height,matBinary.size().width,matBinary.size().height);
-            cv::absdiff(*matTotal, matBinary, matDifference);
-            image = matDifference;
-        }
+        frames++;
     }
 }
 
