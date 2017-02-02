@@ -217,10 +217,16 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 
 #pragma mark - STLCalibrationViewControllerDelegate
-- (void)calibrationdidFinish:(STLCalibrationViewController *)viewController withMatrix:(NS2DArray *)matrix {
-    NSMutableArray *aryLights = [NSMutableArray new];
-    [matrix enumerateObjectsUsingBlock:^(NSValue *obj, NSIndexPath *indexPath, BOOL *stop) {
-        
-    }];
+- (void)calibrationdidFinish:(STLCalibrationViewController *)viewController withHub:(STLHub *)hub {
+    NSError *error = nil;
+    [[STLDataManager sharedManager] saveData:&error];
+    if (error) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:@"An error occured when trying to add the StarLight" preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:self animated:YES completion:nil];
+        NSLog(@"%@",error);
+    } else {
+        [self handleRefresh:nil];
+    }
 }
 @end

@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@class STLCalibrationViewController, CBPeripheral, NS2DArray;
+@class STLCalibrationViewController, CBPeripheral, STLHub;
 @protocol STLCalibrationViewControllerDelegate <NSObject>
-- (void)calibrationdidFinish:(STLCalibrationViewController*)viewController withMatrix:(NS2DArray*)matrix;
+- (void)calibrationdidFinish:(STLCalibrationViewController*)viewController withHub:(STLHub*)hub;
 @end
 
 @interface STLCalibrationViewController : UIViewController

@@ -131,23 +131,6 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
     
     return hub_;
 }
-- (STLHub*)registerHubWithLights:(NS2DArray *)indexes withPositions:(NSDictionary *)positions {
-    STLHub *newHub = [STLHub hub];
-    
-    NSMutableSet *setLights = [NSMutableSet new];
-    [indexes enumerateObjectsUsingBlock:^(NSNumber *obj, NSIndexPath *indexPath, BOOL *stop) {
-        if ([obj integerValue] != -1) {
-            STLLight *newLight = [STLLight lightWithHub:newHub];
-            newLight.position = [[positions objectForKey:[NSString stringWithFormat:@"%li",[obj integerValue]]] integerValue];
-            newLight.index = [obj integerValue];
-            [setLights addObject:newLight];
-        }
-    }];
-    [newHub setLights:setLights];
-    [newHub setMatrix:[NSIndexPath indexPathForRow:indexes.rows inSection:indexes.sections]];
-    
-    return newHub;
-}
 - (BOOL)removeHub:(STLHub *)hub error:(NSError *__autoreleasing *)error {
     if (![self saveData:error]) {
         return NO;

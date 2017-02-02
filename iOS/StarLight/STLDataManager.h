@@ -18,7 +18,6 @@ typedef void (^STLDataManagerDidFinishLoading)(NSArray *hubs);
 @interface STLDataManager : NSObject
 + (instancetype)sharedManager;
 - (BOOL)saveData:(NSError **)error;
-- (STLHub*)registerHubWithLights:(NS2DArray*)indexes withPositions:(NSDictionary*)positions;
 - (STLHub*)hubWithIdentifier:(NSString*)identifier;
 - (NSSet<STLHub*>*)hubs;
 - (BOOL)removeHub:(STLHub*)hub error:(NSError **)error;

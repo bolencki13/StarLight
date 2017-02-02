@@ -199,7 +199,6 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     
     imgViewCalibration.image = MatToUIImage(matCalibration);
     
-    NSLog(@"%@",dictLights);
     for (NSInteger x = 0; x < [[dictLights allKeys] count]; x++) {
         BEMCheckBox *checkBox = [[BEMCheckBox alloc] initWithFrame:[[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)x]] CGRectValue]];
         [checkBox setOn:YES animated:NO];
@@ -215,10 +214,83 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     for (NSInteger x = 0; x < [[dictLights allKeys] count]; x++) {
         [aryCoordinates addObject:[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)x]]];
     }
-    NS2DArray *matrix = [NS2DArray arrayFromCoordinates:aryCoordinates];
     
-    [_delgate calibrationdidFinish:self withMatrix:matrix];
-    [self exit];
+    NSArray *aryX = [aryCoordinates sortedArrayUsingComparator:^NSComparisonResult(NSValue *obj1, NSValue *obj2) {
+        CGRect rect1 = [obj1 CGRectValue];
+        CGRect rect2 = [obj2 CGRectValue];
+        
+        if (CGRectGetMinX(rect1) > CGRectGetMinX(rect2)) {
+            return NSOrderedDescending;
+        } else if (CGRectGetMinX(rect1) < CGRectGetMinX(rect2)) {
+            return NSOrderedAscending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+    NSArray *aryY = [aryCoordinates sortedArrayUsingComparator:^NSComparisonResult(NSValue *obj1, NSValue *obj2) {
+        CGRect rect1 = [obj1 CGRectValue];
+        CGRect rect2 = [obj2 CGRectValue];
+        
+        if (CGRectGetMinY(rect1) > CGRectGetMinY(rect2)) {
+            return NSOrderedDescending;
+        } else if (CGRectGetMinY(rect1) < CGRectGetMinY(rect2)) {
+            return NSOrderedAscending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+    
+    NSMutableDictionary *dictPositions = [NSMutableDictionary new];
+    for (NSInteger section = 0; section < [aryCoordinates count]; section++) {
+        CGRect rectX = [[aryX objectAtIndex:section] CGRectValue];
+        for (NSInteger row = 0; row < [aryCoordinates count]; row++) {
+            CGRect rectY = [[aryY objectAtIndex:row] CGRectValue];
+            if (CGRectEqualToRect(rectX, rectY)) {
+                [dictPositions setObject:[NSNumber numberWithInteger:(section*([aryCoordinates count]))+row] forKey:[NSString stringWithFormat:@"%@",NSStringFromCGRect(rectX)]];
+                break;
+            }
+        }
+    }
+    
+    NSMutableSet *setLights = [NSMutableSet new];
+    for (NSInteger index = 0; index < [aryCoordinates count]; index++) {
+        CGRect rect = [[aryCoordinates objectAtIndex:index] CGRectValue];
+        NSInteger position = [[dictPositions objectForKey:[NSString stringWithFormat:@"%@",NSStringFromCGRect(rect)]] integerValue];
+        
+        STLLight *light = [STLLight light];
+        light.index = index;
+        light.position = position;
+        light.on = NO;
+        [setLights addObject:light];
+    }
+    __block STLHub *hub = [STLHub hubWithLights:setLights];
+    hub.matrix = [NSIndexPath indexPathForRow:[aryCoordinates count] inSection:[aryCoordinates count]];
+    hub.identifer = self.peripheral.name;
+    
+    UIAlertController *alertName = [UIAlertController alertControllerWithTitle:@"StarLight" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    [alertName addAction:[UIAlertAction actionWithTitle:@"Next" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        hub.name = [[alertName textFields] objectAtIndex:0].text;
+        if ([hub.name isEqualToString:@""]) {
+            hub.name = @"StarLight";
+        }
+        
+        UIAlertController *alertLocation = [UIAlertController alertControllerWithTitle:@"StarLight" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+        [alertLocation addAction:[UIAlertAction actionWithTitle:@"Save" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            hub.location = [[alertLocation textFields] objectAtIndex:0].text;
+            if ([hub.location isEqualToString:@""]) {
+                hub.location = @"Unknown";
+            }
+            [_delgate calibrationdidFinish:self withHub:hub];
+            [self exit];
+        }]];
+        [alertLocation addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+            textField.placeholder = @"Location";
+        }];
+    }]];
+    [alertName addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Name";
+    }];
+    [self presentViewController:alertName animated:YES completion:nil];
 }
 - (void)errorWithMessage:(NSString*)message {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Uh, Oh" message:message preferredStyle:UIAlertControllerStyleAlert];
