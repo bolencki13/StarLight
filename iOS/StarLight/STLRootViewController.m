@@ -13,7 +13,7 @@
 #import "STLStoreViewController.h"
 #import "STLDataManager.h"
 #import "STLSequenceManager.h"
-#import "NS2DArray.h"
+#import "NS2DArray+JSON.h"
 
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import <ChameleonFramework/Chameleon.h>
@@ -120,8 +120,48 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 - (void)shareHub:(UIButton*)sender {
     NSIndexPath *indexPath = ((STLRootTableViewCell*)sender.superview.superview.superview).indexPath;
+    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
+    STLRootTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     
-    NSLog(@"Share: %@",[aryHubs objectAtIndex:indexPath.row].name);
+    NSMutableArray *aryStates = [NSMutableArray new];
+    for (NS2DArray *matrix in cell.states) {
+        [aryStates addObject:[matrix json]];
+    }
+    
+    NSDictionary *json = @{
+                           @"states" : aryStates,
+                           @"delay" : [NSNumber numberWithInteger:cell.delay],
+                           @"hub" : @{
+                                   @"sections" : [NSNumber numberWithInteger:hub.matrix.section],
+                                   @"rows" : [NSNumber numberWithInteger:hub.matrix.row]
+                                   }
+                           };
+    NSData *dataJSON = [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:nil];
+    if (!dataJSON) return;
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://starlighthub.com/api/database/upload.php"] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:120.0];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-type"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[dataJSON length]] forHTTPHeaderField:@"Content-Length"];
+    [request setHTTPBody:dataJSON];
+    
+    __block BOOL proccessed = NO;
+    __block NSData *dataResponse = nil;
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        dataResponse = data;
+        proccessed = YES;
+    }] resume];
+    
+    while (!proccessed) {
+        [NSThread sleepForTimeInterval:0];
+    }
+    
+    id response = [NSJSONSerialization JSONObjectWithData:dataResponse options:kNilOptions error:nil];
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:([[response objectForKey:@"success"] boolValue] == YES ? @"The pattern has been uploaded." : @"The pattern failed to upload.") preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 - (void)flashHub:(UIButton*)sender {
     NSIndexPath *indexPath = ((STLRootTableViewCell*)sender.superview.superview.superview).indexPath;
@@ -181,7 +221,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [self.navigationController pushViewController:[STLStoreViewController new] animated:YES];
+    [self.navigationController pushViewController:[[STLStoreViewController alloc] initWithHub:[aryHubs objectAtIndex:indexPath.row]] animated:YES];
 }
 
 #pragma mark - UIViewControllerPreviewingDelegate
