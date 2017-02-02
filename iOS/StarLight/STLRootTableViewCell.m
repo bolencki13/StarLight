@@ -15,6 +15,19 @@
 #define GAP_ACTION (8)
 #define DEFAULT_ROOT_FRAME (CGRectMake(GAP_ACTION, GAP_ACTION, CGRectGetWidth(self.frame)-GAP_ACTION*2, CGRectGetHeight(self.frame)-GAP_ACTION*2))
 
+@implementation STLRootTableViewCellButton
++ (STLRootTableViewCellButton *)buttonWithTitle:(NSString *)title backgroundColor:(UIColor *)backgroundColor titleColor:(UIColor *)titleColor target:(id)target action:(SEL)selector {
+    STLRootTableViewCellButton *button = [STLRootTableViewCellButton new];
+    button.title = title;
+    button.backgroundColor = backgroundColor;
+    button.titleColor = titleColor;
+    button.target = target;
+    button.action = selector;
+    
+    return button;
+}
+@end
+
 @interface STLRootTableViewCell () <UIGestureRecognizerDelegate> {
     UIPanGestureRecognizer *pgrSwipeAction;
 
@@ -25,10 +38,7 @@
     UIButton *btnDetails;
     
     UIView *viewRightActionContent;
-    UIButton *btnDelete;
-    
     UIView *viewLeftActionContent;
-    UIButton *btnFlash;
     
     BOOL _actionMenuOpenRight;
     BOOL _actionMenuOpenLeft;
@@ -116,39 +126,21 @@
     
     viewRightActionContent = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(viewRootContent.frame)+GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(self.frame)-CGRectGetMaxX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame))];
     viewRightActionContent.layer.cornerRadius = viewRootContent.layer.cornerRadius;
-    viewRightActionContent.backgroundColor = viewRootContent.backgroundColor;
     viewRightActionContent.layer.shadowColor = viewRootContent.layer.shadowColor;
     viewRightActionContent.layer.shadowOpacity = viewRootContent.layer.shadowOpacity;
     viewRightActionContent.layer.shadowOffset = viewRootContent.layer.shadowOffset;
     viewRightActionContent.alpha = 0.0;
+    viewRightActionContent.layer.masksToBounds = YES;
     [self.contentView insertSubview:viewRightActionContent belowSubview:viewRootContent];
-    
-    btnDelete = [UIButton buttonWithType:UIButtonTypeCustom];
-    [btnDelete addTarget:self action:@selector(handleAction:) forControlEvents:UIControlEventTouchUpInside];
-    [btnDelete setFrame:viewRightActionContent.bounds];
-    [btnDelete setTitle:@"Delete" forState:UIControlStateNormal];
-    [btnDelete.titleLabel setFont:lblTitle.font];
-    btnDelete.layer.cornerRadius = viewRightActionContent.layer.cornerRadius;
-    [btnDelete setBackgroundColor:[UIColor colorWithHexString:@"#FF3B31"]];
-    [viewRightActionContent addSubview:btnDelete];
     
     viewLeftActionContent = [[UIView alloc] initWithFrame:CGRectMake(GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetMinX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame))];
     viewLeftActionContent.layer.cornerRadius = viewRootContent.layer.cornerRadius;
-    viewLeftActionContent.backgroundColor = viewRootContent.backgroundColor;
     viewLeftActionContent.layer.shadowColor = viewRootContent.layer.shadowColor;
     viewLeftActionContent.layer.shadowOpacity = viewRootContent.layer.shadowOpacity;
     viewLeftActionContent.layer.shadowOffset = viewRootContent.layer.shadowOffset;
     viewLeftActionContent.alpha = 0.0;
+    viewLeftActionContent.layer.masksToBounds = YES;
     [self.contentView insertSubview:viewLeftActionContent belowSubview:viewRootContent];
-    
-    btnFlash = [UIButton buttonWithType:UIButtonTypeCustom];
-    [btnFlash addTarget:self action:@selector(handleAction:) forControlEvents:UIControlEventTouchUpInside];
-    [btnFlash setFrame:viewLeftActionContent.bounds];
-    [btnFlash setTitle:@"Flash" forState:UIControlStateNormal];
-    [btnFlash.titleLabel setFont:lblTitle.font];
-    btnFlash.layer.cornerRadius = viewLeftActionContent.layer.cornerRadius;
-    [btnFlash setBackgroundColor:[UIColor flatGreenColor]];
-    [viewLeftActionContent addSubview:btnFlash];
     
     [self bringSubviewToFront:viewRootContent];
     
@@ -161,14 +153,42 @@
     
     [self updateFrames];
 }
+- (void)setLeftButtons:(NSArray<STLRootTableViewCellButton *> *)leftButtons {
+    _leftButtons = leftButtons;
+    for (STLRootTableViewCellButton *button in leftButtons) {
+        UIButton *btnTemp = [UIButton buttonWithType:UIButtonTypeCustom];
+        [btnTemp addTarget:button.target action:button.action forControlEvents:UIControlEventTouchUpInside];
+        [btnTemp setFrame:viewLeftActionContent.bounds];
+        [btnTemp setTitle:button.title forState:UIControlStateNormal];
+        [btnTemp.titleLabel setFont:lblTitle.font];
+        [btnTemp setBackgroundColor:button.backgroundColor];
+        [btnTemp setTitleColor:button.titleColor forState:UIControlStateNormal];
+        [viewLeftActionContent addSubview:btnTemp];
+    }
+    [self bringSubviewToFront:viewRootContent];
+}
+- (void)setRightButtons:(NSArray<STLRootTableViewCellButton *> *)rightButtons {
+    _rightButtons = rightButtons;
+    for (STLRootTableViewCellButton *button in rightButtons) {
+        UIButton *btnTemp = [UIButton buttonWithType:UIButtonTypeCustom];
+        [btnTemp addTarget:button.target action:button.action forControlEvents:UIControlEventTouchUpInside];
+        [btnTemp setFrame:viewLeftActionContent.bounds];
+        [btnTemp setTitle:button.title forState:UIControlStateNormal];
+        [btnTemp.titleLabel setFont:lblTitle.font];
+        [btnTemp setBackgroundColor:button.backgroundColor];
+        [btnTemp setTitleColor:button.titleColor forState:UIControlStateNormal];
+        [viewRightActionContent addSubview:btnTemp];
+    }
+    [self bringSubviewToFront:viewRootContent];
+}
 
 #pragma mark - Private
 - (void)updateFrames {
     if (!_panning) {
-        if (_actionMenuOpenRight == YES) {
-            viewRootContent.frame = CGRectMake(CGRectGetMinY(DEFAULT_ROOT_FRAME)-MAX_ACTION_WIDTH-GAP_ACTION, CGRectGetMinY(DEFAULT_ROOT_FRAME), CGRectGetWidth(DEFAULT_ROOT_FRAME), CGRectGetHeight(DEFAULT_ROOT_FRAME));
-        } else if (_actionMenuOpenLeft == YES) {
-            viewRootContent.frame = CGRectMake(CGRectGetMinY(DEFAULT_ROOT_FRAME)+MAX_ACTION_WIDTH+GAP_ACTION, CGRectGetMinY(DEFAULT_ROOT_FRAME), CGRectGetWidth(DEFAULT_ROOT_FRAME), CGRectGetHeight(DEFAULT_ROOT_FRAME));
+        if (_actionMenuOpenRight == YES && self.rightButtons.count > 0) {
+            viewRootContent.frame = CGRectMake(CGRectGetMinY(DEFAULT_ROOT_FRAME)-MAX_ACTION_WIDTH*[self.rightButtons count]-GAP_ACTION, CGRectGetMinY(DEFAULT_ROOT_FRAME), CGRectGetWidth(DEFAULT_ROOT_FRAME), CGRectGetHeight(DEFAULT_ROOT_FRAME));
+        } else if (_actionMenuOpenLeft == YES && self.leftButtons.count > 0) {
+            viewRootContent.frame = CGRectMake(CGRectGetMinY(DEFAULT_ROOT_FRAME)+MAX_ACTION_WIDTH*[self.leftButtons count]+GAP_ACTION, CGRectGetMinY(DEFAULT_ROOT_FRAME), CGRectGetWidth(DEFAULT_ROOT_FRAME), CGRectGetHeight(DEFAULT_ROOT_FRAME));
         } else {
             viewRootContent.frame = DEFAULT_ROOT_FRAME;
         }
@@ -178,9 +198,31 @@
     lblLocation.frame = CGRectMake(CGRectGetMaxX(imgViewDrawing.frame)+10, CGRectGetMaxY(lblTitle.frame)-10, CGRectGetWidth(lblTitle.frame), CGRectGetHeight(lblTitle.frame));
     btnDetails.frame = CGRectMake(CGRectGetWidth(viewRootContent.frame)-50, (CGRectGetHeight(viewRootContent.frame)-40)/2, 40, 40);
     viewRightActionContent.frame = CGRectMake(CGRectGetMaxX(viewRootContent.frame)+GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetWidth(self.frame)-CGRectGetMaxX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame));
-    btnDelete.frame = viewRightActionContent.bounds;
     viewLeftActionContent.frame = CGRectMake(GAP_ACTION, CGRectGetMinY(viewRootContent.frame), CGRectGetMinX(viewRootContent.frame)-GAP_ACTION-GAP_ACTION, CGRectGetHeight(viewRootContent.frame));
-    btnFlash.frame = viewLeftActionContent.bounds;
+
+    NSInteger stepper = 0;
+    for (UIView *view in viewRightActionContent.subviews) {
+        if ([view isKindOfClass:[UIButton class]]) {
+            if (_panning) {
+                view.frame = CGRectMake((CGRectGetWidth(viewRightActionContent.frame)/[self.rightButtons count])*stepper-(GAP_ACTION), 0, (CGRectGetWidth(viewRightActionContent.frame)/[self.rightButtons count]), CGRectGetHeight(viewRightActionContent.frame));
+            } else {
+                view.frame = CGRectMake(MAX_ACTION_WIDTH*stepper-(GAP_ACTION), 0, MAX_ACTION_WIDTH, CGRectGetHeight(viewRightActionContent.frame));
+            }
+            stepper++;
+        }
+    }
+    
+    stepper = 0;
+    for (UIView *view in viewLeftActionContent.subviews) {
+        if ([view isKindOfClass:[UIButton class]]) {
+            if (_panning) {
+                view.frame = CGRectMake((CGRectGetWidth(viewLeftActionContent.frame)/[self.leftButtons count])*stepper-(GAP_ACTION), 0, (CGRectGetWidth(viewLeftActionContent.frame)/[self.leftButtons count]), CGRectGetHeight(viewLeftActionContent.frame));
+            } else {
+                view.frame = CGRectMake(MAX_ACTION_WIDTH*stepper-(GAP_ACTION), 0, MAX_ACTION_WIDTH, CGRectGetHeight(viewLeftActionContent.frame));
+            }
+            stepper++;
+        }
+    }
     
     if (_actionMenuOpenRight == YES || _actionMenuOpenLeft == YES) {
         viewRightActionContent.alpha = 1.0;
@@ -259,13 +301,6 @@
         arg2 = ((arg1 * arg3) + -30.0) / (arg3 + -30.0);
     }
     return arg2;
-}
-- (void)handleAction:(UIButton*)sender {
-    if ([[sender titleForState:UIControlStateNormal] isEqualToString:@"Delete"]) {
-        if (self.cellShouldBeRemoved) self.cellShouldBeRemoved();
-    } else if ([[sender titleForState:UIControlStateNormal] isEqualToString:@"Flash"]) {
-        if (self.cellShouldBeFlash) self.cellShouldBeFlash();
-    }
 }
 - (void)handleDetails {
     if (self.cellDetailActivate) self.cellDetailActivate();

@@ -102,6 +102,42 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     configurationViewController.delegate = self;
     return configurationViewController;
 }
+- (void)removeHub:(UIButton*)sender {
+    NSIndexPath *indexPath = ((STLRootTableViewCell*)sender.superview.superview.superview).indexPath;
+    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
+    
+    NSError *error = nil;
+    if ([[STLDataManager sharedManager] removeHub:hub error:&error]) {
+        [aryHubs removeObjectAtIndex:indexPath.row];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.tableView reloadEmptyDataSet];
+    } else {
+        NSLog(@"Error while deleting hub: %@",error);
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Whoops!" message:@"An error occured while trying to delete the StarLight. Try again." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+- (void)shareHub:(UIButton*)sender {
+    NSIndexPath *indexPath = ((STLRootTableViewCell*)sender.superview.superview.superview).indexPath;
+    
+    NSLog(@"Share: %@",[aryHubs objectAtIndex:indexPath.row].name);
+}
+- (void)flashHub:(UIButton*)sender {
+    NSIndexPath *indexPath = ((STLRootTableViewCell*)sender.superview.superview.superview).indexPath;
+    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
+    STLRootTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    
+    STLLightPattern *pattern = [STLLightPattern pattern];
+    pattern.delay = (uint32_t)cell.delay;
+    pattern.states = cell.states;
+    pattern.lights = hub.lightMatrix;
+    pattern.colorForLightIndexWithFrame = ^ UIColor *(NSInteger lightIndex, NSInteger frame) {
+        return [UIColor redColor];
+    };
+    [pattern reloadPattern];
+    [[STLSequenceManager sharedManager] uploadPattern:pattern];
+}
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -123,32 +159,16 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
     [cell setTitle:hub.name];
     [cell setLocation:hub.location];
-    [cell setCellShouldBeRemoved:^{
-        NSError *error = nil;
-        if ([[STLDataManager sharedManager] removeHub:hub error:&error]) {
-            [aryHubs removeObjectAtIndex:indexPath.row];
-            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-            [self.tableView reloadEmptyDataSet];
-        } else {
-            NSLog(@"Error while deleting hub: %@",error);
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Whoops!" message:@"An error occured while trying to delete the StarLight. Try again." preferredStyle:UIAlertControllerStyleAlert];
-            [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
-            [self presentViewController:alert animated:YES completion:nil];
-        }
-    }];
+    cell.indexPath = indexPath;
+    cell.rightButtons = @[
+                          [STLRootTableViewCellButton buttonWithTitle:@"Share" backgroundColor:[UIColor lightGrayColor] titleColor:[UIColor whiteColor] target:self action:@selector(shareHub:)],
+                          [STLRootTableViewCellButton buttonWithTitle:@"Delete" backgroundColor:[UIColor colorWithHexString:@"#FF3B31"] titleColor:[UIColor whiteColor] target:self action:@selector(removeHub:)],
+                          ];
+    cell.leftButtons = @[
+                         [STLRootTableViewCellButton buttonWithTitle:@"Upload" backgroundColor:[UIColor flatGreenColor] titleColor:[UIColor whiteColor] target:self action:@selector(flashHub:)],
+                         ];
     [cell setCellDetailActivate:^{
         [self.navigationController pushViewController:[self actionForIndexPath:indexPath] animated:YES];
-    }];
-    [cell setCellShouldBeFlash:^{
-        STLLightPattern *pattern = [STLLightPattern pattern];
-        pattern.delay = (uint32_t)weakCell.delay;
-        pattern.states = weakCell.states;
-        pattern.lights = hub.lightMatrix;
-        pattern.colorForLightIndexWithFrame = ^ UIColor *(NSInteger lightIndex, NSInteger frame) {
-            return [UIColor redColor];
-        };
-        [pattern reloadPattern];
-        [[STLSequenceManager sharedManager] uploadPattern:pattern];
     }];
     [cell setCellLongHoldActivate:^{
         [weakCell animate];
