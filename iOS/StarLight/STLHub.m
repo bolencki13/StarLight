@@ -30,7 +30,7 @@ static NSMutableSet *hubs = nil;
     if (hubRemove) {
         [hubs removeObject:hubRemove];
     }
-    return hubRemove;
+    return (hubRemove != nil);
 }
 + (void)initialize {
     if (!hubs) {
@@ -44,7 +44,7 @@ static NSMutableSet *hubs = nil;
 #pragma mark - Initalization
 + (STLHub*)hub {
     STLHub *hub = [[STLHub alloc] init];
-    hub.name = [NSString stringWithFormat:@"Hub #%ld",[[STLHub allHubs] count]];
+    hub.name = [NSString stringWithFormat:@"Hub #%ld",(unsigned long)[[STLHub allHubs] count]];
     hub.location = @"Backyard";
     hub.matrix = [NSIndexPath indexPathForRow:0 inSection:0];
     hub.identifer = @"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx";

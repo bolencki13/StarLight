@@ -241,7 +241,7 @@ static NSString * const reuseIdentifier = @"starlight.download.cell";
     if (indexPath.row < [aryFrames count]) {
         cell.previewImage.image = [STLDesignView imageFromStates:[aryFrames objectAtIndex:indexPath.row]];
         cell.previewImage.contentMode = UIViewContentModeScaleAspectFit;
-        cell.titleLabel.text = [NSString stringWithFormat:@"%ld",indexPath.row+1];
+        cell.titleLabel.text = [NSString stringWithFormat:@"%ld",(long)(indexPath.row+1)];
     } else {
         UIImage *imgPlus = [UIImage imageNamed:@"Plus"];
         UIImage *imgPlusTint = [imgPlus imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
