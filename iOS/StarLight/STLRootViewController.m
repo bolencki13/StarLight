@@ -9,6 +9,7 @@
 #import "STLRootViewController.h"
 #import "STLRootTableViewCell.h"
 #import "STLConfigurationViewController.h"
+#import "STLCalibrationViewController.h"
 #import "STLStoreViewController.h"
 #import "STLDataManager.h"
 #import "STLSequenceManager.h"
@@ -17,7 +18,7 @@
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import <ChameleonFramework/Chameleon.h>
 
-@interface STLRootViewController () <UITableViewDataSource, UITableViewDelegate, UIViewControllerPreviewingDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLConfigurationViewControllerDelegate> {
+@interface STLRootViewController () <UITableViewDataSource, UITableViewDelegate, UIViewControllerPreviewingDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, STLConfigurationViewControllerDelegate, STLCalibrationViewControllerDelegate> {
     NSMutableArray<STLHub*> *aryHubs;
 }
 @property (nonatomic, retain, readonly) UITableView *tableView;
@@ -213,5 +214,13 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)configurationViewController:(STLConfigurationViewController *)viewController states:(NSArray<NS2DArray *> *)states withDelay:(NSInteger)delay {
     [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setStates:states];
     [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setDelay:delay];
+}
+
+#pragma mark - STLCalibrationViewControllerDelegate
+- (void)calibrationdidFinish:(STLCalibrationViewController *)viewController withMatrix:(NS2DArray *)matrix {
+    NSMutableArray *aryLights = [NSMutableArray new];
+    [matrix enumerateObjectsUsingBlock:^(NSValue *obj, NSIndexPath *indexPath, BOOL *stop) {
+        
+    }];
 }
 @end

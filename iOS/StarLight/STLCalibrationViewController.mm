@@ -23,9 +23,9 @@
 #import <OpenCV/opencv2/imgcodecs/ios.h>
 #import <OpenCV/opencv2/videoio/cap_ios.h>
 
-#define LIGHTS_PER_STRAND (5) // 25
+#define LIGHTS_PER_STRAND (25)
 #define DELAY (0.3)
-#define OFFSET (0)
+#define OFFSET (13)
 
 UIColor *UIColorFromCVScalar(cv::Scalar color) {
     return [UIColor colorWithRed:color[0]/255 green:color[1]/255 blue:color[2]/255 alpha:1.0];
@@ -199,6 +199,7 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     
     imgViewCalibration.image = MatToUIImage(matCalibration);
     
+    NSLog(@"%@",dictLights);
     for (NSInteger x = 0; x < [[dictLights allKeys] count]; x++) {
         BEMCheckBox *checkBox = [[BEMCheckBox alloc] initWithFrame:[[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)x]] CGRectValue]];
         [checkBox setOn:YES animated:NO];
@@ -206,6 +207,18 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
         checkBox.tag = 10+x;
         [imgViewCalibration addSubview:checkBox];
     }
+    [clvLights reloadData];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStyleDone target:self action:@selector(exitCalibration)];
+}
+- (void)exitCalibration {
+    NSMutableArray *aryCoordinates = [NSMutableArray new];
+    for (NSInteger x = 0; x < [[dictLights allKeys] count]; x++) {
+        [aryCoordinates addObject:[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)x]]];
+    }
+    NS2DArray *matrix = [NS2DArray arrayFromCoordinates:aryCoordinates];
+    
+    [_delgate calibrationdidFinish:self withMatrix:matrix];
+    [self exit];
 }
 - (void)errorWithMessage:(NSString*)message {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Uh, Oh" message:message preferredStyle:UIAlertControllerStyleAlert];
@@ -324,7 +337,7 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
                 cv::rectangle(image, frame.tl(), frame.br(), CVScalarFromUIColor([UIColor blueColor]), 2, CV_AA);
                 
                 if (frames > 60) {
-                    [dictLights setObject:[NSValue valueWithCGRect:CGRectMake(frame.tl().x, frame.tl().y, frame.width, frame.height)] forKey:[NSString stringWithFormat:@"%lu",(unsigned long)[[dictLights allKeys] count]]];
+                    [dictLights setObject:[NSValue valueWithCGRect:CGRectMake((frame.y*CGRectGetWidth(imgViewCalibration.frame))/matRGB.cols, CGRectGetHeight(imgViewCalibration.frame)-CGRectGetHeight([UIApplication sharedApplication].statusBarFrame)/2-(frame.x*CGRectGetHeight(imgViewCalibration.frame))/matRGB.rows, frame.width, frame.height)] forKey:[NSString stringWithFormat:@"%lu",(unsigned long)[[dictLights allKeys] count]]];
                     
                     [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor redColor]];
                     [NSThread sleepForTimeInterval:DELAY];
@@ -340,17 +353,20 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
                     }
                 }
             } else {
-                NSInteger index = 0;
-                CGFloat distance = CGFLOAT_MAX;
-                for (NSInteger x = 1; x < [[dictLights allKeys] count]; x++) {
-                    CGPoint previous = [[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)index]] CGRectValue].origin;
-                    CGPoint current = [[dictLights objectForKey:[NSString stringWithFormat:@"%ld",(long)x]] CGRectValue].origin;
-                    if ([self distanceBetweenPoint:previous andPoint:current] < distance) {
-                        distance = [self distanceBetweenPoint:previous andPoint:current];
-                        index = x;
+                if (frames > 61) {
+                    [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor redColor]];
+                    [NSThread sleepForTimeInterval:DELAY];
+                    currentLight++;
+                    [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor greenColor]];
+                    frames = 0;
+
+                    if (currentLight >= [self calculatedLights]) {
+                        matCalibration = matRGB;
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self confirmCalibration];
+                        });
                     }
                 }
-                [dictLights setObject:[NSValue valueWithCGRect:CGRectMake(frame.tl().x, frame.tl().y, frame.width, frame.height)] forKey:[NSString stringWithFormat:@"%ld",(long)index]];
             }
         }
         frames++;
