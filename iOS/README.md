@@ -8,10 +8,9 @@ StarLight iOS application is the best way to interact with your StarLight Hub. S
 - 3D touch actions
 
 ### Known Bugs
-* Calibration does not include lights relative to strand (yet)
-* Preview (STLConfigurationViewController) does not present correctly
+
 
 ### Features Not Implemented
 * Pattern sharing
-* Update firmware on board
-* Communication with real board
+* Update firmware on board (will not be implemented)
+* Communication with real board (semi present)
