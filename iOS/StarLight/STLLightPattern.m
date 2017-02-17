@@ -34,7 +34,7 @@
     return strPattern;
 }
 - (NSData *)dataPattern {
-    return [self.absolutePattern hexData];
+    return [self.absolutePattern dataUsingEncoding:NSUTF8StringEncoding];
 }
 - (void)reloadPattern {
     strPattern = @"";
@@ -53,7 +53,7 @@
                 [self addCommand:[NSString stringWithFormat:@"%hi%@",(int16_t)lightNumber,[[self.colorForLightIndexWithFrame(lightNumber,frame) hexValue] stringByReplacingOccurrencesOfString:@"#" withString:@""]]];
             }
         }];
-        [self addCommand:@"FF"];
+        [self addCommand:@"$$"];
         frame++;
     }
 }

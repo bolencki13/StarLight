@@ -157,9 +157,9 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
         [NSThread sleepForTimeInterval:0];
     }
     
-    id response = [NSJSONSerialization JSONObjectWithData:dataResponse options:kNilOptions error:nil];
+    NSString *strResponse = [[NSString alloc] initWithData:dataResponse encoding:NSUTF8StringEncoding];
     
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:([[response objectForKey:@"success"] boolValue] == YES ? @"The pattern has been uploaded." : @"The pattern failed to upload.") preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:([strResponse isEqualToString:@"success"] == YES ? @"The pattern has been uploaded." : @"The pattern failed to upload.") preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];
 }

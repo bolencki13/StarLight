@@ -20,8 +20,6 @@
 @end
 
 @interface STLRootTableViewCell : UITableViewCell
-@property (nonatomic, copy) void (^cellShouldBeRemoved)();
-@property (nonatomic, copy) void (^cellShouldBeFlash)();
 @property (nonatomic, copy) void (^cellDetailActivate)();
 @property (nonatomic, copy) void (^cellLongHoldActivate)();
 @property (nonatomic, retain) UIImage *drawImage;

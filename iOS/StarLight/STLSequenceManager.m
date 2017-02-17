@@ -36,20 +36,24 @@
 - (void)setLightAtPosition:(NSInteger)position on:(BOOL)on {
     CBPeripheral *peripheral = [STLBluetoothManager sharedManager].connectedPeripheral;
     
-    NSData *command = [[[[NSString stringWithFormat:@"%02lx%@",(long)position,(on ? [[UIColor whiteColor] hexValue] : @"000000")] stringByReplacingOccurrencesOfString:@"#" withString:@""] uppercaseString] hexData];
+    NSData *command = [[[[NSString stringWithFormat:@"%02lx%@",(long)position,(on ? [[UIColor whiteColor] hexValue] : @"000000")] stringByReplacingOccurrencesOfString:@"#" withString:@""] uppercaseString] dataUsingEncoding:NSUTF8StringEncoding];
+    
     
     [peripheral writeValue:command forCharacteristic:[[peripheral.services objectAtIndex:0].characteristics objectAtIndex:0] type:CBCharacteristicWriteWithoutResponse];
 }
 - (void)setLightAtPosition:(NSInteger)position toColor:(UIColor *)color {
     CBPeripheral *peripheral = [STLBluetoothManager sharedManager].connectedPeripheral;
     
-    NSData *command = [[[NSString stringWithFormat:@"%02lx%@",(long)position,[[color hexValue] stringByReplacingOccurrencesOfString:@"#" withString:@""]] uppercaseString] hexData];
+    NSData *command = [[[NSString stringWithFormat:@"%02lx%@",(long)position,[[color hexValue] stringByReplacingOccurrencesOfString:@"#" withString:@""]] uppercaseString] dataUsingEncoding:NSUTF8StringEncoding];
     
     [peripheral writeValue:command forCharacteristic:[[peripheral.services objectAtIndex:0].characteristics objectAtIndex:0] type:CBCharacteristicWriteWithoutResponse];
 }
 - (void)uploadPattern:(STLLightPattern *)pattern {
+    CBPeripheral *peripheral = [STLBluetoothManager sharedManager].connectedPeripheral;
+    
     NSData *command = [pattern dataPattern];
-    NSLog(@"%@",command);
+    
+    [peripheral writeValue:command forCharacteristic:[[peripheral.services objectAtIndex:0].characteristics objectAtIndex:0] type:CBCharacteristicWriteWithoutResponse];
 }
 
 #pragma mark - Other
