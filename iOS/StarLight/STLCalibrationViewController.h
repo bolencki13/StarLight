@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSNotificationName kSTLCalibrationDidFinish;
+
 @class STLCalibrationViewController, CBPeripheral, STLHub;
 @protocol STLCalibrationViewControllerDelegate <NSObject>
 - (void)calibrationdidFinish:(STLCalibrationViewController*)viewController withHub:(STLHub*)hub;

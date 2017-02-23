@@ -10,6 +10,9 @@
 #import "STLDownloadCollectionViewCell.h"
 #import "STLMultiDirectionLayout.h"
 #import "NS2DArray.h"
+#import "STLLightFrame.h"
+#import "STLLight.h"
+#import "STLHub.h"
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
@@ -22,14 +25,25 @@
 
 @implementation STLAdvancedViewController
 static NSString * const reuseIdentifier = @"starlight.advanced.cell";
-- (instancetype)initWithLightsMatrix:(NS2DArray*)matrix withLightState:(NS2DArray*)state {
+- (instancetype)initWithLightFrame:(STLLightFrame*)frame withSize:(NSIndexPath*)size {
     self = [super init];
     if (self) {
-        if (matrix.sections != state.sections && matrix.rows != state.rows) {
-            @throw [NSException exceptionWithName:@"STLMatrixStateSizeConfiguration" reason:[NSString stringWithFormat:@"State size is not equal to matrix size (Matrix {%ld,%ld} State {%ld,%ld})",(long)matrix.sections,(long)matrix.rows,(long)state.sections,(long)state.rows] userInfo:nil];
+        _lightFrame = frame;
+        _lightState = [NS2DArray arrayWithSections:size.section rows:size.row];
+        _lightColor = [NS2DArray arrayWithSections:size.section rows:size.row];
+        
+        for (NSInteger section = 0; section < size.section; section++) {
+            for (NSInteger row = 0; row < size.row; row++) {
+                [_lightState setObject:[NSNumber numberWithInteger:0] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            }
         }
-        _matrix = matrix;
-        _lightState = state;
+        [_lightFrame enumerateFrame:^(NSString *hexColor, NSInteger position) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(position % _lightState.sections) inSection:(int)(position/_lightState.sections)];
+            NSLog(@"%@",indexPath);
+            [_lightState setObject:[NSNumber numberWithInteger:1] atIndexPath:indexPath];
+            [_lightColor setObject:[UIColor colorWithHexString:hexColor] atIndexPath:indexPath];
+        }];
+        
         self.providesPresentationContextTransitionStyle = YES;
         self.definesPresentationContext = YES;
         self.modalPresentationStyle = UIModalPresentationOverCurrentContext;
@@ -82,7 +96,19 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
     // Dispose of any resources that can be recreated.
 }
 - (void)saveAndExit {
-    [_delegate configurationViewController:self didFinishWithStates:_lightState];
+    __weak typeof(NS2DArray*) weakState = _lightState;
+    [_lightFrame setStateForLight:^BOOL(STLLight *light) {
+        NSInteger state = [[weakState objectAtIndexPath:[NSIndexPath indexPathForRow:(light.position % _lightState.sections) inSection:(light.position % _lightState.sections)]] integerValue];
+        return ((state <=0) ? NO : YES);
+    }];
+    
+    __weak typeof(NS2DArray*) weakColors = _lightColor;
+    [_lightFrame setColorForLight:^UIColor *(STLLight *light) {
+        return [weakColors objectAtIndexPath:[NSIndexPath indexPathForRow:(light.position % weakState.sections) inSection:(light.position % weakState.sections)]];
+    }];
+    [_lightFrame reloadFrame];
+    
+    [_delegate configurationViewController:self didFinishWithFrame:_lightFrame];
     [self exit];
 }
 - (void)exit {
@@ -92,17 +118,17 @@ static NSString * const reuseIdentifier = @"starlight.advanced.cell";
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     [collectionView.collectionViewLayout invalidateLayout];
-    return [_matrix sections];
+    return [_lightState sections];
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [_matrix rows];
+    return [_lightState rows];
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     STLDownloadCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     cell.titleLabel.text = [NSString stringWithFormat:@"(%ld,%ld)",(long)indexPath.section+1, (long)indexPath.row+1];
-    if ([[_matrix objectAtIndexPath:indexPath] integerValue] != -1) {
-        cell.previewImage.backgroundColor = ([[_lightState objectAtIndexPath:indexPath] boolValue] == YES) ? [UIColor flatGreenColor] : [UIColor flatRedColor];
+    if ([[_lightState objectAtIndexPath:indexPath] integerValue] != -1) {
+        cell.previewImage.backgroundColor = ([[_lightState objectAtIndexPath:indexPath] boolValue] == YES) ?[_lightColor objectAtIndexPath:indexPath] : [UIColor lightGrayColor];
         cell.userInteractionEnabled = YES;
     } else {
         cell.previewImage.backgroundColor = [UIColor lightGrayColor];

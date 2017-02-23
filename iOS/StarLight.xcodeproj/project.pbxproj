@@ -12,6 +12,11 @@
 		4030BB951E032740005DA406 /* STLThirdPartyNoticesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4030BB941E032740005DA406 /* STLThirdPartyNoticesViewController.m */; };
 		403DC63A1E30075E00B48E07 /* NS2DArray+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 403DC6391E30075E00B48E07 /* NS2DArray+JSON.m */; };
 		403DC6421E3010DC00B48E07 /* STLStepper.m in Sources */ = {isa = PBXBuildFile; fileRef = 403DC6411E3010DC00B48E07 /* STLStepper.m */; };
+		40451A881E5E62CB007704C0 /* UIColor+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 40451A871E5E62CB007704C0 /* UIColor+Image.m */; };
+		40451A8D1E5E645C007704C0 /* UIImage+Size.m in Sources */ = {isa = PBXBuildFile; fileRef = 40451A8C1E5E645C007704C0 /* UIImage+Size.m */; };
+		40451A901E5E67B1007704C0 /* STLColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 40451A8F1E5E67B1007704C0 /* STLColorPicker.m */; };
+		40451A961E5E75B3007704C0 /* STLColorDimension.m in Sources */ = {isa = PBXBuildFile; fileRef = 40451A951E5E75B3007704C0 /* STLColorDimension.m */; };
+		40451A9A1E5E7AB9007704C0 /* STLLightFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 40451A991E5E7AB9007704C0 /* STLLightFrame.m */; };
 		40503AD51E004FEC0084005B /* NS2DArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 40503AD21E004FEC0084005B /* NS2DArray.m */; };
 		40503AD61E004FEC0084005B /* STLMultiDirectionLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 40503AD41E004FEC0084005B /* STLMultiDirectionLayout.m */; };
 		4051A2771E00A485001C44F9 /* UIAlertController+UIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4051A2761E00A485001C44F9 /* UIAlertController+UIImage.m */; };
@@ -56,6 +61,16 @@
 		403DC6391E30075E00B48E07 /* NS2DArray+JSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NS2DArray+JSON.m"; sourceTree = "<group>"; };
 		403DC6401E3010DC00B48E07 /* STLStepper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLStepper.h; sourceTree = "<group>"; };
 		403DC6411E3010DC00B48E07 /* STLStepper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLStepper.m; sourceTree = "<group>"; };
+		40451A861E5E62CB007704C0 /* UIColor+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Image.h"; sourceTree = "<group>"; };
+		40451A871E5E62CB007704C0 /* UIColor+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Image.m"; sourceTree = "<group>"; };
+		40451A8B1E5E645C007704C0 /* UIImage+Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Size.h"; sourceTree = "<group>"; };
+		40451A8C1E5E645C007704C0 /* UIImage+Size.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Size.m"; sourceTree = "<group>"; };
+		40451A8E1E5E67B1007704C0 /* STLColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLColorPicker.h; sourceTree = "<group>"; };
+		40451A8F1E5E67B1007704C0 /* STLColorPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLColorPicker.m; sourceTree = "<group>"; };
+		40451A941E5E75B3007704C0 /* STLColorDimension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = STLColorDimension.h; path = StarLight/STLColorDimension.h; sourceTree = "<group>"; };
+		40451A951E5E75B3007704C0 /* STLColorDimension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = STLColorDimension.m; path = StarLight/STLColorDimension.m; sourceTree = "<group>"; };
+		40451A981E5E7AB9007704C0 /* STLLightFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLLightFrame.h; sourceTree = "<group>"; };
+		40451A991E5E7AB9007704C0 /* STLLightFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLLightFrame.m; sourceTree = "<group>"; };
 		40503AD11E004FEC0084005B /* NS2DArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NS2DArray.h; path = StarLight/NS2DArray.h; sourceTree = "<group>"; };
 		40503AD21E004FEC0084005B /* NS2DArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NS2DArray.m; path = StarLight/NS2DArray.m; sourceTree = "<group>"; };
 		40503AD31E004FEC0084005B /* STLMultiDirectionLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = STLMultiDirectionLayout.h; path = StarLight/STLMultiDirectionLayout.h; sourceTree = "<group>"; };
@@ -159,6 +174,8 @@
 				40503AD21E004FEC0084005B /* NS2DArray.m */,
 				40503AD31E004FEC0084005B /* STLMultiDirectionLayout.h */,
 				40503AD41E004FEC0084005B /* STLMultiDirectionLayout.m */,
+				40451A941E5E75B3007704C0 /* STLColorDimension.h */,
+				40451A951E5E75B3007704C0 /* STLColorDimension.m */,
 			);
 			name = Objects;
 			path = ..;
@@ -220,14 +237,34 @@
 			name = STLHub;
 			sourceTree = "<group>";
 		};
+		40451A891E5E62CE007704C0 /* UIColor */ = {
+			isa = PBXGroup;
+			children = (
+				40451A861E5E62CB007704C0 /* UIColor+Image.h */,
+				40451A871E5E62CB007704C0 /* UIColor+Image.m */,
+			);
+			name = UIColor;
+			sourceTree = "<group>";
+		};
+		40451A8A1E5E6450007704C0 /* UIImage */ = {
+			isa = PBXGroup;
+			children = (
+				40451A8B1E5E645C007704C0 /* UIImage+Size.h */,
+				40451A8C1E5E645C007704C0 /* UIImage+Size.m */,
+			);
+			name = UIImage;
+			sourceTree = "<group>";
+		};
 		4051A2741E00A473001C44F9 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				40451A8A1E5E6450007704C0 /* UIImage */,
 				403DC63E1E300E1E00B48E07 /* UIAlertController */,
 				403DC63B1E300E0300B48E07 /* NS2DArray */,
 				403DC63C1E300E0B00B48E07 /* NSString */,
 				403DC63D1E300E1600B48E07 /* AVCaptureDevice */,
 				403DC63F1E300E3500B48E07 /* STLHub */,
+				40451A891E5E62CE007704C0 /* UIColor */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -239,6 +276,10 @@
 				40FF27D71E09FB7500A1CF0C /* STLHub.m */,
 				40FF27D91E09FB7B00A1CF0C /* STLLight.h */,
 				40FF27DA1E09FB7B00A1CF0C /* STLLight.m */,
+				40C6DDCA1E170C950093CC56 /* STLLightPattern.h */,
+				40C6DDCB1E170C950093CC56 /* STLLightPattern.m */,
+				40451A981E5E7AB9007704C0 /* STLLightFrame.h */,
+				40451A991E5E7AB9007704C0 /* STLLightFrame.m */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -257,8 +298,6 @@
 			children = (
 				40A072691E0C47A000DE7539 /* STLSequenceManager.h */,
 				40A0726A1E0C47A000DE7539 /* STLSequenceManager.m */,
-				40C6DDCA1E170C950093CC56 /* STLLightPattern.h */,
-				40C6DDCB1E170C950093CC56 /* STLLightPattern.m */,
 				40A072701E0C4C8100DE7539 /* BlueTooth */,
 			);
 			name = API;
@@ -289,6 +328,8 @@
 		40A42E021DFB1AB000F2F996 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				40451A8E1E5E67B1007704C0 /* STLColorPicker.h */,
+				40451A8F1E5E67B1007704C0 /* STLColorPicker.m */,
 				40A42E031DFB1AC200F2F996 /* STLDesignView.h */,
 				40A42E041DFB1AC200F2F996 /* STLDesignView.m */,
 				403DC6401E3010DC00B48E07 /* STLStepper.h */,
@@ -551,6 +592,7 @@
 			files = (
 				40BE09201DFED9DF00E5EC36 /* STLAboutViewController.m in Sources */,
 				4030BB951E032740005DA406 /* STLThirdPartyNoticesViewController.m in Sources */,
+				40451A901E5E67B1007704C0 /* STLColorPicker.m in Sources */,
 				4053767B1E09E3FD004C8AE2 /* STLDataManager.m in Sources */,
 				4053766B1E09DA2A004C8AE2 /* NS2DArray+CGRect.m in Sources */,
 				40A0726F1E0C4BCC00DE7539 /* NSString+Hex.m in Sources */,
@@ -559,17 +601,21 @@
 				40A42E011DFB159400F2F996 /* STLConfigurationViewController.m in Sources */,
 				40E26D271DFA05760023F041 /* STLCalibrationViewController.mm in Sources */,
 				4051A2771E00A485001C44F9 /* UIAlertController+UIImage.m in Sources */,
+				40451A881E5E62CB007704C0 /* UIColor+Image.m in Sources */,
 				40B0709D1DF72ED3002D745F /* STLRootViewController.m in Sources */,
 				40C6DDCC1E170C950093CC56 /* STLLightPattern.m in Sources */,
 				407057571E25723A009699CE /* STLApplication.m in Sources */,
 				40A0726B1E0C47A100DE7539 /* STLSequenceManager.m in Sources */,
 				40B0709A1DF72ED3002D745F /* STLAppDelegate.m in Sources */,
+				40451A8D1E5E645C007704C0 /* UIImage+Size.m in Sources */,
 				40A42E081DFB4A4700F2F996 /* STLDownloadCollectionViewCell.m in Sources */,
 				40A072731E0C4C9800DE7539 /* STLBluetoothManager.m in Sources */,
 				409412541E2F003300FBCECA /* STLPreviewViewController.m in Sources */,
+				40451A9A1E5E7AB9007704C0 /* STLLightFrame.m in Sources */,
 				40B070971DF72ED3002D745F /* main.m in Sources */,
 				40A42E051DFB1AC200F2F996 /* STLDesignView.m in Sources */,
 				40503AD61E004FEC0084005B /* STLMultiDirectionLayout.m in Sources */,
+				40451A961E5E75B3007704C0 /* STLColorDimension.m in Sources */,
 				40FF27D81E09FB7500A1CF0C /* STLHub.m in Sources */,
 				40A42DFD1DFB12B300F2F996 /* STLCalibrationCollectionViewCell.m in Sources */,
 				403DC6421E3010DC00B48E07 /* STLStepper.m in Sources */,

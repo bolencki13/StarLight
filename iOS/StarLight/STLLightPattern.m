@@ -7,8 +7,7 @@
 //
 
 #import "STLLightPattern.h"
-#import "NS2DArray.h"
-#import "NSString+Hex.h"
+#import "STLLightFrame.h"
 
 #import <Chameleon.h>
 
@@ -18,48 +17,55 @@
 @end
 
 @implementation STLLightPattern
-+ (STLLightPattern *)pattern {
-    return [self new];
++ (NSString*)frameIdentifier {
+    return @"$$";
 }
-- (instancetype)init {
++ (STLLightPattern*)patternWithFrames:(NSArray<STLLightFrame*>*)frames {
+    STLLightPattern *pattern = [self new];
+    pattern.frames = frames;
+    
+    return pattern;
+}
+- (instancetype)initWithJSON:(NSDictionary *)json {
     self = [super init];
     if (self) {
-        strPattern = @"";
+        self.delay = [[json objectForKey:@"delay"] integerValue];
+        
+        NSMutableArray *aryFrames = [NSMutableArray new];
+        for (NSDictionary *frame in [json objectForKey:@"frames"]) {
+            [aryFrames addObject:[[STLLightFrame alloc] initWithJSON:frame]];
+        }
+        self.frames = aryFrames;
     }
     return self;
 }
 
 #pragma mark - Public
 - (NSString*)absolutePattern {
+    strPattern = [NSString stringWithFormat:@"%ld%@",(long)self.delay,[STLLightPattern frameIdentifier]];
+
+    for (STLLightFrame *frame in self.frames) {
+        strPattern = [NSString stringWithFormat:@"%@%@%@",strPattern,frame.absoluteFrame,[STLLightPattern frameIdentifier]];
+    }
+    
     return strPattern;
 }
 - (NSData *)dataPattern {
     return [self.absolutePattern dataUsingEncoding:NSUTF8StringEncoding];
 }
-- (void)reloadPattern {
-    strPattern = @"";
-
-    if (!_delay || !_states || !_lights) {
-        return;
-    }
-    
-    [self addCommand:[NSString stringWithFormat:@"%u",_delay]];
-    
-    NSInteger frame = 0;
-    for (NS2DArray *state in _states) {
-        [state enumerateObjectsUsingBlock:^(id obj, NSIndexPath *indexPath, BOOL *stop) {
-            NSInteger lightNumber = [[_lights objectAtIndexPath:indexPath] integerValue];
-            if (lightNumber != -1 && [obj boolValue] == YES) {
-                [self addCommand:[NSString stringWithFormat:@"%hi%@",(int16_t)lightNumber,[[self.colorForLightIndexWithFrame(lightNumber,frame) hexValue] stringByReplacingOccurrencesOfString:@"#" withString:@""]]];
-            }
-        }];
-        [self addCommand:@"$$"];
-        frame++;
-    }
+- (STLHub *)hub {
+    return [self.frames objectAtIndex:0].hub;
 }
-
-#pragma mark - Handling
-- (void)addCommand:(NSString*)command {
-    strPattern = [NSString stringWithFormat:@"%@\n%@",strPattern,command];
+- (NSDictionary *)JSON {
+    NSMutableDictionary *dictJSON = [NSMutableDictionary new];
+    
+    NSMutableArray *aryFrames = [NSMutableArray new];
+    for (STLLightFrame *frame in self.frames) {
+        [aryFrames addObject:[frame JSON]];
+    }
+    [dictJSON setObject:aryFrames forKey:@"frames"];
+    [dictJSON setObject:[NSNumber numberWithInteger:self.delay] forKey:@"delay"];
+    
+    return dictJSON;
 }
 @end

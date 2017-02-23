@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class NS2DArray;
+@class STLLightPattern;
 
 @interface STLRootTableViewCellButton : NSObject
 @property (nonatomic, retain) UIColor *backgroundColor;
@@ -23,11 +23,10 @@
 @property (nonatomic, copy) void (^cellDetailActivate)();
 @property (nonatomic, copy) void (^cellLongHoldActivate)();
 @property (nonatomic, retain) UIImage *drawImage;
-@property (nonatomic, retain) NSArray<NS2DArray*> *states;
+@property (nonatomic, retain) STLLightPattern *pattern;
 @property (nonatomic, retain) NSArray<STLRootTableViewCellButton*> *rightButtons;
 @property (nonatomic, retain) NSArray<STLRootTableViewCellButton*> *leftButtons;
 @property (nonatomic, retain) NSIndexPath *indexPath;
-@property (nonatomic) NSInteger delay; // mm
 + (CGFloat)defaultCellHeight;
 - (void)setTitle:(NSString*)title;
 - (void)setLocation:(NSString*)location;

@@ -10,11 +10,14 @@
 #import <UIKit/UIColor.h>
 #import "STLLightPattern.h"
 
+#define DELAY_BLE (0.1)
+
 @class STLLight, STLHub;
 @interface STLSequenceManager : NSObject
-+ (STLSequenceManager*)sharedManager;
+@property (nonatomic, readonly) BOOL running;
 @property (nonatomic, retain) STLHub *hub;
++ (STLSequenceManager*)sharedManager;
 - (void)setLightAtPosition:(NSInteger)position on:(BOOL)on;
 - (void)setLightAtPosition:(NSInteger)position toColor:(UIColor*)color;
-- (void)uploadPattern:(STLLightPattern*)pattern;
+- (void)uploadToHub:(STLHub*)hub;
 @end

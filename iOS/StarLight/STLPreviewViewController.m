@@ -7,6 +7,7 @@
 //
 
 #import "STLPreviewViewController.h"
+#import "STLSequenceManager.h"
 
 #import <Chameleon.h>
 
@@ -15,6 +16,7 @@
     UINavigationItem *navItem;
 
     UIImageView *imgViewAnimation;
+    NSTimer *tmrAnimation;
 }
 @end
 

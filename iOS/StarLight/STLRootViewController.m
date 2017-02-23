@@ -14,6 +14,8 @@
 #import "STLDataManager.h"
 #import "STLSequenceManager.h"
 #import "NS2DArray+JSON.h"
+#import "STLLightFrame.h"
+#import "STLLightPattern.h"
 
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 #import <ChameleonFramework/Chameleon.h>
@@ -28,6 +30,8 @@
 static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addHub:) name:kSTLCalibrationDidFinish object:nil];
     
     /* BLUE: #EEF9FF GREEN: #EEFFF9 */
     self.view.backgroundColor = [UIColor colorWithHexString:@"#EEF9FF"];
@@ -69,7 +73,7 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    // Dispose of any resources that can be recreated
 }
 - (void)handleRefresh:(id)sender {
     [[STLDataManager sharedManager] reloadData:^(NSArray *hubs) {
@@ -95,10 +99,10 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://starlighthub.com/index.html#purchase"]];
 }
 - (UIViewController*)actionForIndexPath:(NSIndexPath*)indexPath {
-    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
-    NSArray<NS2DArray*> *states = ((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]).states;
+    STLLightPattern *pattern = [aryHubs objectAtIndex:indexPath.row].pattern;
+    pattern.hub = [aryHubs objectAtIndex:indexPath.row];
     
-    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithHub:hub withStates:states];
+    STLConfigurationViewController *configurationViewController = [[STLConfigurationViewController alloc] initWithPattern:pattern];
     configurationViewController.delegate = self;
     return configurationViewController;
 }
@@ -118,65 +122,30 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
         [self presentViewController:alert animated:YES completion:nil];
     }
 }
-- (void)shareHub:(UIButton*)sender {
-    NSIndexPath *indexPath = ((STLRootTableViewCell*)sender.superview.superview.superview).indexPath;
-    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
-    STLRootTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    
-    NSMutableArray *aryStates = [NSMutableArray new];
-    for (NS2DArray *matrix in cell.states) {
-        [aryStates addObject:[matrix json]];
-    }
-    
-    NSDictionary *json = @{
-                           @"states" : aryStates,
-                           @"delay" : [NSNumber numberWithInteger:cell.delay],
-                           @"hub" : @{
-                                   @"sections" : [NSNumber numberWithInteger:hub.matrix.section],
-                                   @"rows" : [NSNumber numberWithInteger:hub.matrix.row]
-                                   }
-                           };
-    NSData *dataJSON = [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:nil];
-    if (!dataJSON) return;
-    
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://starlighthub.com/api/database/upload.php"] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:120.0];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-type"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-    [request setHTTPMethod:@"POST"];
-    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[dataJSON length]] forHTTPHeaderField:@"Content-Length"];
-    [request setHTTPBody:dataJSON];
-    
-    __block BOOL proccessed = NO;
-    __block NSData *dataResponse = nil;
-    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        dataResponse = data;
-        proccessed = YES;
-    }] resume];
-    
-    while (!proccessed) {
-        [NSThread sleepForTimeInterval:0];
-    }
-    
-    NSString *strResponse = [[NSString alloc] initWithData:dataResponse encoding:NSUTF8StringEncoding];
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:([strResponse isEqualToString:@"success"] == YES ? @"The pattern has been uploaded." : @"The pattern failed to upload.") preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
-    [self presentViewController:alert animated:YES completion:nil];
-}
 - (void)flashHub:(UIButton*)sender {
     NSIndexPath *indexPath = ((STLRootTableViewCell*)sender.superview.superview.superview).indexPath;
     STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
-    STLRootTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    [[STLSequenceManager sharedManager] uploadToHub:hub];
+}
+- (void)addHub:(id)sender {
+    STLHub *hub = nil;
+    if ([sender isKindOfClass:[NSNotification class]]) {
+        hub = [sender object];
+    } else {
+        hub = sender;
+    }
+    if (!hub) return;
     
-    STLLightPattern *pattern = [STLLightPattern pattern];
-    pattern.delay = (uint32_t)cell.delay;
-    pattern.states = cell.states;
-    pattern.lights = hub.lightMatrix;
-    pattern.colorForLightIndexWithFrame = ^ UIColor *(NSInteger lightIndex, NSInteger frame) {
-        return [UIColor redColor];
-    };
-    [pattern reloadPattern];
-    [[STLSequenceManager sharedManager] uploadPattern:pattern];
+    NSError *error = nil;
+    [[STLDataManager sharedManager] saveData:&error];
+    if (error) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:@"An error occured when trying to add the StarLight" preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:self animated:YES completion:nil];
+        NSLog(@"%@",error);
+    } else {
+        [self handleRefresh:nil];
+    }
 }
 
 #pragma mark - UITableViewDataSource
@@ -201,7 +170,6 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
     [cell setLocation:hub.location];
     cell.indexPath = indexPath;
     cell.rightButtons = @[
-                          [STLRootTableViewCellButton buttonWithTitle:@"Share" backgroundColor:[UIColor lightGrayColor] titleColor:[UIColor whiteColor] target:self action:@selector(shareHub:)],
                           [STLRootTableViewCellButton buttonWithTitle:@"Delete" backgroundColor:[UIColor colorWithHexString:@"#FF3B31"] titleColor:[UIColor whiteColor] target:self action:@selector(removeHub:)],
                           ];
     cell.leftButtons = @[
@@ -221,7 +189,9 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [self.navigationController pushViewController:[[STLStoreViewController alloc] initWithHub:[aryHubs objectAtIndex:indexPath.row]] animated:YES];
+    [self.navigationController pushViewController:[self actionForIndexPath:indexPath] animated:YES];
+
+//    [self.navigationController pushViewController:[[STLStoreViewController alloc] initWithHub:[aryHubs objectAtIndex:indexPath.row]] animated:YES];
 }
 
 #pragma mark - UIViewControllerPreviewingDelegate
@@ -271,22 +241,18 @@ static NSString * const reuseIdentifier = @"starlight.root.cell";
 }
 
 #pragma mark - STLConfigurationViewControllerDelegate
-- (void)configurationViewController:(STLConfigurationViewController *)viewController states:(NSArray<NS2DArray *> *)states withDelay:(NSInteger)delay {
-    [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setStates:states];
-    [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[aryHubs indexOfObject:viewController.hub] inSection:0]]) setDelay:delay];
+- (void)configurationViewController:(STLConfigurationViewController *)viewController withLightPattern:(STLLightPattern *)pattern {
+    NSInteger row = [aryHubs indexOfObject:pattern.hub];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+    STLHub *hub = [aryHubs objectAtIndex:indexPath.row];
+    hub.pattern = pattern;
+    
+    [((STLRootTableViewCell*)[self.tableView cellForRowAtIndexPath:indexPath]) setPattern:pattern];
+    [[STLDataManager sharedManager] saveData:nil];
 }
 
 #pragma mark - STLCalibrationViewControllerDelegate
 - (void)calibrationdidFinish:(STLCalibrationViewController *)viewController withHub:(STLHub *)hub {
-    NSError *error = nil;
-    [[STLDataManager sharedManager] saveData:&error];
-    if (error) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"StarLight" message:@"An error occured when trying to add the StarLight" preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
-        [self presentViewController:self animated:YES completion:nil];
-        NSLog(@"%@",error);
-    } else {
-        [self handleRefresh:nil];
-    }
+    [self addHub:hub];
 }
 @end

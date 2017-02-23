@@ -15,6 +15,8 @@
 #import "STLSequenceManager.h"
 #import "NS2DArray+CGRect.h"
 #import "AVCaptureDevice+DevicePresence.h"
+#import "STLLightPattern.h"
+#import "STLLightFrame.h"
 
 #import <ChameleonFramework/Chameleon.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
@@ -23,9 +25,8 @@
 #import <OpenCV/opencv2/imgcodecs/ios.h>
 #import <OpenCV/opencv2/videoio/cap_ios.h>
 
-#define LIGHTS_PER_STRAND (25)
-#define DELAY (0.3)
-#define OFFSET (13)
+#define LIGHTS_PER_STRAND (4)
+#define OFFSET (0)
 
 UIColor *UIColorFromCVScalar(cv::Scalar color) {
     return [UIColor colorWithRed:color[0]/255 green:color[1]/255 blue:color[2]/255 alpha:1.0];
@@ -41,6 +42,8 @@ cv::Rect RectFromCGRrect(CGRect frame) {
 CGRect CGRectFromRect(cv::Rect frame) {
     return CGRectMake(frame.x, frame.y, frame.width, frame.height);
 }
+
+NSNotificationName kSTLCalibrationDidFinish = @"STLCalibrationDidFinish";
 
 @interface STLCalibrationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CvVideoCameraDelegate, BEMCheckBoxDelegate> {
     UICollectionView *clvLights; // collection view used for confirmation
@@ -153,6 +156,7 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     // Dispose of any resources that can be recreated.
 }
 - (void)exit {
+    [[STLBluetoothManager sharedManager] disconnnectFromPeripheral:self.peripheral];
     [camera stop];
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
@@ -178,7 +182,7 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     matCalibration = NULL;
     
     for (NSInteger x = OFFSET; x < [self calculatedLights]+OFFSET; x++) {
-        [NSThread sleepForTimeInterval:DELAY];
+        [NSThread sleepForTimeInterval:DELAY_BLE];
         if (x == OFFSET) {
             [[STLSequenceManager sharedManager] setLightAtPosition:x toColor:[UIColor greenColor]];
         } else {
@@ -265,7 +269,16 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
     }
     __block STLHub *hub = [STLHub hubWithLights:setLights];
     hub.matrix = [NSIndexPath indexPathForRow:[aryCoordinates count] inSection:[aryCoordinates count]];
-    hub.identifer = self.peripheral.name;
+    hub.identifer = [self.peripheral.identifier UUIDString];
+    
+    STLLightFrame *frame = [STLLightFrame frameWithHub:hub];
+    [frame setStateForLight:^BOOL(STLLight *light) {
+        return NO;
+    }];
+    [frame reloadFrame];
+    hub.pattern = [STLLightPattern patternWithFrames:@[
+                                                       frame
+                                                       ]];
     
     UIAlertController *alertName = [UIAlertController alertControllerWithTitle:@"StarLight" message:@"" preferredStyle:UIAlertControllerStyleAlert];
     [alertName addAction:[UIAlertAction actionWithTitle:@"Next" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -281,11 +294,13 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
                 hub.location = @"Unknown";
             }
             [_delgate calibrationdidFinish:self withHub:hub];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kSTLCalibrationDidFinish object:hub userInfo:nil];
             [self exit];
         }]];
         [alertLocation addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
             textField.placeholder = @"Location";
         }];
+        [self presentViewController:alertLocation animated:YES completion:nil];
     }]];
     [alertName addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         textField.placeholder = @"Name";
@@ -412,7 +427,7 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
                     [dictLights setObject:[NSValue valueWithCGRect:CGRectMake((frame.y*CGRectGetWidth(imgViewCalibration.frame))/matRGB.cols, CGRectGetHeight(imgViewCalibration.frame)-CGRectGetHeight([UIApplication sharedApplication].statusBarFrame)/2-(frame.x*CGRectGetHeight(imgViewCalibration.frame))/matRGB.rows, frame.width, frame.height)] forKey:[NSString stringWithFormat:@"%lu",(unsigned long)[[dictLights allKeys] count]]];
                     
                     [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor redColor]];
-                    [NSThread sleepForTimeInterval:DELAY];
+                    [NSThread sleepForTimeInterval:DELAY_BLE];
                     currentLight++;
                     [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor greenColor]];
                     frames = 0;
@@ -427,7 +442,7 @@ static NSString * const reuseIdentifier = @"starlight.calibration.cell";
             } else {
                 if (frames > 61) {
                     [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor redColor]];
-                    [NSThread sleepForTimeInterval:DELAY];
+                    [NSThread sleepForTimeInterval:DELAY_BLE];
                     currentLight++;
                     [[STLSequenceManager sharedManager] setLightAtPosition:currentLight+OFFSET toColor:[UIColor greenColor]];
                     frames = 0;

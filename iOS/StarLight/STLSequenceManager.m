@@ -44,27 +44,72 @@
 - (void)setLightAtPosition:(NSInteger)position toColor:(UIColor *)color {
     CBPeripheral *peripheral = [STLBluetoothManager sharedManager].connectedPeripheral;
     
-    NSData *command = [[[NSString stringWithFormat:@"%02lx%@",(long)position,[[color hexValue] stringByReplacingOccurrencesOfString:@"#" withString:@""]] uppercaseString] dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *strCommand = [[NSString stringWithFormat:@"%02lx%@",(long)position,[[color hexValue] stringByReplacingOccurrencesOfString:@"#" withString:@""]] uppercaseString];
+    if (strCommand.length < 8) {
+        strCommand = [NSString stringWithFormat:@"0%@",strCommand];
+    }
+    NSLog(@"Sending string of length: %lu",(unsigned long)strCommand.length);
+    NSData *command = [strCommand dataUsingEncoding:NSUTF8StringEncoding];
     
-    [peripheral writeValue:command forCharacteristic:[[peripheral.services objectAtIndex:0].characteristics objectAtIndex:0] type:CBCharacteristicWriteWithoutResponse];
+    if ([[peripheral.services objectAtIndex:0].characteristics objectAtIndex:0] != nil) {
+        [peripheral writeValue:command forCharacteristic:[[peripheral.services objectAtIndex:0].characteristics objectAtIndex:0] type:CBCharacteristicWriteWithoutResponse];
+    }
 }
-- (void)uploadPattern:(STLLightPattern *)pattern {
-    CBPeripheral *peripheral = [STLBluetoothManager sharedManager].connectedPeripheral;
+- (void)uploadToHub:(STLHub*)hub {
+    if (_running) return;
+    _running = YES;
     
-    NSData *command = [pattern dataPattern];
-    
-    [peripheral writeValue:command forCharacteristic:[[peripheral.services objectAtIndex:0].characteristics objectAtIndex:0] type:CBCharacteristicWriteWithoutResponse];
+    [self connectIfNecessary:hub success:^(CBPeripheral *peripheral) {
+        NSLog(@"Connected");
+        NSArray *aryItems = [hub.pattern.absolutePattern componentsSeparatedByString:[STLLightPattern frameIdentifier]];
+        for (NSString *line in aryItems) {
+            for (STLLight *light in hub.lights) {
+                [self setLightAtPosition:light.index on:NO];
+                [NSThread sleepForTimeInterval:DELAY_BLE];
+            }
+            for (NSInteger x = 0; x < (line.length/8); x++) {
+                NSString *strLine = [line substringFromIndex:8*x];
+                if (strLine.length > 8) strLine = [strLine substringToIndex:8];
+                
+                NSInteger position = [[strLine substringToIndex:3] integerValue];
+                NSString *color = [strLine substringFromIndex:2];
+                
+                [self setLightAtPosition:position toColor:[UIColor colorWithHexString:[NSString stringWithFormat:@"#%@",color]]];
+                [NSThread sleepForTimeInterval:DELAY_BLE];
+            }
+            [NSThread sleepForTimeInterval:(hub.pattern.delay/1000)];
+        }
+        _running = NO;
+    } failed:^(NSError *error) {
+        NSLog(@"%@",error);
+    }];
 }
 
 #pragma mark - Other
-- (CBPeripheral*)peripheralForLight:(STLLight*)light {
+- (void)connectIfNecessary:(STLHub*)hub success:(STLDeviceConnectionSuccess)success failed:(STLDeviceFailed)failed {
+    if ([STLBluetoothManager sharedManager].connectedPeripheral == nil) {
+        CBPeripheral *peripheral = [self peripheralForHub:hub];
+        if (peripheral) {
+            [[STLBluetoothManager sharedManager] connectToPeripheral:[self peripheralForHub:hub] success:success failed:failed];
+        } else {
+            if (failed) failed([NSError errorWithDomain:@"com.bolencki13.starlight" code:-42 userInfo:@{
+                                                                                                        NSLocalizedFailureReasonErrorKey : @"Peripheral is nil"
+                                                                                                        }]);
+        }
+    } else {
+        if (success) success([STLBluetoothManager sharedManager].connectedPeripheral);
+    }
+}
+- (CBPeripheral*)peripheralForHub:(STLHub*)hub {
     CBPeripheral *peripheral = nil;
-    for (CBPeripheral *_peripheral in [STLBluetoothManager sharedManager].peripherals) {
-        if ([_peripheral.name isEqualToString:light.hub.name]) {
+    NSArray *aryTemp =[STLBluetoothManager sharedManager].peripherals;
+    for (CBPeripheral *_peripheral in aryTemp) {
+        if ([[_peripheral.identifier UUIDString] isEqualToString:hub.identifer]) {
             peripheral = _peripheral;
             break;
         }
     }
     return peripheral;
 }
+
 @end

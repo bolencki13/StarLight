@@ -22,14 +22,15 @@
 
 #import <UIKit/UIKit.h>
 
-@class NS2DArray;
+@class NS2DArray, STLHub, STLLightFrame;
 @interface STLLightPattern : NSObject
-@property (nonatomic, retain) NSArray<NS2DArray*> *states;
-@property (nonatomic, retain) NS2DArray *lights;
-@property (nonatomic) uint32_t delay;
-@property (nonatomic, copy) UIColor* (^colorForLightIndexWithFrame)(NSInteger lightIndex, NSInteger frame);
+@property (nonatomic, retain) STLHub *hub;
+@property (nonatomic, retain) NSArray<STLLightFrame*> *frames;
+@property (nonatomic) NSInteger delay;
 @property (nonatomic, retain, readonly) NSString *absolutePattern;
 @property (nonatomic, retain, readonly) NSData *dataPattern;
-+ (STLLightPattern*)pattern;
-- (void)reloadPattern;
++ (NSString*)frameIdentifier;
++ (STLLightPattern*)patternWithFrames:(NSArray<STLLightFrame*>*)frames;
+- (instancetype)initWithJSON:(NSDictionary*)json;
+- (NSDictionary*)JSON;
 @end

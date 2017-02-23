@@ -8,16 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-@class NS2DArray, STLLightPattern, STLHub;
+@class STLLightFrame, STLHub;
 @interface STLDesignView : UIView
+@property (nonatomic, retain) UIColor *drawColor;
+@property (nonatomic, readonly) BOOL empty;
 @property (nonatomic, readonly) BOOL drawing;
 @property (nonatomic, retain, readonly) UIImage *image;
-@property (nonatomic, retain, readonly) STLHub *hub;
-@property (nonatomic, retain) NS2DArray *states;
-@property (nonatomic, retain, readonly) STLLightPattern *lightPattern;
-@property (nonatomic, copy) void (^didFinishDrawing)(UIImage *image, NS2DArray *states, STLLightPattern *lightPattern);
-+ (UIImage*)imageFromStates:(NS2DArray*)states;
-- (instancetype)initWithFrame:(CGRect)frame withHub:(STLHub*)hub withStates:(NS2DArray*)states;
+@property (nonatomic, retain) STLLightFrame *lightFrame;
+@property (nonatomic, retain, readonly) NSIndexPath *size;
+@property (nonatomic, copy) void (^didFinishDrawing)(UIImage *image, STLLightFrame *lightFrame);
++ (UIImage*)imageFromFrame:(STLLightFrame*)frame;
+- (instancetype)initWithFrame:(CGRect)frame withFrame:(STLLightFrame*)lightFrame;
 - (void)updateValuesForMatrixSize:(NSIndexPath*)size;
 - (void)erase;
 - (void)highlightAtIndex:(NSIndexPath*)indexPath;

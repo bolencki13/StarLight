@@ -8,6 +8,8 @@
 
 #import "STLRootTableViewCell.h"
 #import "STLDesignView.h"
+#import "STLLightPattern.h"
+#import "STLLightFrame.h"
 
 #import <ChameleonFramework/Chameleon.h>
 
@@ -326,12 +328,12 @@
     lblLocation.text = location;
     [lblLocation sizeToFit];
 }
-- (void)setStates:(NSArray<NS2DArray *> *)states {
-    _states = states;
+- (void)setPattern:(STLLightPattern *)pattern {
+    _pattern = pattern;
     
     NSMutableArray *aryImages = [NSMutableArray new];
-    for (NS2DArray *state in _states) {
-        UIImage *image = [STLDesignView imageFromStates:state];
+    for (STLLightFrame *frame in self.pattern.frames) {
+        UIImage *image = [STLDesignView imageFromFrame:frame];
         [aryImages addObject:image];
     }
     
@@ -339,7 +341,7 @@
     imgViewDrawing.image = [aryImages lastObject];
 }
 - (void)animate {
-    imgViewDrawing.animationDuration = self.delay/1000*[imgViewDrawing.animationImages count];
+    imgViewDrawing.animationDuration = self.pattern.delay/1000*[imgViewDrawing.animationImages count];
     imgViewDrawing.animationRepeatCount = 1;
     [imgViewDrawing startAnimating];
 }

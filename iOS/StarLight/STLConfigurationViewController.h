@@ -8,15 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@class STLConfigurationViewController, NS2DArray, STLHub, STLLightPattern;
+@class STLConfigurationViewController, STLHub, STLLightPattern;
 @protocol STLConfigurationViewControllerDelegate <NSObject>
-- (void)configurationViewController:(STLConfigurationViewController*)viewController states:(NSArray<NS2DArray*>*)states withDelay:(NSInteger)delay;
+- (void)configurationViewController:(STLConfigurationViewController*)viewController withLightPattern:(STLLightPattern*)pattern;
 @end
 
-@class STLHub;
+@class STLLightPattern;
 @interface STLConfigurationViewController : UIViewController
 @property (nonatomic, retain, readonly) STLHub *hub;
-@property (nonatomic, retain, readonly) NSArray<NS2DArray*> *states;
+@property (nonatomic, retain, readonly) STLLightPattern *pattern;
 @property (nonatomic, retain) id<STLConfigurationViewControllerDelegate> delegate;
-- (instancetype)initWithHub:(STLHub*)hub withStates:(NSArray<NS2DArray *>*)states;
+- (instancetype)initWithPattern:(STLLightPattern*)pattern;
 @end

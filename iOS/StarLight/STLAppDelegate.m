@@ -8,6 +8,7 @@
 
 #import "STLAppDelegate.h"
 #import "STLDataManager.h"
+#import "STLBluetoothManager.h"
 #import "STLHub.h"
 #import "STLLight.h"
 #import "STLRootViewController.h"
@@ -33,12 +34,16 @@
                                                         [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@-new",[[NSBundle mainBundle] bundleIdentifier]] localizedTitle:@"New StarLight" localizedSubtitle:nil icon:[UIApplicationShortcutIcon iconWithType:UIApplicationShortcutIconTypeAdd] userInfo:nil],
                                                         ];
     
-#if DEBUG
-    [self populateDummyData];
-#endif
+//#if DEBUG
+//    [self populateDummyData];
+//#endif
     
     self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[STLRootViewController new]];
     
+    [[STLBluetoothManager sharedManager] startScanningForDevices:^(NSArray<CBPeripheral *> *peripherals) {
+        NSLog(@"Found devices over BLE");
+    }];
+
     return YES;
 }
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -51,6 +56,10 @@
 }
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    
+    [[STLBluetoothManager sharedManager] startScanningForDevices:^(NSArray<CBPeripheral *> *peripherals) {
+        NSLog(@"Found devices over BLE");
+    }];
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
@@ -59,6 +68,7 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
     [[STLDataManager sharedManager] saveData:nil];
+    [[STLBluetoothManager sharedManager] disconnnectFromPeripheral:[STLBluetoothManager sharedManager].connectedPeripheral];
 }
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
     

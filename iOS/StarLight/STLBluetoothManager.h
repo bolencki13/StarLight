@@ -23,4 +23,5 @@ typedef void (^STLDeviceConnectionSuccess)(CBPeripheral *peripheral);
 - (void)startScanningForDevices:(STLDeviceDiscovery)block;
 - (void)stopScanning;
 - (void)connectToPeripheral:(CBPeripheral*)peripheral success:(STLDeviceConnectionSuccess)success failed:(STLDeviceFailed)failed;
+- (void)disconnnectFromPeripheral:(CBPeripheral*)peripheral;
 @end

@@ -8,8 +8,11 @@
 
 #import "STLDesignView.h"
 #import "NS2DArray.h"
-#import "STLLightPattern.h"
+#import "STLLightFrame.h"
 #import "STLHub.h"
+#import "STLLight.h"
+
+#import <Chameleon.h>
 
 @interface STLDesignView () {
     BOOL mouseSwiped;
@@ -17,12 +20,16 @@
     CGFloat lineSize;
     
     UIImageView *imgViewDrawing;
+    
+    NS2DArray *states;
+    NS2DArray *colors;
+    STLLightFrame *lightFrame;
 }
 @end
 
 @implementation STLDesignView
-+ (UIImage *)imageFromStates:(NS2DArray *)states {
-    STLDesignView *designView = [[STLDesignView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds)) withHub:nil withStates:states];
++ (UIImage *)imageFromFrame:(STLLightFrame *)frame {
+    STLDesignView *designView = [[STLDesignView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds)) withFrame:frame];
     UIImage *image = [UIImage imageWithCGImage:designView.image.CGImage];
     designView = nil;
     return image;
@@ -41,14 +48,13 @@
     }
     return self;
 }
-- (instancetype)initWithFrame:(CGRect)frame withHub:(STLHub*)hub withStates:(NS2DArray *)states {
+- (instancetype)initWithFrame:(CGRect)frame withFrame:(STLLightFrame *)lFrame {
     self = [super initWithFrame:frame];
     if (self) {
         [self sharedInit];
-        _hub = hub;
-        if (states) {
-            [self updateValuesForMatrixSize:[NSIndexPath indexPathForRow:states.rows inSection:states.sections]];
-            self.states = states;
+        if (lFrame) {
+            [self updateValuesForMatrixSize:lFrame.hub.matrix];
+            [self setLightFrame:lFrame];
         }
     }
     return self;
@@ -75,23 +81,48 @@
 - (UIImage*)image {
     return (_drawing ? nil :imgViewDrawing.image);
 }
-- (void)setStates:(NS2DArray *)states {
+- (void)setLightFrame:(STLLightFrame *)lFrame {
     [self erase];
-    _states = states;
+    lightFrame = lFrame;
     
-    [states enumerateObjectsUsingBlock:^(NSNumber *obj, NSIndexPath *indexPath, BOOL *stop) {
-        if ([obj boolValue] == YES) {
-            [self highlightAtIndex:indexPath];
-        }
+    [lightFrame enumerateFrame:^(NSString *hexColor, NSInteger position) {
+        self.drawColor = [UIColor colorWithHexString:hexColor];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(position % states.sections) inSection:(int)(position/states.sections)];
+        [self highlightAtIndex:indexPath];
     }];
 }
-- (void)updateValuesForMatrixSize:(NSIndexPath*)size {
-    _states = [NS2DArray arrayWithSections:size.section rows:size.row];
-    for (NSInteger section = 0; section < _states.sections; section++) {
-        for (NSInteger row = 0; row < _states.rows; row++) {
-            [_states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+- (STLLightFrame *)lightFrame {
+    for (STLLight *light in lightFrame.hub.lights) {
+        if ([[states objectAtIndexPath:[NSIndexPath indexPathForRow:(light.position % states.sections) inSection:(light.position % states.sections)]] boolValue] == YES) {
+            light.on = YES;
         }
     }
+    
+    [lightFrame setStateForLight:^BOOL(STLLight *light) {
+        return light.on;
+    }];
+    
+    __weak typeof(NS2DArray*) weakColors = colors;
+    [lightFrame setColorForLight:^UIColor *(STLLight *light) {
+        return [weakColors objectAtIndexPath:[NSIndexPath indexPathForRow:(light.position % states.sections) inSection:(light.position % states.sections)]];
+    }];
+    [lightFrame reloadFrame];
+    
+    return lightFrame;
+}
+- (void)updateValuesForMatrixSize:(NSIndexPath*)size {
+    _size = size;
+    
+    states = [NS2DArray arrayWithSections:size.section rows:size.row];
+    colors = [NS2DArray arrayWithSections:size.section rows:size.row];
+    for (NSInteger section = 0; section < states.sections; section++) {
+        for (NSInteger row = 0; row < states.rows; row++) {
+            [states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            [colors setObject:[UIColor clearColor] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    
+    
     
     lineSize = CGRectGetWidth(self.frame)/fmin(size.section, size.row);
     
@@ -116,30 +147,35 @@
 }
 - (void)erase {
     imgViewDrawing.image = [UIImage new];
-    for (NSInteger section = 0; section < _states.sections; section++) {
-        for (NSInteger row = 0; row < _states.rows; row++) {
-            [_states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+    for (NSInteger section = 0; section < states.sections; section++) {
+        for (NSInteger row = 0; row < states.rows; row++) {
+            [states setObject:[NSNumber numberWithBool:NO] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            [colors setObject:[UIColor clearColor] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
         }
     }
-    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states, self.lightPattern);
+    _empty = YES;
+    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.lightFrame);
 }
-- (void)highlightAtIndex:(NSIndexPath *)indexPath {
-    if (indexPath.row < _states.rows && indexPath.section < _states.sections) {
-        [_states setObject:[NSNumber numberWithBool:YES] atIndexPath:indexPath];
+- (void)highlightAtIndex:(NSIndexPath*)indexPath {
+    if (indexPath.row < states.rows && indexPath.section < states.sections) {
+        [states setObject:[NSNumber numberWithBool:YES] atIndexPath:indexPath];
+        [colors setObject:self.drawColor atIndexPath:indexPath];
         
-        CGPoint currentPoint = CGPointMake((indexPath.row*(CGRectGetWidth(imgViewDrawing.frame)/_states.rows))+((CGRectGetWidth(self.frame)/fmin(_states.sections, _states.rows))/2),(indexPath.section*(CGRectGetHeight(imgViewDrawing.frame)/_states.sections))+((CGRectGetWidth(self.frame)/fmin(_states.sections, _states.rows))/2));
-        
+        CGPoint currentPoint = CGPointMake((indexPath.row*(CGRectGetWidth(imgViewDrawing.frame)/states.rows))+((CGRectGetWidth(self.frame)/fmin(states.sections, states.rows))/2),(indexPath.section*(CGRectGetHeight(imgViewDrawing.frame)/states.sections))+((CGRectGetWidth(self.frame)/fmin(states.sections, states.rows))/2));
+
         UIGraphicsBeginImageContext(self.frame.size);
+        [self.drawColor set];
         [imgViewDrawing.image drawInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         CGContextMoveToPoint(UIGraphicsGetCurrentContext(), currentPoint.x, currentPoint.y);
         CGContextAddLineToPoint(UIGraphicsGetCurrentContext(), currentPoint.x+1, currentPoint.y);
         CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapSquare);
         CGContextSetLineWidth(UIGraphicsGetCurrentContext(), lineSize);
-        CGContextSetFillColorWithColor(UIGraphicsGetCurrentContext(), [UINavigationBar appearance].barTintColor.CGColor);
-        
+
         CGContextStrokePath(UIGraphicsGetCurrentContext());
         imgViewDrawing.image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
+        
+        _empty = NO;
     }
 }
 
@@ -155,16 +191,16 @@
     if (!CGRectContainsPoint(self.bounds,currentPoint)) return;
     
     // logic for adding drawing state to NS2DArray (needs to convert CGRect relative to NSIndexPath)
-    NSInteger row = 100*((currentPoint.x/CGRectGetWidth(self.frame))/(_states.sections+1));
-    NSInteger section = 100*((currentPoint.y/CGRectGetHeight(self.frame))/(_states.rows+1));
-    if (row < _states.rows && section < _states.sections) {
-        [_states setObject:[NSNumber numberWithBool:YES] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+    NSInteger row = (self.size.row*self.size.section)*((currentPoint.x/CGRectGetWidth(self.frame))/(states.sections));
+    NSInteger section = (self.size.row*self.size.section)*((currentPoint.y/CGRectGetHeight(self.frame))/(states.rows));
+    if (row < states.rows && section < states.sections) {
+        [states setObject:[NSNumber numberWithBool:YES] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
         [self highlightAtIndex:[NSIndexPath indexPathForRow:row inSection:section]];
     }
 }
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     _drawing = NO;
-    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.states,self.lightPattern);
+    if (self.didFinishDrawing) self.didFinishDrawing(self.image,self.lightFrame);
 }
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     _drawing = NO;

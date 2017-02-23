@@ -9,6 +9,7 @@
 #import "STLHub.h"
 #import "STLLight.h"
 #import "NS2DArray.h"
+#import "STLLightPattern.h"
 
 @implementation STLHub
 static NSMutableSet *hubs = nil;
@@ -67,6 +68,7 @@ static NSMutableSet *hubs = nil;
     hub.location = [json objectForKey:@"location"];
     hub.matrix = [NSIndexPath indexPathForRow:[[[json objectForKey:@"matrix"] objectForKey:@"rows"] integerValue] inSection:[[[json objectForKey:@"matrix"] objectForKey:@"sections"] integerValue]];
     hub.identifer = [json objectForKey:@"identifier"];
+    hub.pattern = [[STLLightPattern alloc] initWithJSON:[json objectForKey:@"pattern"]];
     
     NSMutableSet *setLights = [NSMutableSet new];
     for (NSDictionary *light in json[@"lights"]) {
@@ -104,6 +106,7 @@ static NSMutableSet *hubs = nil;
                       @"sections" : [NSNumber numberWithInteger:self.matrix.section]
                       } forKey:@"matrix"];
     [json setObject:self.identifer forKey:@"identifier"];
+    [json setObject:[self.pattern JSON] forKey:@"pattern"];
     
     NSMutableArray *aryLights = [NSMutableArray new];
     for (STLLight *light in self.lights) {
@@ -124,8 +127,11 @@ static NSMutableSet *hubs = nil;
     
     for (NSInteger section = 0; section < matrix.sections; section++) {
         for (NSInteger row = 0; row < matrix.rows; row++) {
-            STLLight *light = [self lightAtIndex:(section*(matrix.rows))+row];
-            if (light) [matrix setObject:[NSNumber numberWithInteger:light.index] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            NSInteger index = (section*(matrix.rows))+row;
+            STLLight *light = [self lightAtPosition:index];
+            if (light) {
+                [matrix setObject:[NSNumber numberWithInteger:light.index] atIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            }
         }
     }
     
@@ -133,10 +139,10 @@ static NSMutableSet *hubs = nil;
 }
 
 #pragma mark - Private
-- (STLLight*)lightAtIndex:(NSInteger)index {
+- (STLLight*)lightAtPosition:(NSInteger)index {
     STLLight *light = nil;
     for (STLLight *_light in self.lights) {
-        if (_light.index == index) {
+        if (_light.position == index) {
             light = _light;
             break;
         }

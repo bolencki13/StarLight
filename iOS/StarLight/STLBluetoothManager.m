@@ -8,7 +8,9 @@
 
 #import "STLBluetoothManager.h"
 
-#define BLUE_BEAN_UUID (@"A495FF10-C5B1-4B44-B512-1370F02D74DE")
+#define BLUE_BEAN_UUID (@"B8E06067-62AD-41BA-9231-206AE80AB550")
+#define CENTRAL_MANAGER_UUID (@"B8E06067-62AD-41BA-9231-206AE80AB550")
+#define PERIPHERAL_UUID (@"BF45E40A-DE2A-4BC8-BBA0-E5D6065F1B4B")
 
 @interface STLBluetoothManager () <CBCentralManagerDelegate, CBPeripheralDelegate> {
     NSMutableArray<CBPeripheral*> *aryPeripheral;
@@ -70,6 +72,10 @@
         [_centralManager connectPeripheral:peripheral options:nil];
     }
 }
+- (void)disconnnectFromPeripheral:(CBPeripheral*)peripheral {
+    [self.centralManager cancelPeripheralConnection:peripheral];
+    _connectedPeripheral = nil;
+}
 
 #pragma mark - CBCentralManagerDelegate
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary<NSString *,id> *)advertisementData RSSI:(NSNumber *)RSSI {
@@ -104,7 +110,7 @@
         [self peripheral:_connectedPeripheral didDiscoverServices:nil];
     } else {
         [_connectedPeripheral discoverServices:@[
-                                       [CBUUID UUIDWithString:@"A495FF20-C5B1-4B44-B512-1370F02D74DE"]
+                                       [CBUUID UUIDWithString:CENTRAL_MANAGER_UUID]
                                        ]];
     }
 }
@@ -116,7 +122,7 @@
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(nullable NSError *)error {
     _connectedPeripheral = peripheral;
     [_connectedPeripheral discoverCharacteristics:@[
-                                          [CBUUID UUIDWithString:@"A495FF21-C5B1-4B44-B512-1370F02D74DE"]
+                                          [CBUUID UUIDWithString:PERIPHERAL_UUID]
                                          ] forService:[_connectedPeripheral.services objectAtIndex:0]];
 }
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error {

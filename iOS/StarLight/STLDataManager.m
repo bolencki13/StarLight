@@ -108,7 +108,7 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
 
 #pragma mark Data (Hub)
 - (NSSet<STLHub *> *)hubs {
-    if (saved && !deleted) {
+    if (!saved && !deleted) {
         [self loadData];
     }
     
@@ -121,7 +121,7 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
 - (STLHub*)hubWithIdentifier:(NSString *)identifier {
     STLHub *hub_ = nil;
     
-    NSSet *tempSet = [[NSSet alloc] initWithSet:[self hubs]];
+    NSSet *tempSet = [[NSSet alloc] initWithSet:[STLHub allHubs]];
     for (STLHub *hub in tempSet) {
         if ([hub.identifer isEqualToString:identifier]) {
             hub_ = hub;
@@ -141,6 +141,7 @@ NSString * const STLDataManagerDidFinishLoadingData = @"kSTLDataManagerDidFinish
     }
     return success;
 }
+
 
 #pragma mark Data (Light)
 

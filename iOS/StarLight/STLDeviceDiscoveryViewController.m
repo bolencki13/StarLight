@@ -41,6 +41,10 @@ static NSString * const reuseIdentifier = @"starlight.device.cell";
     [viewHeader addSubview:lblTitle];
     self.tableView.tableHeaderView = viewHeader;
     
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] initWithFrame:CGRectZero];
+    [refreshControl addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:refreshControl];
+    
     [self handleRefresh:nil];
 }
 - (void)didReceiveMemoryWarning {
@@ -48,10 +52,16 @@ static NSString * const reuseIdentifier = @"starlight.device.cell";
     // Dispose of any resources that can be recreated.
 }
 - (void)handleRefresh:(id)sender {
+    aryDevices = [[STLBluetoothManager sharedManager] peripherals];
+    [self.tableView reloadData];
+    return;
+    
     [[STLBluetoothManager sharedManager] startScanningForDevices:^(NSArray<CBPeripheral *> *peripherals) {
         aryDevices = peripherals;
         [self.tableView reloadData];
-        if ([sender isKindOfClass:[UIRefreshControl class]]) [sender endRefreshing];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([sender isKindOfClass:[UIRefreshControl class]]) [sender endRefreshing];
+        });
     }];
 }
 
